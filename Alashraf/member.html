@@ -1,0 +1,5142 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>حساب العضو | منظمة الأشراف للتنمية</title>
+
+    <meta name="description"
+          content="الملف الشخصي لعضو منظمة الأشراف للتنمية">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <style>
+
+        :root {
+
+            --green: #16845b;
+            --green-dark: #0d6042;
+            --green-deep: #083d2a;
+            --green-light: #eaf7f1;
+            --green-soft: #f4fbf7;
+
+            --white: #ffffff;
+            --black: #17221d;
+            --text: #53615a;
+            --muted: #7a867f;
+
+            --border: #e4eee9;
+
+            --danger: #dc3545;
+            --warning: #f0a500;
+
+            --shadow:
+                0 20px 60px rgba(8, 61, 42, 0.08);
+
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+
+            font-family: "Cairo", "Inter", sans-serif;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(22,132,91,0.07),
+                    transparent 30%
+                ),
+                #f6faf8;
+
+            color: var(--black);
+
+            min-height: 100vh;
+
+        }
+
+
+        button,
+        input,
+        textarea,
+        select {
+
+            font-family: inherit;
+
+        }
+
+
+        button {
+            cursor: pointer;
+        }
+
+
+        a {
+            text-decoration: none;
+        }
+
+
+        /* =========================================
+           PAGE LOADING
+        ========================================= */
+
+        #pageLoader {
+
+            position: fixed;
+
+            inset: 0;
+
+            z-index: 99999;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green-deep),
+                    var(--green-dark)
+                );
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            transition:
+                opacity 0.4s ease,
+                visibility 0.4s ease;
+
+        }
+
+
+        #pageLoader.hide {
+
+            opacity: 0;
+
+            visibility: hidden;
+
+        }
+
+
+        .loader-content {
+
+            text-align: center;
+
+            color: white;
+
+        }
+
+
+        .loader-logo {
+
+            width: 82px;
+
+            height: 82px;
+
+            margin: 0 auto 20px;
+
+            border-radius: 24px;
+
+            background: rgba(255,255,255,0.12);
+
+            border: 1px solid rgba(255,255,255,0.18);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 32px;
+
+        }
+
+
+        .loader-content h2 {
+
+            font-size: 18px;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .loader-content p {
+
+            font-size: 11px;
+
+            opacity: 0.75;
+
+        }
+
+
+        .loader-spinner {
+
+            width: 30px;
+
+            height: 30px;
+
+            border: 3px solid rgba(255,255,255,0.2);
+
+            border-top-color: white;
+
+            border-radius: 50%;
+
+            animation: spin 0.8s linear infinite;
+
+            margin: 20px auto 0;
+
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        /* =========================================
+           NAVBAR
+        ========================================= */
+
+        .navbar {
+
+            position: sticky;
+
+            top: 0;
+
+            z-index: 1000;
+
+            height: 74px;
+
+            background:
+                rgba(255,255,255,0.94);
+
+            backdrop-filter: blur(18px);
+
+            -webkit-backdrop-filter: blur(18px);
+
+            border-bottom:
+                1px solid var(--border);
+
+        }
+
+
+        .navbar-inner {
+
+            width: min(
+                1180px,
+                calc(100% - 40px)
+            );
+
+            height: 100%;
+
+            margin: auto;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 20px;
+
+        }
+
+
+        .brand {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+            color: var(--green-deep);
+
+        }
+
+
+        .brand-icon {
+
+            width: 42px;
+
+            height: 42px;
+
+            border-radius: 13px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green),
+                    var(--green-deep)
+                );
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            box-shadow:
+                0 8px 20px rgba(22,132,91,0.2);
+
+        }
+
+
+        .brand-text strong {
+
+            display: block;
+
+            font-size: 13px;
+
+            font-weight: 800;
+
+        }
+
+
+        .brand-text span {
+
+            display: block;
+
+            font-family: Inter, sans-serif;
+
+            direction: ltr;
+
+            font-size: 8px;
+
+            color: var(--muted);
+
+            margin-top: 2px;
+
+        }
+
+
+        .nav-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+        }
+
+
+        .nav-btn {
+
+            border: 1px solid var(--border);
+
+            background: white;
+
+            color: var(--text);
+
+            height: 40px;
+
+            padding: 0 14px;
+
+            border-radius: 10px;
+
+            font-size: 11px;
+
+            font-weight: 700;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            transition: 0.2s ease;
+
+        }
+
+
+        .nav-btn:hover {
+
+            border-color: var(--green);
+
+            color: var(--green);
+
+        }
+
+
+        .logout-btn {
+
+            background: #fff5f5;
+
+            border-color: #f4d9dd;
+
+            color: var(--danger);
+
+        }
+
+
+        .logout-btn:hover {
+
+            background: #fdecec;
+
+            color: var(--danger);
+
+            border-color: #efb9c0;
+
+        }
+
+
+        /* =========================================
+           MAIN
+        ========================================= */
+
+        .main {
+
+            width: min(
+                1080px,
+                calc(100% - 40px)
+            );
+
+            margin: 0 auto;
+
+            padding: 42px 0 70px;
+
+        }
+
+
+        .welcome {
+
+            position: relative;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green-deep),
+                    var(--green)
+                );
+
+            color: white;
+
+            border-radius: 24px;
+
+            padding: 34px;
+
+            margin-bottom: 24px;
+
+            box-shadow:
+                0 22px 55px rgba(8,61,42,0.16);
+
+        }
+
+
+        .welcome::before {
+
+            content: "";
+
+            position: absolute;
+
+            width: 260px;
+
+            height: 260px;
+
+            border-radius: 50%;
+
+            background:
+                rgba(255,255,255,0.06);
+
+            top: -130px;
+
+            left: -70px;
+
+        }
+
+
+        .welcome::after {
+
+            content: "";
+
+            position: absolute;
+
+            width: 180px;
+
+            height: 180px;
+
+            border-radius: 50%;
+
+            border:
+                1px solid rgba(255,255,255,0.08);
+
+            bottom: -100px;
+
+            right: 15%;
+
+        }
+
+
+        .welcome-content {
+
+            position: relative;
+
+            z-index: 2;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 25px;
+
+        }
+
+
+        .welcome-text small {
+
+            display: block;
+
+            font-size: 10px;
+
+            opacity: 0.7;
+
+            margin-bottom: 7px;
+
+        }
+
+
+        .welcome-text h1 {
+
+            font-size: clamp(
+                22px,
+                4vw,
+                32px
+            );
+
+            line-height: 1.3;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .welcome-text p {
+
+            font-size: 11px;
+
+            opacity: 0.78;
+
+            line-height: 1.8;
+
+            max-width: 580px;
+
+        }
+
+
+        .member-badge {
+
+            flex-shrink: 0;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 7px;
+
+            padding: 9px 14px;
+
+            border-radius: 30px;
+
+            background:
+                rgba(255,255,255,0.12);
+
+            border:
+                1px solid rgba(255,255,255,0.16);
+
+            font-size: 10px;
+
+            font-weight: 700;
+
+        }
+
+
+        .member-badge i {
+
+            color: #bff1d9;
+
+        }
+
+
+        /* =========================================
+           PROFILE LAYOUT
+        ========================================= */
+
+        .profile-layout {
+
+            display: grid;
+
+            grid-template-columns:
+                300px
+                minmax(0, 1fr);
+
+            gap: 24px;
+
+            align-items: start;
+
+        }
+
+
+        .card {
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 20px;
+
+            box-shadow: var(--shadow);
+
+        }
+
+
+        /* =========================================
+           PROFILE SIDE
+        ========================================= */
+
+        .profile-card {
+
+            padding: 28px;
+
+            text-align: center;
+
+        }
+
+
+        .avatar-wrapper {
+
+            position: relative;
+
+            width: 125px;
+
+            height: 125px;
+
+            margin: 0 auto 20px;
+
+        }
+
+
+        .avatar {
+
+            width: 125px;
+
+            height: 125px;
+
+            border-radius: 50%;
+
+            overflow: hidden;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    var(--green-light),
+                    #d9f2e6
+                );
+
+            border:
+                5px solid white;
+
+            box-shadow:
+                0 10px 30px rgba(8,61,42,0.12);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            color: var(--green);
+
+            font-size: 42px;
+
+        }
+
+
+        .avatar img {
+
+            width: 100%;
+
+            height: 100%;
+
+            object-fit: cover;
+
+        }
+
+
+        .avatar-upload {
+
+            position: absolute;
+
+            bottom: 0;
+
+            left: 2px;
+
+            width: 38px;
+
+            height: 38px;
+
+            border-radius: 50%;
+
+            border: 3px solid white;
+
+            background: var(--green);
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 13px;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 5px 15px rgba(8,61,42,0.2);
+
+        }
+
+
+        .avatar-upload:hover {
+
+            background:
+                var(--green-dark);
+
+        }
+
+
+        #avatarInput {
+
+            display: none;
+
+        }
+
+
+        .profile-name {
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+            color: var(--black);
+
+            margin-bottom: 4px;
+
+        }
+
+
+        .profile-name-en {
+
+            font-family: Inter, sans-serif;
+
+            direction: ltr;
+
+            font-size: 10px;
+
+            color: var(--muted);
+
+            margin-bottom: 17px;
+
+        }
+
+
+        .approved-badge {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            padding: 7px 12px;
+
+            border-radius: 20px;
+
+            background: var(--green-light);
+
+            color: var(--green-dark);
+
+            font-size: 9px;
+
+            font-weight: 800;
+
+        }
+
+
+        .side-divider {
+
+            height: 1px;
+
+            background: var(--border);
+
+            margin: 24px 0;
+
+        }
+
+
+        .side-note {
+
+            text-align: right;
+
+            color: var(--muted);
+
+            font-size: 10px;
+
+            line-height: 1.9;
+
+        }
+
+
+        .side-note i {
+
+            color: var(--green);
+
+            margin-left: 5px;
+
+        }
+
+
+        /* =========================================
+           FORM CARD
+        ========================================= */
+
+        .form-card {
+
+            padding: 28px;
+
+        }
+
+
+        .card-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 25px;
+
+            padding-bottom: 18px;
+
+            border-bottom:
+                1px solid var(--border);
+
+        }
+
+
+        .card-header h2 {
+
+            font-size: 17px;
+
+            color: var(--black);
+
+        }
+
+
+        .card-header p {
+
+            color: var(--muted);
+
+            font-size: 10px;
+
+            margin-top: 5px;
+
+        }
+
+
+        .edit-indicator {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            gap: 6px;
+
+            color: var(--green);
+
+            background: var(--green-light);
+
+            border-radius: 10px;
+
+            padding: 8px 11px;
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+            white-space: nowrap;
+
+        }
+
+
+        .form-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 17px;
+
+        }
+
+
+        .form-group {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 7px;
+
+        }
+
+
+        .form-group.full {
+
+            grid-column: 1 / -1;
+
+        }
+
+
+        .form-group label {
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            color: var(--text);
+
+        }
+
+
+        .form-group label span {
+
+            color: var(--danger);
+
+        }
+
+
+        .input-wrap {
+
+            position: relative;
+
+        }
+
+
+        .input-wrap i {
+
+            position: absolute;
+
+            right: 13px;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            color: #8c9992;
+
+            font-size: 11px;
+
+            pointer-events: none;
+
+        }
+
+
+        .input-wrap input,
+        .input-wrap textarea {
+
+            width: 100%;
+
+            border:
+                1px solid var(--border);
+
+            background: #fbfdfc;
+
+            color: var(--black);
+
+            border-radius: 11px;
+
+            outline: none;
+
+            font-size: 11px;
+
+            padding:
+                12px 38px 12px 12px;
+
+            transition: 0.2s ease;
+
+        }
+
+
+        .input-wrap textarea {
+
+            min-height: 95px;
+
+            resize: vertical;
+
+            line-height: 1.7;
+
+        }
+
+
+        .input-wrap input:focus,
+        .input-wrap textarea:focus {
+
+            border-color: var(--green);
+
+            background: white;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(22,132,91,0.08);
+
+        }
+
+
+        .input-wrap input:disabled {
+
+            background: #f1f5f3;
+
+            color: #7d8882;
+
+            cursor: not-allowed;
+
+        }
+
+
+        .input-help {
+
+            font-size: 8px;
+
+            color: #9aa59f;
+
+            line-height: 1.5;
+
+        }
+
+
+        /* =========================================
+           ACCOUNT INFO
+        ========================================= */
+
+        .account-info {
+
+            margin-top: 22px;
+
+            padding: 17px;
+
+            border-radius: 13px;
+
+            background: var(--green-soft);
+
+            border:
+                1px solid var(--border);
+
+        }
+
+
+        .account-info-title {
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            color: var(--green-deep);
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .account-grid {
+
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 10px;
+
+        }
+
+
+        .account-item {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 8px;
+
+        }
+
+
+        .account-item i {
+
+            color: var(--green);
+
+            font-size: 11px;
+
+        }
+
+
+        .account-item span {
+
+            color: var(--muted);
+
+            font-size: 9px;
+
+        }
+
+
+        .account-item strong {
+
+            color: var(--text);
+
+            font-size: 9px;
+
+            font-weight: 700;
+
+        }
+
+
+        /* =========================================
+           BUTTONS
+        ========================================= */
+
+        .form-actions {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: flex-start;
+
+            gap: 10px;
+
+            margin-top: 25px;
+
+            padding-top: 20px;
+
+            border-top:
+                1px solid var(--border);
+
+        }
+
+
+        .btn {
+
+            border: none;
+
+            border-radius: 10px;
+
+            padding: 11px 18px;
+
+            font-size: 10px;
+
+            font-weight: 800;
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 7px;
+
+            transition: 0.2s ease;
+
+        }
+
+
+        .btn-primary {
+
+            background: var(--green);
+
+            color: white;
+
+        }
+
+
+        .btn-primary:hover {
+
+            background:
+                var(--green-dark);
+
+            transform:
+                translateY(-1px);
+
+        }
+
+
+        .btn-secondary {
+
+            background:
+                var(--green-light);
+
+            color: var(--green-dark);
+
+        }
+
+
+        .btn-secondary:hover {
+
+            background: #dcf2e7;
+
+        }
+
+
+        .btn:disabled {
+
+            opacity: 0.55;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+        }
+
+
+        /* =========================================
+           CERTIFICATES / ACHIEVEMENTS
+        ========================================= */
+
+        .coming-card {
+
+            margin-top: 24px;
+
+            padding: 25px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 18px;
+
+        }
+
+
+        .coming-icon {
+
+            width: 50px;
+
+            height: 50px;
+
+            border-radius: 14px;
+
+            background: var(--green-light);
+
+            color: var(--green);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 20px;
+
+            flex-shrink: 0;
+
+        }
+
+
+        .coming-card h3 {
+
+            font-size: 13px;
+
+            margin-bottom: 4px;
+
+        }
+
+
+        .coming-card p {
+
+            font-size: 10px;
+
+            color: var(--muted);
+
+            line-height: 1.7;
+
+        }
+
+
+        /* =========================================
+           TOAST
+        ========================================= */
+
+        .toast {
+
+            position: fixed;
+
+            bottom: 25px;
+
+            right: 25px;
+
+            z-index: 99999;
+
+            min-width: 270px;
+
+            max-width: 400px;
+
+            background:
+                var(--green-deep);
+
+            color: white;
+
+            padding: 13px 16px;
+
+            border-radius: 12px;
+
+            box-shadow:
+                0 15px 35px rgba(0,0,0,0.18);
+
+            font-size: 10px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 9px;
+
+            transform:
+                translateY(120px);
+
+            opacity: 0;
+
+            pointer-events: none;
+
+            transition: 0.3s ease;
+
+        }
+
+
+        .toast.show {
+
+            transform:
+                translateY(0);
+
+            opacity: 1;
+
+        }
+
+
+        .toast.error {
+
+            background: #7d1f2b;
+
+        }
+
+
+        .toast i {
+
+            font-size: 14px;
+
+        }
+
+
+        /* =========================================
+           ACCESS DENIED
+        ========================================= */
+
+        .access-denied {
+
+            min-height: 100vh;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            padding: 25px;
+
+        }
+
+
+        .denied-card {
+
+            width: 100%;
+
+            max-width: 430px;
+
+            background: white;
+
+            border:
+                1px solid var(--border);
+
+            border-radius: 22px;
+
+            padding: 35px;
+
+            text-align: center;
+
+            box-shadow: var(--shadow);
+
+        }
+
+
+        .denied-icon {
+
+            width: 68px;
+
+            height: 68px;
+
+            margin: 0 auto 18px;
+
+            border-radius: 20px;
+
+            background: #fdecec;
+
+            color: var(--danger);
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 27px;
+
+        }
+
+
+        .denied-card h2 {
+
+            margin-bottom: 8px;
+
+            font-size: 20px;
+
+        }
+
+
+        .denied-card p {
+
+            color: var(--muted);
+
+            font-size: 11px;
+
+            line-height: 1.8;
+
+            margin-bottom: 22px;
+
+        }
+
+
+        /* =========================================
+           RESPONSIVE
+        ========================================= */
+
+        @media (max-width: 850px) {
+
+            .profile-layout {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .profile-card {
+
+                text-align: center;
+
+            }
+
+
+            .side-note {
+
+                text-align: center;
+
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .navbar {
+
+                height: 68px;
+
+            }
+
+
+            .navbar-inner {
+
+                width:
+                    calc(100% - 25px);
+
+            }
+
+
+            .brand-text {
+
+                display: none;
+
+            }
+
+
+            .nav-btn span {
+
+                display: none;
+
+            }
+
+
+            .nav-btn {
+
+                width: 40px;
+
+                padding: 0;
+
+            }
+
+
+            .main {
+
+                width:
+                    calc(100% - 25px);
+
+                padding-top: 25px;
+
+            }
+
+
+            .welcome {
+
+                padding: 25px;
+
+                border-radius: 19px;
+
+            }
+
+
+            .welcome-content {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+
+            .form-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .form-group.full {
+
+                grid-column: auto;
+
+            }
+
+
+            .account-grid {
+
+                grid-template-columns: 1fr;
+
+            }
+
+
+            .form-card {
+
+                padding: 20px;
+
+            }
+
+
+            .profile-card {
+
+                padding: 23px;
+
+            }
+
+
+            .card-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+
+            .coming-card {
+
+                align-items: flex-start;
+
+            }
+
+
+            .toast {
+
+                right: 12px;
+
+                left: 12px;
+
+                bottom: 12px;
+
+                min-width: auto;
+
+            }
+
+        }
+
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible {
+
+            outline:
+                3px solid
+                rgba(22,132,91,0.25);
+
+            outline-offset: 2px;
+
+        }
+        /* =========================================
+   CERTIFICATES
+========================================= */
+
+.certificates-section {
+    margin-top: 24px;
+    display: grid;
+    gap: 24px;
+}
+
+.certificates-card {
+    padding: 28px;
+}
+
+.certificates-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--border);
+}
+
+.certificates-header > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+
+.section-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    background: var(--green-light);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+}
+
+.section-icon.admin {
+    background: #eef3ff;
+    color: #4b65a8;
+}
+
+.certificates-header h2 {
+    font-size: 16px;
+    color: var(--black);
+}
+
+.certificates-header p {
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 4px;
+    line-height: 1.7;
+}
+
+.certificates-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.certificate-item {
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 17px;
+    background: #fbfdfc;
+    transition: 0.2s ease;
+}
+
+.certificate-item:hover {
+    border-color: #cfe4da;
+    transform: translateY(-2px);
+}
+
+.certificate-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.certificate-icon {
+    width: 43px;
+    height: 43px;
+    border-radius: 11px;
+    background: var(--green-light);
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 17px;
+}
+
+.admin-certificate .certificate-icon {
+    background: #eef3ff;
+    color: #4b65a8;
+}
+
+.certificate-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.certificate-info h3 {
+    font-size: 12px;
+    color: var(--black);
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.certificate-info p {
+    color: var(--muted);
+    font-size: 9px;
+    line-height: 1.7;
+}
+
+.certificate-date {
+    margin-top: 12px;
+    color: #9aa59f;
+    font-size: 8px;
+}
+
+.certificate-actions {
+    display: flex;
+    gap: 7px;
+    margin-top: 14px;
+}
+
+.certificate-action {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text);
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 9px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.certificate-action:hover {
+    border-color: var(--green);
+    color: var(--green);
+}
+
+.certificate-action.delete:hover {
+    border-color: #e3b4ba;
+    color: var(--danger);
+    background: #fff5f5;
+}
+
+.certificates-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 35px 20px;
+    border: 1px dashed var(--border);
+    border-radius: 15px;
+    color: var(--muted);
+}
+
+.certificates-empty i {
+    font-size: 28px;
+    color: #b7c8bf;
+    margin-bottom: 10px;
+}
+
+.certificates-empty p {
+    font-size: 10px;
+}
+
+
+/* =========================================
+   CERTIFICATE MODAL
+========================================= */
+
+.certificate-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    background: rgba(8,61,42,0.35);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.certificate-modal.show {
+    display: flex;
+}
+
+.certificate-modal-box {
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.2);
+}
+
+.certificate-modal-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    align-items: flex-start;
+    margin-bottom: 22px;
+}
+
+.certificate-modal-header h3 {
+    font-size: 16px;
+}
+
+.certificate-modal-header p {
+    color: var(--muted);
+    font-size: 9px;
+    margin-top: 4px;
+}
+
+.certificate-modal-close {
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: white;
+    color: var(--muted);
+}
+
+.certificate-modal-close:hover {
+    color: var(--danger);
+    border-color: #efc5ca;
+}
+
+.certificate-form-group {
+    margin-bottom: 16px;
+}
+
+.certificate-form-group label {
+    display: block;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 7px;
+}
+
+.certificate-form-group input,
+.certificate-form-group textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #fbfdfc;
+    padding: 11px;
+    outline: none;
+    font-family: inherit;
+    font-size: 10px;
+}
+
+.certificate-form-group textarea {
+    min-height: 85px;
+    resize: vertical;
+}
+
+.certificate-form-group input:focus,
+.certificate-form-group textarea:focus {
+    border-color: var(--green);
+    box-shadow:
+        0 0 0 3px rgba(22,132,91,0.08);
+}
+
+.certificate-form-group small {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 8px;
+}
+
+.certificate-modal-actions {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    padding-top: 17px;
+    border-top: 1px solid var(--border);
+}
+
+@media (max-width: 650px) {
+
+    .certificates-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .certificates-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+/* =========================================================
+   ORGANIZATION LOGO
+========================================================= */
+
+.navbar .brand-icon {
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: transparent;
+}
+
+.navbar .brand-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================
+     LOADER
+========================================= -->
+
+<div id="pageLoader">
+
+    <div class="loader-content">
+
+        <div class="loader-logo">
+
+            <i class="fa-solid fa-users"></i>
+
+        </div>
+
+        <h2>
+            منظمة الأشراف للتنمية
+        </h2>
+
+        <p>
+            جاري تحميل حساب العضو...
+        </p>
+
+        <div class="loader-spinner"></div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================
+     NAVBAR
+========================================= -->
+
+<header class="navbar">
+
+    <div class="navbar-inner">
+
+
+        <a
+            href="index.html"
+            class="brand">
+
+           <div class="brand-icon">
+
+    <img
+        src="images/logo.png"
+        alt="شعار منظمة الأشراف للتنمية">
+
+</div>
+
+
+            <div class="brand-text">
+
+                <strong>
+                    منظمة الأشراف للتنمية
+                </strong>
+
+                <span>
+                    AL-ASHRAF DEVELOPMENT ORGANIZATION
+                </span>
+
+            </div>
+
+        </a>
+
+
+        <div class="nav-actions">
+
+
+            <a
+                href="index.html"
+                class="nav-btn">
+
+                <i class="fa-solid fa-house"></i>
+
+                <span>
+                    الرئيسية
+                </span>
+
+            </a>
+
+
+            <button
+                type="button"
+                class="nav-btn logout-btn"
+                onclick="logout()">
+
+                <i class="fa-solid fa-right-from-bracket"></i>
+
+                <span>
+                    تسجيل الخروج
+                </span>
+
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<!-- =========================================
+     MAIN CONTENT
+========================================= -->
+
+<main
+    class="main"
+    id="mainContent"
+    style="display:none;">
+
+
+    <!-- WELCOME -->
+
+    <section class="welcome">
+
+        <div class="welcome-content">
+
+
+            <div class="welcome-text">
+
+                <small>
+                    منصة أعضاء منظمة الأشراف
+                </small>
+
+                <h1 id="welcomeName">
+                    مرحباً بك
+                </h1>
+
+                <p>
+                    هذه صفحتك الشخصية.
+                    يمكنك تحديث بياناتك الشخصية
+                    وإدارة معلومات حسابك.
+                </p>
+
+            </div>
+
+
+            <div class="member-badge">
+
+                <i class="fa-solid fa-circle-check"></i>
+
+                عضو معتمد
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- PROFILE -->
+
+    <section class="profile-layout">
+
+
+        <!-- =====================================
+             PROFILE SIDE
+        ====================================== -->
+
+        <aside class="card profile-card">
+
+
+            <div class="avatar-wrapper">
+
+                <div
+                    class="avatar"
+                    id="avatarPreview">
+
+                    <i class="fa-solid fa-user"></i>
+
+                </div>
+
+
+                <label
+                    for="avatarInput"
+                    class="avatar-upload"
+                    title="تغيير الصورة">
+
+                    <i class="fa-solid fa-camera"></i>
+
+                </label>
+
+
+                <input
+                    type="file"
+                    id="avatarInput"
+                    accept="image/*">
+
+            </div>
+
+
+            <h2
+                class="profile-name"
+                id="profileName">
+
+                العضو
+
+            </h2>
+
+
+            <div
+                class="profile-name-en"
+                id="profileNameEn">
+
+                Member
+
+            </div>
+
+
+            <div class="approved-badge">
+
+                <i class="fa-solid fa-shield-check"></i>
+
+                حساب معتمد
+
+            </div>
+
+
+            <div class="side-divider"></div>
+
+
+            <div class="side-note">
+
+                <i class="fa-solid fa-lock"></i>
+
+                حالة العضوية وصلاحيات الحساب
+                تتم إدارتها من قبل الإدارة
+                ولا يمكن للعضو تغييرها.
+
+            </div>
+
+
+        </aside>
+
+
+        <!-- =====================================
+             FORM
+        ====================================== -->
+
+        <div class="card form-card">
+
+
+            <div class="card-header">
+
+                <div>
+
+                    <h2>
+                        البيانات الشخصية
+                    </h2>
+
+                    <p>
+                        يمكنك تعديل معلوماتك الشخصية فقط.
+                    </p>
+
+                </div>
+
+
+                <div class="edit-indicator">
+
+                    <i class="fa-solid fa-pen"></i>
+
+                    قابل للتعديل
+
+                </div>
+
+            </div>
+
+
+            <form
+                id="profileForm">
+
+
+                <div class="form-grid">
+
+
+                    <!-- Arabic Name -->
+
+                    <div class="form-group">
+
+                        <label>
+                            الاسم الرباعي بالعربي
+                        </label>
+
+                        <div class="input-wrap">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            <input
+                                type="text"
+                                id="fullNameAr"
+                                placeholder="اكتب اسمك الرباعي بالعربي"
+                                autocomplete="name">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- English Name -->
+
+                    <div class="form-group">
+
+                        <label>
+                            الاسم الرباعي بالإنجليزية
+                        </label>
+
+                        <div class="input-wrap">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            <input
+                                type="text"
+                                id="fullNameEn"
+                                placeholder="Enter your full name in English"
+                                dir="ltr"
+                                autocomplete="name">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Age -->
+
+                    <div class="form-group">
+
+                        <label>
+                            العمر
+                        </label>
+
+                        <div class="input-wrap">
+
+                            <i class="fa-solid fa-cake-candles"></i>
+
+                            <input
+                                type="number"
+                                id="age"
+                                min="1"
+                                max="120"
+                                placeholder="العمر">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Education -->
+
+                    <div class="form-group">
+
+                        <label>
+                            التعليم
+                        </label>
+
+                        <div class="input-wrap">
+
+                            <i class="fa-solid fa-graduation-cap"></i>
+
+                            <input
+                                type="text"
+                                id="education"
+                                placeholder="مثال: جامعة الخرطوم - كلية..."
+                                >
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Phone -->
+
+                    <div class="form-group">
+
+                        <label>
+                            رقم الهاتف
+                        </label>
+
+                        <div class="input-wrap">
+
+                            <i class="fa-solid fa-phone"></i>
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                placeholder="رقم الهاتف"
+                                dir="ltr"
+                                autocomplete="tel">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Email -->
+
+                    <div class="form-group">
+
+                        <label>
+                            البريد الإلكتروني
+                        </label>
+
+                        <div class="input-wrap">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            <input
+                                type="email"
+                                id="email"
+                                disabled
+                                dir="ltr">
+
+                        </div>
+
+                        <div class="input-help">
+                            البريد الإلكتروني مرتبط بحساب تسجيل الدخول ولا يمكن تغييره من هنا.
+                        </div>
+
+                    </div>
+
+
+                    <!-- Address -->
+
+                    <div class="form-group full">
+
+                        <label>
+                            السكن / العنوان
+                        </label>
+
+                        <div class="input-wrap">
+
+                            <i class="fa-solid fa-location-dot"></i>
+
+                            <textarea
+                                id="address"
+                                placeholder="اكتب مكان السكن أو العنوان"></textarea>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- ACCOUNT INFORMATION -->
+
+                <div class="account-info">
+
+                    <div class="account-info-title">
+
+                        <i class="fa-solid fa-shield-halved"></i>
+
+                        معلومات الحساب
+
+                    </div>
+
+
+                    <div class="account-grid">
+
+
+                        <div class="account-item">
+
+                            <i class="fa-solid fa-user-tag"></i>
+
+                            <span>
+                                نوع الحساب:
+                            </span>
+
+                            <strong>
+                                عضو
+                            </strong>
+
+                        </div>
+
+
+                        <div class="account-item">
+
+                            <i class="fa-solid fa-circle-check"></i>
+
+                            <span>
+                                الحالة:
+                            </span>
+
+                            <strong>
+                                معتمد
+                            </strong>
+
+                        </div>
+
+
+                        <div class="account-item">
+
+                            <i class="fa-solid fa-calendar"></i>
+
+                            <span>
+                                تاريخ التسجيل:
+                            </span>
+
+                            <strong id="createdAt">
+                                -
+                            </strong>
+
+                        </div>
+
+
+                        <div class="account-item">
+
+                            <i class="fa-solid fa-id-card"></i>
+
+                            <span>
+                                رقم العضوية:
+                            </span>
+
+                            <strong
+                                id="memberId"
+                                dir="ltr">
+
+                                -
+
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+                <!-- ACTIONS -->
+
+                <div class="form-actions">
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                        id="saveBtn">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        حفظ التعديلات
+
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        onclick="loadProfile()">
+
+                        <i class="fa-solid fa-rotate-right"></i>
+
+                        إعادة تحميل
+
+                    </button>
+
+                </div>
+
+
+            </form>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
+         CERTIFICATES / ACHIEVEMENTS
+    ========================================== -->
+ <!-- =========================================
+     CERTIFICATES
+========================================= -->
+
+<section class="certificates-section">
+
+    <!-- =====================================
+         MEMBER CERTIFICATES
+    ====================================== -->
+
+    <div class="card certificates-card">
+
+        <div class="certificates-header">
+
+            <div>
+
+                <div class="section-icon">
+                    <i class="fa-solid fa-certificate"></i>
+                </div>
+
+                <div>
+                    <h2>شهاداتي</h2>
+
+                    <p>
+                        يمكنك رفع شهاداتك ودوراتك التدريبية
+                        وإضافتها إلى ملفك الشخصي.
+                    </p>
+                </div>
+
+            </div>
+
+            <button
+                type="button"
+                class="btn btn-primary"
+                onclick="openCertificateModal()">
+
+                <i class="fa-solid fa-plus"></i>
+
+                إضافة شهادة
+
+            </button>
+
+        </div>
+
+
+        <div
+            id="memberCertificates"
+            class="certificates-grid">
+
+            <div class="certificates-empty">
+
+                <i class="fa-solid fa-award"></i>
+
+                <p>
+                    لم تضف أي شهادة بعد.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================
+         ADMIN CERTIFICATES
+    ====================================== -->
+
+    <div class="card certificates-card admin-certificates-card">
+
+        <div class="certificates-header">
+
+            <div>
+
+                <div class="section-icon admin">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+
+                <div>
+
+                    <h2>
+                        شهادات أضافتها الإدارة
+                    </h2>
+
+                    <p>
+                        الشهادات والوثائق التي تضيفها
+                        إدارة منظمة الأشراف إلى ملفك.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="adminCertificates"
+            class="certificates-grid">
+
+            <div class="certificates-empty">
+
+                <i class="fa-solid fa-folder-open"></i>
+
+                <p>
+                    لا توجد شهادات مضافة من الإدارة حتى الآن.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================
+     ADD CERTIFICATE MODAL
+========================================= -->
+
+<div
+    id="certificateModal"
+    class="certificate-modal">
+
+    <div class="certificate-modal-box">
+
+        <div class="certificate-modal-header">
+
+            <div>
+
+                <h3>
+                    إضافة شهادة
+                </h3>
+
+                <p>
+                    أضف شهادة أو دورة تدريبية إلى ملفك.
+                </p>
+
+            </div>
+
+            <button
+                type="button"
+                class="certificate-modal-close"
+                onclick="closeCertificateModal()">
+
+                <i class="fa-solid fa-xmark"></i>
+
+            </button>
+
+        </div>
+
+
+        <form id="certificateForm">
+
+            <div class="certificate-form-group">
+
+                <label>
+                    اسم الشهادة
+                </label>
+
+                <input
+                    type="text"
+                    id="certificateTitle"
+                    placeholder="مثال: شهادة الإسعافات الأولية"
+                    required>
+
+            </div>
+
+
+            <div class="certificate-form-group">
+
+                <label>
+                    وصف الشهادة
+                </label>
+
+                <textarea
+                    id="certificateDescription"
+                    placeholder="اكتب وصفًا مختصرًا للشهادة أو الدورة"></textarea>
+
+            </div>
+
+
+            <div class="certificate-form-group">
+
+                <label>
+                    ملف الشهادة
+                </label>
+
+                <input
+                    type="file"
+                    id="certificateFile"
+                    accept=".pdf,.jpg,.jpeg,.png"
+                    required>
+
+                <small>
+                    PDF أو JPG أو PNG — الحد الأقصى 10MB
+                </small>
+
+            </div>
+
+
+            <div class="certificate-modal-actions">
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="closeCertificateModal()">
+
+                    إلغاء
+
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                    id="certificateSaveBtn">
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    رفع الشهادة
+
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+</main>
+
+
+<!-- =========================================
+     TOAST
+========================================= -->
+
+<div
+    class="toast"
+    id="toast">
+
+    <i
+        class="fa-solid fa-circle-check"
+        id="toastIcon"></i>
+
+    <span id="toastMessage">
+        تم بنجاح
+    </span>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://hoivwjarrxxvieboujzy.supabase.co";
+
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_1uf_RSuk4F75Sbtt7nfc5Q_DmjTCWhO";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
+
+/* =========================================================
+   GLOBAL VARIABLES
+========================================================= */
+
+let currentUser = null;
+
+let currentProfile = null;
+
+
+/* =========================================================
+   DOM READY
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        const authenticated =
+            await checkAuthentication();
+
+
+        if (!authenticated) {
+
+            return;
+
+        }
+
+
+         await loadProfile();
+
+await loadCertificates();
+
+    }
+);
+
+
+/* =========================================================
+   AUTHENTICATION
+========================================================= */
+
+async function checkAuthentication() {
+
+    try {
+
+        const {
+            data: { session },
+            error
+        } =
+            await supabaseClient.auth.getSession();
+
+
+        if (error) {
+
+            console.error(
+                "Session error:",
+                error
+            );
+
+            showAccessDenied(
+                "حدث خطأ أثناء التحقق من جلسة الدخول."
+            );
+
+            return false;
+
+        }
+
+
+        if (
+            !session ||
+            !session.user
+        ) {
+
+            showAccessDenied(
+                "يجب تسجيل الدخول أولاً للوصول إلى حساب العضو."
+            );
+
+            return false;
+
+        }
+
+
+        currentUser =
+            session.user;
+
+
+        /* =============================================
+           GET PROFILE
+        ============================================= */
+
+        const {
+            data: profile,
+            error: profileError
+        } =
+            await supabaseClient
+                .from("profiles")
+              .select(`
+    id,
+    user_id,
+    email,
+    full_name_ar,
+    full_name_en,
+    age,
+    education,
+    address,
+    phone,
+    avatar_url,
+    status,
+    role,
+    created_at,
+    updated_at
+`)
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .maybeSingle();
+
+
+        if (profileError) {
+
+            console.error(
+                "Profile error:",
+                profileError
+            );
+
+            showAccessDenied(
+                "تعذر تحميل بيانات العضوية."
+            );
+
+            return false;
+
+        }
+
+
+        if (!profile) {
+
+            showAccessDenied(
+                "لم يتم العثور على ملف العضو."
+            );
+
+            return false;
+
+        }
+
+
+        /* =============================================
+           ADMIN
+        ============================================= */
+
+        if (
+            profile.role === "admin" &&
+            profile.status === "approved"
+        ) {
+
+            window.location.href =
+                "admin.html";
+
+            return false;
+
+        }
+
+
+        /* =============================================
+           REJECTED
+        ============================================= */
+
+        if (
+            profile.status === "rejected"
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            showAccessDenied(
+                "تم رفض طلب العضوية. يرجى التواصل مع الإدارة."
+            );
+
+            return false;
+
+        }
+
+
+        /* =============================================
+           PENDING
+        ============================================= */
+
+        if (
+            profile.status !== "approved"
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            showAccessDenied(
+                "حسابك لم تتم الموافقة عليه بعد. يرجى انتظار اعتماد الإدارة."
+            );
+
+            return false;
+
+        }
+
+
+        /* =============================================
+           MEMBER
+        ============================================= */
+
+        if (
+            profile.role !== "member"
+        ) {
+
+            await supabaseClient.auth.signOut();
+
+            showAccessDenied(
+                "هذا الحساب ليس حساب عضو صالح."
+            );
+
+            return false;
+
+        }
+
+
+        currentProfile =
+            profile;
+
+
+        return true;
+
+    }
+    catch (error) {
+
+        console.error(
+            "Authentication exception:",
+            error
+        );
+
+        showAccessDenied(
+            "حدث خطأ غير متوقع."
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD PROFILE
+========================================================= */
+
+async function loadProfile() {
+
+    try {
+
+        const {
+            data: profile,
+            error
+        } =
+            await supabaseClient
+                .from("profiles")
+                .select(`
+                    id,
+                    user_id,
+                    email,
+                    full_name_ar,
+                    full_name_en,
+                    age,
+                    education,
+                    address,
+                    phone,
+                    avatar_url,
+                    status,
+                    role,
+                    created_at,
+                    updated_at
+                `)
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .maybeSingle();
+
+
+        if (error) {
+
+            console.error(
+                "Load profile error:",
+                error
+            );
+
+            showToast(
+                "تعذر تحميل بياناتك.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (!profile) {
+
+            showToast(
+                "لم يتم العثور على ملفك الشخصي.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        currentProfile =
+            profile;
+
+
+        populateProfile(
+            profile
+        );
+
+
+        showMainContent();
+
+
+    }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        showToast(
+            "حدث خطأ أثناء تحميل الملف.",
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   POPULATE PROFILE
+========================================================= */
+
+function populateProfile(
+    profile
+) {
+
+    const fullNameAr =
+        profile.full_name_ar ||
+        "عضو منظمة الأشراف";
+
+
+    const fullNameEn =
+        profile.full_name_en ||
+        "Al-Ashraf Member";
+
+
+    document.getElementById(
+        "fullNameAr"
+    ).value =
+        profile.full_name_ar || "";
+
+
+    document.getElementById(
+        "fullNameEn"
+    ).value =
+        profile.full_name_en || "";
+
+
+    document.getElementById(
+        "age"
+    ).value =
+        profile.age ?? "";
+
+
+    document.getElementById(
+        "education"
+    ).value =
+        profile.education || "";
+
+
+    document.getElementById(
+        "address"
+    ).value =
+        profile.address || "";
+
+
+    document.getElementById(
+        "phone"
+    ).value =
+        profile.phone || "";
+
+
+    document.getElementById(
+        "email"
+    ).value =
+        profile.email ||
+        currentUser.email ||
+        "";
+
+
+    document.getElementById(
+        "welcomeName"
+    ).textContent =
+        "مرحباً " +
+        fullNameAr;
+
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        fullNameAr;
+
+
+    document.getElementById(
+        "profileNameEn"
+    ).textContent =
+        fullNameEn;
+
+
+    document.getElementById(
+        "memberId"
+    ).textContent =
+        profile.id
+            ? String(
+                profile.id
+            ).substring(
+                0,
+                8
+            ).toUpperCase()
+            : "-";
+
+
+    document.getElementById(
+        "createdAt"
+    ).textContent =
+        formatDate(
+            profile.created_at
+        );
+
+
+    setAvatar(
+        profile.avatar_url
+    );
+
+}
+
+
+/* =========================================================
+   AVATAR
+========================================================= */
+
+function setAvatar(
+    avatarUrl
+) {
+
+    const preview =
+        document.getElementById(
+            "avatarPreview"
+        );
+
+
+    if (!preview) {
+
+        return;
+
+    }
+
+
+    if (avatarUrl) {
+
+        preview.innerHTML = `
+
+            <img
+                src="${escapeHtml(
+                    avatarUrl
+                )}"
+                alt="Profile">
+
+        `;
+
+    }
+    else {
+
+        preview.innerHTML = `
+
+            <i class="fa-solid fa-user"></i>
+
+        `;
+
+    }
+
+}
+
+
+/* =========================================================
+   AVATAR FILE
+========================================================= */
+
+document
+    .getElementById("avatarInput")
+    .addEventListener(
+        "change",
+        async function (event) {
+
+            const file =
+                event.target.files[0];
+
+
+            if (!file) {
+
+                return;
+
+            }
+
+
+            if (
+                !file.type.startsWith(
+                    "image/"
+                )
+            ) {
+
+                showToast(
+                    "يرجى اختيار صورة صحيحة.",
+                    true
+                );
+
+                event.target.value = "";
+
+                return;
+
+            }
+
+
+            if (
+                file.size >
+                5 * 1024 * 1024
+            ) {
+
+                showToast(
+                    "حجم الصورة يجب ألا يتجاوز 5MB.",
+                    true
+                );
+
+                event.target.value = "";
+
+                return;
+
+            }
+
+
+            await uploadAvatar(
+                file
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   UPLOAD AVATAR
+========================================================= */
+
+async function uploadAvatar(
+    file
+) {
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
+    try {
+
+        showToast(
+            "جاري رفع الصورة..."
+        );
+
+
+        const extension =
+            file.name
+                .split(".")
+                .pop()
+                .toLowerCase();
+
+
+        const filePath =
+            `members/${currentUser.id}/avatar-${Date.now()}.${extension}`;
+
+
+        /*
+         IMPORTANT:
+         The storage bucket should be named:
+         gallery
+        */
+
+        const {
+            error: uploadError
+        } =
+            await supabaseClient.storage
+                .from("gallery")
+                .upload(
+                    filePath,
+                    file,
+                    {
+                        upsert: false,
+                        contentType:
+                            file.type
+                    }
+                );
+
+
+        if (uploadError) {
+
+            console.error(
+                "Avatar upload error:",
+                uploadError
+            );
+
+            showToast(
+                "فشل رفع الصورة: " +
+                uploadError.message,
+                true
+            );
+
+            return;
+
+        }
+
+
+        const {
+            data: publicData
+        } =
+            supabaseClient.storage
+                .from("gallery")
+                .getPublicUrl(
+                    filePath
+                );
+
+
+        const publicUrl =
+            publicData.publicUrl;
+
+
+        /* =============================================
+           SAVE URL TO PROFILE
+        ============================================= */
+
+        const {
+            error: updateError
+        } =
+            await supabaseClient
+                .from("profiles")
+                .update({
+                    avatar_url:
+                        publicUrl,
+
+                    updated_at:
+                        new Date().toISOString()
+                })
+                .eq(
+                    "user_id",
+                    currentUser.id
+                );
+
+
+        if (updateError) {
+
+            console.error(
+                "Avatar profile update error:",
+                updateError
+            );
+
+            showToast(
+                "تم رفع الصورة لكن لم يتم حفظها في الملف.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        currentProfile.avatar_url =
+            publicUrl;
+
+
+        setAvatar(
+            publicUrl
+        );
+
+
+        showToast(
+            "تم تحديث الصورة الشخصية بنجاح."
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Avatar exception:",
+            error
+        );
+
+        showToast(
+            "حدث خطأ أثناء رفع الصورة.",
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE PROFILE
+========================================================= */
+
+document
+    .getElementById("profileForm")
+    .addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            if (!currentUser) {
+
+                return;
+
+            }
+
+
+            const saveBtn =
+                document.getElementById(
+                    "saveBtn"
+                );
+
+
+            const fullNameAr =
+                document.getElementById(
+                    "fullNameAr"
+                ).value.trim();
+
+
+            const fullNameEn =
+                document.getElementById(
+                    "fullNameEn"
+                ).value.trim();
+
+
+            const ageValue =
+                document.getElementById(
+                    "age"
+                ).value;
+
+
+            const education =
+                document.getElementById(
+                    "education"
+                ).value.trim();
+
+
+            const address =
+                document.getElementById(
+                    "address"
+                ).value.trim();
+
+
+            const phone =
+                document.getElementById(
+                    "phone"
+                ).value.trim();
+
+
+            if (!fullNameAr) {
+
+                showToast(
+                    "يرجى كتابة الاسم بالعربي.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            if (!fullNameEn) {
+
+                showToast(
+                    "يرجى كتابة الاسم بالإنجليزية.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            let age = null;
+
+
+            if (ageValue !== "") {
+
+                age =
+                    parseInt(
+                        ageValue,
+                        10
+                    );
+
+
+                if (
+                    Number.isNaN(age) ||
+                    age < 1 ||
+                    age > 120
+                ) {
+
+                    showToast(
+                        "يرجى إدخال عمر صحيح.",
+                        true
+                    );
+
+                    return;
+
+                }
+
+            }
+
+
+            saveBtn.disabled =
+                true;
+
+
+            saveBtn.innerHTML = `
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                جاري الحفظ...
+
+            `;
+
+
+            try {
+
+                /*
+                 IMPORTANT:
+                 We intentionally update ONLY
+                 member-editable fields.
+
+                 role and status are NOT included.
+                */
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from("profiles")
+                        .update({
+
+                            full_name_ar:
+                                fullNameAr,
+
+                            full_name_en:
+                                fullNameEn,
+
+                            age:
+                                age,
+
+                            education:
+                                education ||
+                                null,
+
+                            address:
+                                address ||
+                                null,
+
+                            phone:
+                                phone ||
+                                null,
+
+                            updated_at:
+                                new Date().toISOString()
+
+                        })
+                        .eq(
+                            "user_id",
+                            currentUser.id
+                        )
+                        .select()
+                        .single();
+
+
+                if (error) {
+
+                    console.error(
+                        "Save profile error:",
+                        error
+                    );
+
+                    showToast(
+                        "فشل حفظ البيانات: " +
+                        error.message,
+                        true
+                    );
+
+                    return;
+
+                }
+
+
+                currentProfile =
+                    data;
+
+
+                populateProfile(
+                    data
+                );
+
+
+                showToast(
+                    "تم حفظ بياناتك بنجاح."
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    error
+                );
+
+                showToast(
+                    "حدث خطأ أثناء حفظ البيانات.",
+                    true
+                );
+
+            }
+            finally {
+
+                saveBtn.disabled =
+                    false;
+
+
+                saveBtn.innerHTML = `
+
+                    <i class="fa-solid fa-floppy-disk"></i>
+
+                    حفظ التعديلات
+
+                `;
+
+            }
+
+        }
+    );
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout() {
+
+    try {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "login.html";
+
+    }
+    catch (error) {
+
+        console.error(
+            error
+        );
+
+        window.location.href =
+            "login.html";
+
+    }
+
+}
+
+
+/* =========================================================
+   SHOW MAIN
+========================================================= */
+
+function showMainContent() {
+
+    const main =
+        document.getElementById(
+            "mainContent"
+        );
+
+
+    if (main) {
+
+        main.style.display =
+            "block";
+
+    }
+
+
+    setTimeout(
+        function () {
+
+            document
+                .getElementById(
+                    "pageLoader"
+                )
+                ?.classList
+                .add("hide");
+
+        },
+        250
+    );
+
+}
+
+
+/* =========================================================
+   ACCESS DENIED
+========================================================= */
+
+function showAccessDenied(
+    message
+) {
+
+    document.body.innerHTML = `
+
+        <div class="access-denied">
+
+            <div class="denied-card">
+
+                <div class="denied-icon">
+
+                    <i class="fa-solid fa-lock"></i>
+
+                </div>
+
+
+                <h2>
+                    الوصول غير متاح
+                </h2>
+
+
+                <p>
+
+                    ${escapeHtml(
+                        message
+                    )}
+
+                </p>
+
+
+                <a
+                    href="login.html"
+                    class="btn btn-primary">
+
+                    <i class="fa-solid fa-right-to-bracket"></i>
+
+                    تسجيل الدخول
+
+                </a>
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer = null;
+
+
+function showToast(
+    message,
+    isError = false
+) {
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+
+    const messageElement =
+        document.getElementById(
+            "toastMessage"
+        );
+
+
+    const icon =
+        document.getElementById(
+            "toastIcon"
+        );
+
+
+    if (
+        !toast ||
+        !messageElement
+    ) {
+
+        return;
+
+    }
+
+
+    messageElement.textContent =
+        message;
+
+
+    toast.classList.toggle(
+        "error",
+        isError
+    );
+
+
+    if (icon) {
+
+        icon.className =
+            isError
+                ? "fa-solid fa-circle-exclamation"
+                : "fa-solid fa-circle-check";
+
+    }
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            function () {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            3500
+        );
+
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+function formatDate(
+    dateString
+) {
+
+    if (!dateString) {
+
+        return "-";
+
+    }
+
+
+    try {
+
+        return new Intl.DateTimeFormat(
+            "ar-SD",
+            {
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }
+        ).format(
+            new Date(
+                dateString
+            )
+        );
+
+    }
+    catch {
+
+        return "-";
+
+    }
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(
+    value
+) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   AUTH STATE LISTENER
+========================================================= */
+
+supabaseClient.auth.onAuthStateChange(
+    function (event, session) {
+
+        if (
+            event === "SIGNED_OUT"
+        ) {
+
+            window.location.href =
+                "login.html";
+
+        }
+
+    }
+);
+/* =========================================================
+   CERTIFICATES
+========================================================= */
+ /* =========================================================
+   CERTIFICATES
+========================================================= */
+
+let certificates = [];
+
+
+/* =========================================================
+   LOAD CERTIFICATES
+========================================================= */
+
+async function loadCertificates() {
+
+    if (!currentUser) {
+        return;
+    }
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("certificates")
+            .select(`
+                id,
+                user_id,
+                title,
+                description,
+                file_url,
+                storage_path,
+                source,
+                created_at,
+                updated_at
+            `)
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Certificates loading error:",
+                error
+            );
+
+            showToast(
+                "تعذر تحميل الشهادات.",
+                true
+            );
+
+            return;
+        }
+
+
+        certificates =
+            data || [];
+
+
+        renderMemberCertificates(
+            certificates.filter(
+                certificate =>
+                    certificate.source === "member"
+            )
+        );
+
+
+        renderAdminCertificates(
+            certificates.filter(
+                certificate =>
+                    certificate.source === "admin"
+            )
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Certificates exception:",
+            error
+        );
+
+        showToast(
+            "حدث خطأ أثناء تحميل الشهادات.",
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   MEMBER CERTIFICATES
+========================================================= */
+
+function renderMemberCertificates(
+    memberCertificates
+) {
+
+    const container =
+        document.getElementById(
+            "memberCertificates"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    if (!memberCertificates.length) {
+
+        container.innerHTML = `
+
+            <div class="certificates-empty">
+
+                <i class="fa-solid fa-award"></i>
+
+                <p>
+                    لم تضف أي شهادة بعد.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        memberCertificates
+            .map(
+                certificate =>
+                    createCertificateCard(
+                        certificate,
+                        false
+                    )
+            )
+            .join("");
+
+}
+
+
+/* =========================================================
+   ADMIN CERTIFICATES
+========================================================= */
+
+function renderAdminCertificates(
+    adminCertificates
+) {
+
+    const container =
+        document.getElementById(
+            "adminCertificates"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    if (!adminCertificates.length) {
+
+        container.innerHTML = `
+
+            <div class="certificates-empty">
+
+                <i class="fa-solid fa-building-shield"></i>
+
+                <p>
+                    لا توجد شهادات مضافة من الإدارة حتى الآن.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        adminCertificates
+            .map(
+                certificate =>
+                    createCertificateCard(
+                        certificate,
+                        true
+                    )
+            )
+            .join("");
+
+}
+
+
+/* =========================================================
+   CERTIFICATE CARD
+========================================================= */
+
+function createCertificateCard(
+    certificate,
+    isAdminCertificate
+) {
+
+    const title =
+        escapeHtml(
+            certificate.title ||
+            "شهادة"
+        );
+
+
+    const description =
+        escapeHtml(
+            certificate.description ||
+            "لا يوجد وصف."
+        );
+
+
+    const date =
+        formatDate(
+            certificate.created_at
+        );
+
+
+    const adminClass =
+        isAdminCertificate
+            ? "admin-certificate"
+            : "";
+
+
+    const sourceBadge =
+        isAdminCertificate
+
+            ? `
+
+                <span
+                    class="certificate-source-badge">
+
+                    <i class="fa-solid fa-shield-halved"></i>
+
+                    من الإدارة
+
+                </span>
+
+              `
+
+            : `
+
+                <span
+                    class="certificate-source-badge member">
+
+                    <i class="fa-solid fa-user"></i>
+
+                    أضفتها بنفسي
+
+                </span>
+
+              `;
+
+
+    const deleteButton =
+        !isAdminCertificate
+
+            ? `
+
+                <button
+                    type="button"
+                    class="certificate-action delete"
+                    onclick="deleteCertificate('${certificate.id}')">
+
+                    <i class="fa-solid fa-trash"></i>
+
+                    حذف
+
+                </button>
+
+              `
+
+            : "";
+
+
+    return `
+
+        <article
+            class="certificate-item ${adminClass}">
+
+            <div class="certificate-top">
+
+                <div class="certificate-icon">
+
+                    <i class="fa-solid fa-certificate"></i>
+
+                </div>
+
+
+                <div class="certificate-info">
+
+                    <h3>
+                        ${title}
+                    </h3>
+
+                    ${sourceBadge}
+
+                    <p>
+                        ${description}
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div class="certificate-date">
+
+                <i class="fa-regular fa-calendar"></i>
+
+                ${date}
+
+            </div>
+
+
+            <div class="certificate-actions">
+
+                <button
+                    type="button"
+                    class="certificate-action"
+                    onclick="openCertificate('${certificate.id}')">
+
+                    <i class="fa-solid fa-eye"></i>
+
+                    عرض الشهادة
+
+                </button>
+
+
+                ${deleteButton}
+
+            </div>
+
+        </article>
+
+    `;
+
+}
+
+
+/* =========================================================
+   OPEN PRIVATE CERTIFICATE
+========================================================= */
+
+async function openCertificate(
+    certificateId
+) {
+
+    const certificate =
+        certificates.find(
+            item =>
+                String(item.id) ===
+                String(certificateId)
+        );
+
+
+    if (!certificate) {
+
+        showToast(
+            "لم يتم العثور على الشهادة.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    if (!certificate.storage_path) {
+
+        showToast(
+            "ملف الشهادة غير موجود.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    try {
+
+        showToast(
+            "جاري فتح الشهادة..."
+        );
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.storage
+                .from("certificates")
+                .createSignedUrl(
+                    certificate.storage_path,
+                    3600
+                );
+
+
+        if (error) {
+
+            console.error(
+                "Signed URL error:",
+                error
+            );
+
+            showToast(
+                "تعذر فتح الشهادة.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !data ||
+            !data.signedUrl
+        ) {
+
+            showToast(
+                "تعذر إنشاء رابط الشهادة.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        window.open(
+            data.signedUrl,
+            "_blank",
+            "noopener,noreferrer"
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Open certificate error:",
+            error
+        );
+
+        showToast(
+            "حدث خطأ أثناء فتح الشهادة.",
+            true
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   OPEN MODAL
+========================================================= */
+
+function openCertificateModal() {
+
+    const modal =
+        document.getElementById(
+            "certificateModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.classList.add(
+        "show"
+    );
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeCertificateModal() {
+
+    const modal =
+        document.getElementById(
+            "certificateModal"
+        );
+
+
+    if (!modal) {
+        return;
+    }
+
+
+    modal.classList.remove(
+        "show"
+    );
+
+
+    const form =
+        document.getElementById(
+            "certificateForm"
+        );
+
+
+    if (form) {
+        form.reset();
+    }
+
+}
+
+
+/* =========================================================
+   ADD MEMBER CERTIFICATE
+========================================================= */
+
+document
+    .getElementById(
+        "certificateForm"
+    )
+    ?.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            if (!currentUser) {
+
+                showToast(
+                    "جلسة الدخول غير صالحة.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            const title =
+                document
+                    .getElementById(
+                        "certificateTitle"
+                    )
+                    .value
+                    .trim();
+
+
+            const description =
+                document
+                    .getElementById(
+                        "certificateDescription"
+                    )
+                    .value
+                    .trim();
+
+
+            const file =
+                document
+                    .getElementById(
+                        "certificateFile"
+                    )
+                    .files[0];
+
+
+            const saveButton =
+                document.getElementById(
+                    "certificateSaveBtn"
+                );
+
+
+            if (!title) {
+
+                showToast(
+                    "يرجى كتابة اسم الشهادة.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            if (!file) {
+
+                showToast(
+                    "يرجى اختيار ملف الشهادة.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            const allowedTypes = [
+
+                "application/pdf",
+
+                "image/jpeg",
+
+                "image/png"
+
+            ];
+
+
+            if (
+                !allowedTypes.includes(
+                    file.type
+                )
+            ) {
+
+                showToast(
+                    "يسمح فقط بملفات PDF و JPG و PNG.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            if (
+                file.size >
+                10 * 1024 * 1024
+            ) {
+
+                showToast(
+                    "حجم الملف يجب ألا يتجاوز 10MB.",
+                    true
+                );
+
+                return;
+
+            }
+
+
+            saveButton.disabled =
+                true;
+
+
+            saveButton.innerHTML = `
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                جاري الرفع...
+
+            `;
+
+
+            let storagePath =
+                null;
+
+
+            try {
+
+                /* =========================================
+                   FILE EXTENSION
+                ========================================= */
+
+                const extension =
+                    file.name
+                        .split(".")
+                        .pop()
+                        .toLowerCase();
+
+
+                /* =========================================
+                   PRIVATE STORAGE PATH
+                ========================================= */
+
+                storagePath =
+                    `${currentUser.id}/${crypto.randomUUID()}.${extension}`;
+
+
+                /* =========================================
+                   UPLOAD TO CERTIFICATES BUCKET
+                ========================================= */
+
+                const {
+                    error: uploadError
+                } =
+                    await supabaseClient.storage
+                        .from("certificates")
+                        .upload(
+                            storagePath,
+                            file,
+                            {
+                                upsert: false,
+                                contentType:
+                                    file.type
+                            }
+                        );
+
+
+                if (uploadError) {
+
+                    console.error(
+                        "Certificate upload error:",
+                        uploadError
+                    );
+
+                    showToast(
+                        "فشل رفع الشهادة: " +
+                        uploadError.message,
+                        true
+                    );
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   DATABASE RECORD
+                ========================================= */
+
+               const { error: insertError } =
+    await supabaseClient
+        .from("certificates")
+        .insert({
+            user_id: currentUser.id,
+            title: title,
+            description: description || null,
+
+            // file_url مطلوب في قاعدة البيانات
+            // لكن الملف نفسه موجود داخل Private Storage
+            file_url: storagePath,
+
+            storage_path: storagePath,
+            source: "member"
+        });
+
+
+                if (insertError) {
+
+                    console.error(
+                        "Certificate database error:",
+                        insertError
+                    );
+
+
+                    /* ===============================
+                       ROLLBACK STORAGE
+                    =============================== */
+
+                    await supabaseClient.storage
+                        .from("certificates")
+                        .remove([
+                            storagePath
+                        ]);
+
+
+                    showToast(
+                        "تم رفع الملف لكن تعذر حفظ بيانات الشهادة.",
+                        true
+                    );
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   RESET
+                ========================================= */
+
+                document
+                    .getElementById(
+                        "certificateForm"
+                    )
+                    .reset();
+
+
+                closeCertificateModal();
+
+
+                /* =========================================
+                   REFRESH
+                ========================================= */
+
+                await loadCertificates();
+
+
+                showToast(
+                    "تمت إضافة الشهادة بنجاح."
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Certificate exception:",
+                    error
+                );
+
+
+                if (storagePath) {
+
+                    await supabaseClient.storage
+                        .from("certificates")
+                        .remove([
+                            storagePath
+                        ]);
+
+                }
+
+
+                showToast(
+                    "حدث خطأ أثناء إضافة الشهادة.",
+                    true
+                );
+
+            }
+            finally {
+
+                saveButton.disabled =
+                    false;
+
+
+                saveButton.innerHTML = `
+
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+
+                    رفع الشهادة
+
+                `;
+
+            }
+
+        }
+    );
+
+
+/* =========================================================
+   DELETE MEMBER CERTIFICATE
+========================================================= */
+
+async function deleteCertificate(
+    certificateId
+) {
+
+    if (!certificateId) {
+        return;
+    }
+
+
+    const certificate =
+        certificates.find(
+            item =>
+                String(item.id) ===
+                String(certificateId)
+        );
+
+
+    if (!certificate) {
+
+        showToast(
+            "الشهادة غير موجودة.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    /* =========================================
+       SECURITY CHECK
+    ========================================= */
+
+    if (
+        certificate.user_id !==
+        currentUser.id
+    ) {
+
+        showToast(
+            "لا يمكنك حذف هذه الشهادة.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    if (
+        certificate.source !== "member"
+    ) {
+
+        showToast(
+            "لا يمكنك حذف شهادة أضافتها الإدارة.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const confirmed =
+        window.confirm(
+            "هل أنت متأكد من حذف هذه الشهادة؟\n\nلا يمكن التراجع عن هذا الإجراء."
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    try {
+
+        showToast(
+            "جاري حذف الشهادة..."
+        );
+
+
+        /* =========================================
+           DELETE STORAGE FILE
+        ========================================= */
+
+        if (
+            certificate.storage_path
+        ) {
+
+            const {
+                error: storageError
+            } =
+                await supabaseClient.storage
+                    .from("certificates")
+                    .remove([
+                        certificate.storage_path
+                    ]);
+
+
+            if (storageError) {
+
+                console.error(
+                    "Certificate storage delete error:",
+                    storageError
+                );
+
+                showToast(
+                    "فشل حذف ملف الشهادة.",
+                    true
+                );
+
+                return;
+
+            }
+
+        }
+
+
+        /* =========================================
+           DELETE DATABASE RECORD
+        ========================================= */
+
+        const {
+            error: deleteError
+        } =
+            await supabaseClient
+                .from("certificates")
+                .delete()
+                .eq(
+                    "id",
+                    certificate.id
+                )
+                .eq(
+                    "user_id",
+                    currentUser.id
+                )
+                .eq(
+                    "source",
+                    "member"
+                );
+
+
+        if (deleteError) {
+
+            console.error(
+                "Certificate database delete error:",
+                deleteError
+            );
+
+            showToast(
+                "تم حذف الملف لكن تعذر حذف سجل الشهادة.",
+                true
+            );
+
+            return;
+
+        }
+
+
+        await loadCertificates();
+
+
+        showToast(
+            "تم حذف الشهادة بنجاح."
+        );
+
+    }
+    catch (error) {
+
+        console.error(
+            "Delete certificate exception:",
+            error
+        );
+
+        showToast(
+            "حدث خطأ أثناء حذف الشهادة.",
+            true
+        );
+
+    }
+
+}
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,5257 @@
+ <!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Al-Ashraf Organization for Development</title>
+
+    <meta
+        name="description"
+        content="Al-Ashraf Organization for Development - Giving without limits for serving the community and achieving development."
+    >
+
+    <meta name="theme-color" content="#16845b">
+
+
+    <!-- =========================================================
+         GOOGLE FONTS
+    ========================================================== -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+
+    <!-- =========================================================
+         FONT AWESOME
+    ========================================================== -->
+
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    >
+
+
+    <!-- =========================================================
+         STYLE
+    ========================================================== -->
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- =========================================================
+     SUPABASE
+========================================================= -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://hoivwjarrxxvieboujzy.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_1uf_RSuk4F75Sbtt7nfc5Q_DmjTCWhO";
+
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+</script>
+
+<style>
+/* =========================================================
+   DYNAMIC IMAGE SYSTEM - INDEX
+========================================================= */
+.hero-image-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+.hero-slides {
+    position: absolute;
+    inset: 0;
+}
+ .hero-slide {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+    display: block;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity .7s ease,
+        visibility .7s ease;
+}
+
+.hero-slide.active {
+    opacity: 1;
+    visibility: visible;
+}
+.hero-slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 8;
+    width: 46px;
+    height: 46px;
+    border: 1px solid rgba(255,255,255,.35);
+    border-radius: 50%;
+    background: rgba(0,0,0,.28);
+    color: #fff;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(6px);
+}
+.hero-prev { left: 24px; }
+.hero-next { right: 24px; }
+.hero-dots {
+    position: absolute;
+    z-index: 9;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+}
+.hero-dot {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255,255,255,.55);
+    cursor: pointer;
+}
+.hero-dot.active {
+    width: 25px;
+    border-radius: 20px;
+    background: #fff;
+}
+ 
+@media (max-width: 700px) {
+    .hero-slider-btn { width: 40px; height: 40px; }
+    .hero-prev { left: 12px; }
+    .hero-next { right: 12px; }
+  
+}
+ 
+ /* =========================================================
+   PROJECTS GRID
+   3 CARDS PER ROW
+========================================================= */
+
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    width: 100%;
+    align-items: start;
+}
+
+.project-card {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.10);
+}
+
+.project-slider {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    overflow: hidden;
+    background: #eee;
+}
+
+.project-slides {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.project-slide {
+    position: absolute !important;
+    inset: 0;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: cover;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity .5s ease,
+        visibility .5s ease;
+}
+
+.project-slide.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* PROJECT ARROWS */
+
+.project-slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    z-index: 20;
+
+    width: 44px;
+    height: 44px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(0,0,0,.55);
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+.project-slider-btn:hover {
+    background: rgba(0,0,0,.85);
+    transform: translateY(-50%) scale(1.08);
+}
+
+.project-prev {
+    left: 15px;
+}
+
+.project-next {
+    right: 15px;
+}
+
+/* PROJECT DOTS */
+
+.project-dots {
+    position: absolute;
+
+    bottom: 15px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 21;
+
+    display: flex;
+    gap: 7px;
+
+    align-items: center;
+    justify-content: center;
+
+    max-width: calc(100% - 100px);
+    overflow: hidden;
+}
+
+.project-dot {
+    flex: 0 0 auto;
+
+    width: 8px;
+    height: 8px;
+
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.65);
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+.project-dot.active {
+    width: 24px;
+    border-radius: 20px;
+    background: #fff;
+}
+
+/* PROJECT BODY */
+
+.project-body {
+    position: relative;
+    padding: 20px;
+}
+
+.project-body h3 {
+    margin: 0 0 10px;
+}
+
+.project-body p {
+    margin: 0;
+    line-height: 1.7;
+}
+
+.project-counter {
+    margin-top: 14px;
+    text-align: center;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    opacity: .65;
+}
+
+.project-tag {
+    position: absolute;
+
+    top: 15px;
+    left: 15px;
+
+    z-index: 25;
+
+    padding: 6px 12px;
+
+    border-radius: 30px;
+
+    background: rgba(22,132,91,.92);
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* TABLET */
+
+@media (max-width: 1000px) {
+
+    .projects-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+    .projects-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .project-slider {
+        height: 240px;
+    }
+
+}
+ /* =========================================================
+   ACTIVITIES + GALLERY
+   ONE CARD PER DATABASE RECORD
+========================================================= */
+
+#publicGallery {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    width: 100%;
+    align-items: start;
+}
+
+/* =========================================================
+   GALLERY CARD
+========================================================= */
+
+#publicGallery .gallery-record-card {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.10);
+}
+
+/* =========================================================
+   GALLERY SLIDER
+========================================================= */
+
+#publicGallery .gallery-record-slider {
+    position: relative;
+    width: 100%;
+    height: 260px;
+    overflow: hidden;
+    background: #eee;
+}
+
+/* =========================================================
+   GALLERY IMAGES
+========================================================= */
+
+#publicGallery .gallery-record-slider .universal-slide {
+    position: absolute !important;
+    inset: 0;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: cover !important;
+    display: block;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity .5s ease,
+        visibility .5s ease;
+}
+
+#publicGallery .gallery-record-slider .universal-slide.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* =========================================================
+   GALLERY ARROWS
+========================================================= */
+
+#publicGallery .gallery-record-slider .universal-arrow {
+    position: absolute;
+
+    top: 50%;
+    transform: translateY(-50%);
+
+    z-index: 20;
+
+    width: 44px;
+    height: 44px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(0,0,0,.55);
+    color: #fff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+#publicGallery .gallery-record-slider .universal-arrow:hover {
+    background: rgba(0,0,0,.85);
+    transform: translateY(-50%) scale(1.08);
+}
+
+#publicGallery .gallery-record-slider .universal-prev {
+    left: 15px;
+}
+
+#publicGallery .gallery-record-slider .universal-next {
+    right: 15px;
+}
+
+/* =========================================================
+   GALLERY DOTS
+========================================================= */
+
+#publicGallery .gallery-record-slider .universal-dots {
+    position: absolute;
+
+    bottom: 15px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 21;
+
+    display: flex;
+    gap: 7px;
+
+    align-items: center;
+    justify-content: center;
+
+    max-width: calc(100% - 100px);
+
+    overflow: hidden;
+}
+
+#publicGallery .gallery-record-slider .universal-dot {
+    flex: 0 0 auto;
+
+    width: 8px;
+    height: 8px;
+
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.65);
+
+    cursor: pointer;
+
+    transition: .25s ease;
+}
+
+#publicGallery .gallery-record-slider .universal-dot.active {
+    width: 24px;
+    border-radius: 20px;
+    background: #fff;
+}
+
+/* =========================================================
+   GALLERY COUNTER
+========================================================= */
+
+#publicGallery .universal-counter {
+    padding: 10px 15px 0;
+
+    text-align: center;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    opacity: .65;
+}
+
+/* =========================================================
+   GALLERY INFORMATION
+========================================================= */
+
+#publicGallery .universal-card-info {
+    padding: 20px;
+}
+
+#publicGallery .universal-card-title {
+    margin: 0 0 10px;
+}
+
+#publicGallery .universal-card-description {
+    margin: 0;
+    line-height: 1.7;
+}
+
+/* =========================================================
+   EMPTY / ERROR
+========================================================= */
+
+#publicGallery .gallery-empty {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    #publicGallery {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 650px) {
+
+    #publicGallery {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    #publicGallery .gallery-record-slider {
+        height: 240px;
+    }
+
+}
+/* =========================
+   PARTNERS SECTION
+========================= */
+
+.partners-section {
+    background: #fff;
+}
+
+.partners-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 22px;
+    align-items: stretch;
+}
+ /* =========================
+   OUR PARTNERS - FLOATING BUBBLES
+========================= */
+
+.partners-section {
+    background: #fff;
+    overflow: hidden;
+}
+
+.partners-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 35px;
+    padding: 25px 10px 45px;
+}
+
+/* الفقاعة */
+.partner-card {
+    width: 190px;
+    height: 190px;
+
+    background: #fff;
+    border-radius: 50%;
+
+    border: 1px solid rgba(22, 132, 91, 0.12);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.07),
+        inset 0 0 0 8px rgba(22, 132, 91, 0.025);
+
+    position: relative;
+
+    animation: partnerFloat 5s ease-in-out infinite;
+
+    transition:
+        transform .35s ease,
+        box-shadow .35s ease;
+}
+
+/* اختلاف حركة كل فقاعة */
+.partner-card:nth-child(2) {
+    animation-delay: -1.5s;
+}
+
+.partner-card:nth-child(3) {
+    animation-delay: -3s;
+}
+
+.partner-card:nth-child(4) {
+    animation-delay: -4.2s;
+}
+
+.partner-card:nth-child(5) {
+    animation-delay: -2.2s;
+}
+
+/* الحركة */
+@keyframes partnerFloat {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-14px) rotate(1deg);
+    }
+}
+
+/* تأثير عند تمرير الماوس */
+.partner-card:hover {
+    transform: translateY(-18px) scale(1.08);
+
+    box-shadow:
+        0 20px 45px rgba(22, 132, 91, 0.15),
+        inset 0 0 0 8px rgba(22, 132, 91, 0.04);
+
+    z-index: 5;
+}
+
+/* الشعار */
+.partner-logo {
+    width: 125px;
+    height: 90px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin-bottom: 8px;
+}
+
+.partner-logo img {
+    max-width: 115px;
+    max-height: 70px;
+
+    width: auto;
+    height: auto;
+
+    object-fit: contain;
+
+    display: block;
+
+    transition: transform .35s ease;
+}
+
+.partner-card:hover .partner-logo img {
+    transform: scale(1.08);
+}
+
+/* اسم الشريك */
+.partner-name {
+    margin: 0;
+
+    color: #083d2a;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    line-height: 1.4;
+
+    max-width: 145px;
+}
+
+/* لمعة صغيرة على الفقاعة */
+.partner-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 12px;
+    height: 12px;
+
+    top: 25px;
+    left: 35px;
+
+    background: rgba(255, 255, 255, 0.9);
+
+    border-radius: 50%;
+
+    filter: blur(1px);
+
+    pointer-events: none;
+}
+
+/* نقطة خضراء صغيرة */
+.partner-card::after {
+    content: "";
+
+    position: absolute;
+
+    width: 7px;
+    height: 7px;
+
+    bottom: 30px;
+    right: 38px;
+
+    background: rgba(22, 132, 91, 0.18);
+
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    .partners-grid {
+        gap: 22px;
+        padding: 20px 5px 35px;
+    }
+
+    .partner-card {
+        width: 145px;
+        height: 145px;
+    }
+
+    .partner-logo {
+        width: 100px;
+        height: 65px;
+        margin-bottom: 4px;
+    }
+
+    .partner-logo img {
+        max-width: 90px;
+        max-height: 55px;
+    }
+
+    .partner-name {
+        font-size: 12px;
+        max-width: 115px;
+    }
+
+    .partner-card::before {
+        top: 18px;
+        left: 25px;
+        width: 9px;
+        height: 9px;
+    }
+
+    .partner-card::after {
+        bottom: 22px;
+        right: 27px;
+    }
+}
+
+@media (max-width: 400px) {
+
+    .partners-grid {
+        gap: 15px;
+    }
+
+    .partner-card {
+        width: 130px;
+        height: 130px;
+    }
+
+    .partner-logo {
+        width: 85px;
+        height: 55px;
+    }
+
+    .partner-logo img {
+        max-width: 78px;
+        max-height: 48px;
+    }
+
+    .partner-name {
+        font-size: 11px;
+        max-width: 105px;
+    }
+}
+ /* =========================================================
+    NAVBAR - FIT ALL ITEMS
+ ========================================================= */
+
+.navbar .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.navbar .brand {
+    flex-shrink: 0;
+}
+
+.navbar .nav-links {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    flex: 1;
+    min-width: 0;
+}
+
+.navbar .nav-links a {
+    white-space: nowrap;
+    font-size: 13px;
+}
+
+.navbar .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.navbar .member-login-btn,
+.navbar .volunteer-btn,
+.navbar .language-btn {
+    white-space: nowrap;
+}
+
+/* الشاشات المتوسطة */
+@media (max-width: 1250px) {
+
+    .navbar .nav-inner {
+        gap: 10px;
+    }
+
+    .navbar .nav-links {
+        gap: 9px;
+    }
+
+    .navbar .nav-links a {
+        font-size: 12px;
+    }
+
+    .navbar .member-login-btn,
+    .navbar .volunteer-btn {
+        padding-left: 9px;
+        padding-right: 9px;
+    }
+}
+</style>
+
+</head>
+
+
+<body>
+<!-- AL-ASHRAF WELCOME SCREEN -->
+<div id="welcomeScreen" class="welcome-screen">
+    <div class="welcome-content">
+
+        <div class="welcome-logo">
+            <img src="images/logo.png" alt="Al-Ashraf Organization">
+        </div>
+
+        <div class="welcome-small">WELCOME TO</div>
+
+        <h1>
+            AL-ASHRAF
+            <span>ORGANIZATION FOR DEVELOPMENT</span>
+        </h1>
+
+        <div class="welcome-line"></div>
+
+        <p>
+            Giving Without Limits • Serving Communities • Creating Development
+        </p>
+
+        <div class="welcome-loading">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+
+    function closeWelcomeScreen() {
+        const screen = document.getElementById("welcomeScreen");
+
+        if (!screen) return;
+
+        screen.classList.add("hide");
+
+        setTimeout(function () {
+            if (screen && screen.parentNode) {
+                screen.parentNode.removeChild(screen);
+            }
+        }, 900);
+    }
+
+    // Always close after 2.5 seconds
+    setTimeout(closeWelcomeScreen, 2500);
+
+    // Emergency fallback: never allow it to remain stuck
+    setTimeout(closeWelcomeScreen, 5000);
+
+})();
+</script>
+
+ 
+
+
+<!-- =========================================================
+     NAVBAR
+========================================================= -->
+ 
+<header class="navbar">
+
+    <div class="container nav-inner">
+
+        <!-- BRAND -->
+        <a href="index.html" class="brand">
+
+            <img
+                src="images/logo.png"
+                alt="Al-Ashraf Organization logo"
+                class="brand-logo"
+            >
+
+            <div class="brand-name">
+                <span class="brand-name-en">
+                    Al-Ashraf Organization for Development
+                </span>
+
+                <span class="brand-name-ar">
+                    منظمة الأشراف للتنمية
+                </span>
+            </div>
+
+        </a>
+
+
+        <!-- NAVIGATION -->
+        <nav class="nav-links" id="navLinks">
+
+            <a
+                href="#home"
+                class="active"
+                data-i18n="home"
+            >
+                Home
+            </a>
+
+            <a
+                href="#about"
+                data-i18n="about"
+            >
+                About
+            </a>
+
+            <a
+                href="#fields"
+                data-i18n="ourFields"
+            >
+                Our Fields
+            </a>
+           <a href="#partners" data-i18n="partners">شركاؤنا</a>
+
+            <a
+                href="#impact"
+                data-i18n="ourImpact"
+            >
+                Our Impact
+            </a>
+
+            <a
+                href="#projects"
+                data-i18n="projects"
+            >
+                Projects
+            </a>
+
+            <a
+                href="#gallery"
+                data-i18n="gallery"
+            >
+                Gallery
+            </a>
+
+            <a
+                href="#contact"
+                data-i18n="contact"
+            >
+                Contact
+            </a>
+
+        </nav>
+
+
+        <!-- ACTIONS -->
+        <div class="nav-actions">
+
+            <!-- MEMBER LOGIN -->
+             <a 
+    href="login.html" 
+    class="member-login-btn" 
+>
+    <i class="fas fa-user"></i> 
+    <span data-i18n="memberLogin">دخول الأعضاء</span>
+</a>
+
+ 
+<a 
+    href="volunteer.html" 
+    class="volunteer-btn" 
+    title="تقديم طلب للتطوع أو التدريب" 
+    aria-label="تقديم طلب للتطوع أو التدريب"
+>
+    <i class="fa-solid fa-hand-holding-heart"></i>
+    <span data-i18n="volunteerTraining">
+        تقديم طلب تطوع أو تدريب
+    </span>
+</a>
+
+
+            <!-- LANGUAGE -->
+            <button
+                class="language-btn"
+                onclick="toggleLanguage()"
+                id="languageBtn"
+                type="button"
+            >
+                AR
+            </button>
+
+
+            <!-- MOBILE MENU -->
+            <button
+                class="menu-btn"
+                onclick="toggleMenu()"
+                aria-label="Menu"
+                type="button"
+            >
+                <i class="fa-solid fa-bars"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+<section class="hero" id="home">
+
+    <div class="section-motion-lines" aria-hidden="true">
+        <span class="motion-line line-1"></span>
+        <span class="motion-line line-2"></span>
+        <span class="motion-line line-3"></span>
+        <span class="motion-line line-4"></span>
+        <span class="motion-line line-5"></span>
+        <span class="motion-wave wave-1"></span>
+        <span class="motion-wave wave-2"></span>
+    </div>
+
+    <div class="hero-overlay"></div>
+    <div class="hero-glow hero-glow-1"></div>
+    <div class="hero-glow hero-glow-2"></div>
+
+    <div class="hero-image-container" id="heroImageContainer">
+        <div class="hero-slides" id="heroSlides"></div>
+
+        <button type="button" class="hero-slider-btn hero-prev" id="heroPrev" aria-label="Previous image">
+            <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <button type="button" class="hero-slider-btn hero-next" id="heroNext" aria-label="Next image">
+            <i class="fa-solid fa-chevron-right"></i>
+        </button>
+
+        <div class="hero-dots" id="heroDots"></div>
+    </div>
+
+    <div class="container">
+        <div class="hero-content">
+
+            <div class="hero-logo-wrap">
+                <img
+                    src="images/logo.png"
+                    alt="Al-Ashraf Organization for Development"
+                    class="hero-logo"
+                >
+            </div>
+
+            <h1 class="hero-title" data-i18n="heroTitle">
+                Al-Ashraf Organization for Development
+            </h1>
+
+            <div class="hero-line"></div>
+
+            <p class="hero-description" data-i18n="heroDescription">
+                Al-Ashraf Organization for Development is a Sudanese
+                voluntary non-profit organization registered with the
+                Humanitarian Aid Commission (HAC). Established in 2005,
+                it works in voluntary and humanitarian action and
+                community service.
+            </p>
+
+        </div>
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     ABOUT
+========================================================= -->
+<section class="section about-section" id="about">
+
+    <!-- Animated Background Lines -->
+    <div class="section-motion-lines light-motion" aria-hidden="true">
+        <span class="motion-line line-1"></span>
+        <span class="motion-line line-2"></span>
+        <span class="motion-line line-3"></span>
+        <span class="motion-wave wave-1"></span>
+        <span class="motion-wave wave-2"></span>
+    </div>
+
+    <div class="container">
+
+        <div class="about-grid">
+
+            <div class="about-image">
+
+    <div class="about-single-image" id="aboutImages"></div>
+
+    <div class="about-badge">
+                    <strong>2005</strong>
+                    <span data-i18n="founded">Founded</span>
+                </div>
+
+            </div>
+
+
+            <div class="about-content">
+
+                <div
+                    class="eyebrow"
+                    data-i18n="whoWeAre"
+                >
+                    Who We Are
+                </div>
+
+                <h2 class="section-title">
+
+                    <span data-i18n="aboutTitle">
+                        Working Together for a Better Community
+                    </span>
+
+                </h2>
+
+                <p data-i18n="aboutParagraph1">
+                    Al-Ashraf Organization for Development is a
+                    Sudanese voluntary, non-profit organization
+                    working in humanitarian action, community
+                    development and volunteer service.
+                </p>
+
+                <p data-i18n="aboutParagraph2">
+                    The organization was established in 2005 and
+                    is registered with the Humanitarian Aid
+                    Commission (HAC).
+                </p>
+
+                <ul class="check-list">
+
+                    <li>
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        <span data-i18n="aboutPoint1">
+                            Humanitarian and community support
+                        </span>
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        <span data-i18n="aboutPoint2">
+                            Volunteer and youth development
+                        </span>
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        <span data-i18n="aboutPoint3">
+                            Health and community initiatives
+                        </span>
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-circle-check"></i>
+
+                        <span data-i18n="aboutPoint4">
+                            Environmental sanitation activities
+                        </span>
+                    </li>
+
+                </ul>
+
+                <a
+                    href="#fields"
+                    class="btn btn-primary"
+                >
+                    <span data-i18n="exploreFields">
+                        Explore Our Fields
+                    </span>
+
+                    <i class="fa-solid fa-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     OUR FIELDS
+========================================================= -->
+<section
+    class="section section-soft fields-section"
+    id="fields"
+>
+
+    <!-- Animated Background Lines -->
+    <div class="section-motion-lines light-motion" aria-hidden="true">
+        <span class="motion-line line-1"></span>
+        <span class="motion-line line-2"></span>
+        <span class="motion-line line-3"></span>
+        <span class="motion-line line-4"></span>
+        <span class="motion-wave wave-1"></span>
+        <span class="motion-wave wave-2"></span>
+    </div>
+
+    <div class="container">
+
+        <div class="section-header center">
+
+            <div
+                class="eyebrow"
+                data-i18n="whatWeDo"
+            >
+                What We Do
+            </div>
+
+            <h2
+                class="section-title"
+                data-i18n="fieldsTitle"
+            >
+                Our Fields of Work
+            </h2>
+
+            <p
+                class="section-text"
+                data-i18n="fieldsDescription"
+            >
+                Our work focuses on key areas that contribute to
+                community resilience, humanitarian response and
+                sustainable development.
+            </p>
+
+        </div>
+
+
+        <div class="fields-grid">
+
+            <div class="field-card">
+
+                <div class="field-icon">
+                    <i class="fa-solid fa-wheat-awn"></i>
+                </div>
+
+                <h3 data-i18n="foodSecurity">
+                    Food Security
+                </h3>
+
+                <p data-i18n="foodSecurityText">
+                    Supporting vulnerable families and contributing
+                    to access to essential food supplies.
+                </p>
+
+            </div>
+
+
+            <div class="field-card">
+
+                <div class="field-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+
+                <h3 data-i18n="education">
+                    Education & Training
+                </h3>
+
+                <p data-i18n="educationText">
+                    Training youth and volunteers in humanitarian,
+                    health and community service skills.
+                </p>
+
+            </div>
+
+
+            <div class="field-card">
+
+                <div class="field-icon">
+                    <i class="fa-solid fa-people-group"></i>
+                </div>
+
+                <h3 data-i18n="communityDevelopment">
+                    Community Development
+                </h3>
+
+                <p data-i18n="communityText">
+                    Supporting communities to build resilience and
+                    create positive local change.
+                </p>
+
+            </div>
+
+
+            <div class="field-card">
+
+                <div class="field-icon">
+                    <i class="fa-solid fa-heart-pulse"></i>
+                </div>
+
+                <h3 data-i18n="healthCare">
+                    Health Care
+                </h3>
+
+                <p data-i18n="healthText">
+                    Supporting patients, health facilities and
+                    people in need of essential care.
+                </p>
+
+            </div>
+
+
+            <div class="field-card">
+
+                <div class="field-icon">
+                    <i class="fa-solid fa-faucet-drip"></i>
+                </div>
+
+                <h3 data-i18n="wash">
+                    WASH
+                </h3>
+
+                <p data-i18n="washText">
+                    Environmental sanitation, public cleanliness
+                    and tree-planting campaigns.
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="section partners-section" id="partners">
+
+    <div class="container">
+
+        <div class="section-header center">
+
+            <div class="eyebrow" data-i18n="partnersEyebrow">
+                Our Partners
+            </div>
+
+            <h2 class="section-title" data-i18n="partnersTitle">
+                شركاؤنا
+            </h2>
+
+            <p class="section-text" data-i18n="partnersDescription">
+                نفخر بشراكاتنا مع المنظمات والمؤسسات الدولية
+                التي ساهمت معنا في خدمة المجتمعات وتحقيق أثر مستدام.
+            </p>
+
+        </div>
+
+        <div class="partners-grid" id="publicPartners">
+
+            <div class="partners-loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span data-i18n="loadingPartners">
+                    جاري تحميل الشركاء...
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+<!-- =========================================================
+     IMPACT
+========================================================= -->
+<section
+    class="section impact"
+    id="impact"
+>
+
+    <!-- Animated Background Lines -->
+    <div class="section-motion-lines" aria-hidden="true">
+        <span class="motion-line line-1"></span>
+        <span class="motion-line line-2"></span>
+        <span class="motion-line line-3"></span>
+        <span class="motion-line line-4"></span>
+        <span class="motion-wave wave-1"></span>
+        <span class="motion-wave wave-2"></span>
+    </div>
+
+    <div class="container">
+
+        <div class="section-header center">
+
+            <div
+                class="eyebrow"
+                data-i18n="ourImpact"
+            >
+                Our Impact
+            </div>
+
+            <h2
+                class="section-title"
+                data-i18n="impactTitle"
+            >
+                Numbers That Tell Our Story
+            </h2>
+
+            <p
+                class="section-text"
+                data-i18n="impactDescription"
+            >
+                Through volunteer work, training and community
+                initiatives, Al-Ashraf continues to serve communities
+                in need.
+            </p>
+
+        </div>
+
+
+        <div class="impact-grid">
+
+            <div class="impact-item">
+
+                <div class="impact-number">
+                    572+
+                </div>
+
+                <h3 data-i18n="peopleTrained">
+                    People Trained
+                </h3>
+
+                <p data-i18n="peopleTrainedText">
+                    Youth and community members
+                </p>
+
+            </div>
+
+
+            <div class="impact-item">
+
+                <div class="impact-number">
+                    685+
+                </div>
+
+                <h3 data-i18n="volunteers">
+                    Volunteers
+                </h3>
+
+                <p data-i18n="volunteersText">
+                    Trained volunteers
+                </p>
+
+            </div>
+
+
+            <div class="impact-item">
+
+                <div class="impact-number">
+                    38+
+                </div>
+
+                <h3 data-i18n="campaigns">
+                    Campaigns
+                </h3>
+
+                <p data-i18n="campaignsText">
+                    Sanitation & tree planting
+                </p>
+
+            </div>
+
+
+            <div class="impact-item">
+
+                <div class="impact-number">
+                    24
+                </div>
+
+                <h3 data-i18n="locations">
+                    Locations
+                </h3>
+
+                <p data-i18n="locationsText">
+                    Communities and sites served
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     PROJECTS
+========================================================= -->
+<section
+    class="section"
+    id="projects"
+>
+
+    <div class="container">
+
+        <div class="section-header">
+
+            <div
+                class="eyebrow"
+                data-i18n="ourWork"
+            >
+                Our Work
+            </div>
+
+            <h2
+                class="section-title"
+                data-i18n="projectsTitle"
+            >
+                Projects & Initiatives
+            </h2>
+
+            <p
+                class="section-text"
+                data-i18n="projectsDescription"
+            >
+                Our projects respond to humanitarian needs and
+                support communities through practical initiatives.
+            </p>
+
+        </div>
+
+
+        <!-- Dynamic Projects -->
+        <div
+            class="projects-grid"
+            id="publicProjects"
+        >
+
+            <div class="gallery-loading">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+                <span>Loading projects...</span>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     GALLERY / ACTIVITIES
+========================================================= -->
+<section
+    class="section section-soft"
+    id="gallery"
+>
+
+    <div class="container">
+
+        <div class="section-header center">
+
+            <div
+                class="eyebrow"
+                data-i18n="ourActivities"
+            >
+                Our Activities
+            </div>
+
+            <h2
+                class="section-title"
+                data-i18n="galleryTitle"
+            >
+                From Our Field
+            </h2>
+
+            <p
+                class="section-text"
+                data-i18n="galleryDescription"
+            >
+                A glimpse of our community activities, projects
+                and volunteer work.
+            </p>
+
+        </div>
+
+
+        <!-- Dynamic Activities + Gallery -->
+         <div
+    class="universal-slider-container"
+    id="publicGallery"
+>
+
+            <div class="gallery-loading">
+
+                <i class="fa-solid fa-spinner fa-spin"></i>
+
+                <span>
+                    Loading images...
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CTA
+========================================================= -->
+<section class="cta">
+
+    <div class="container">
+
+        <div class="cta-box">
+
+            <div>
+
+                <h2 data-i18n="ctaTitle">
+                    Al-Ashraf Organization for Development
+                </h2>
+
+                <p data-i18n="ctaText">
+                    Communication channels
+                </p>
+
+            </div>
+
+            <a
+                href="#contact"
+                class="btn"
+            >
+
+                <span data-i18n="getInTouch">
+                    Get in Touch
+                </span>
+
+                <i class="fa-solid fa-arrow-right"></i>
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     CONTACT
+========================================================= -->
+<section
+    class="section"
+    id="contact"
+>
+
+    <div class="container">
+
+        <div class="contact-grid">
+
+            <div>
+
+                <div
+                    class="eyebrow"
+                    data-i18n="contactUs"
+                >
+                    Contact Us
+                </div>
+
+                <h2
+                    class="section-title"
+                    data-i18n="contactTitle"
+                >
+                    Let's Serve Our Community Together
+                </h2>
+
+                <p
+                    class="section-text"
+                    data-i18n="contactDescription"
+                >
+                    For inquiries, partnerships or information
+                    about our activities, you can reach us through
+                    the following channels.
+                </p>
+
+
+                <div class="contact-list">
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            <i class="fa-solid fa-location-dot"></i>
+                        </div>
+
+                        <div>
+
+                            <strong data-i18n="location">
+                                Location
+                            </strong>
+
+                            <span data-i18n="locationAddress">
+                                Al-Thawra Al-Harra 17,
+                                south of the Civil Registry.
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+
+                        <div>
+
+                            <strong data-i18n="phone">
+                                WhatsApp
+                            </strong>
+
+                            <a
+                                href="https://wa.me/249118622533"
+                                target="_blank"
+                            >
+                                +249 118 622 533 Abdallah
+                            </a>
+
+                            <br>
+
+                            <a
+                                href="https://wa.me/249112153645"
+                                target="_blank"
+                            >
+                                +249 112 153 645 Afag
+                            </a>
+
+                            <br>
+
+                            <a
+                                href="https://wa.me/249127000858"
+                                target="_blank"
+                            >
+                                +249 127 000 858 othman
+                            </a>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="contact-item">
+
+                        <div class="contact-icon">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+
+                        <div>
+
+                            <strong data-i18n="workingHours">
+                                Working Hours
+                            </strong>
+
+                            <span data-i18n="workingHoursText">
+                                Saturday - Thursday |
+                                8:00 AM - 3:00 PM
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="contact-card">
+
+                <h3 data-i18n="organizationName">
+                    Al-Ashraf Organization
+                </h3>
+
+                <p data-i18n="slogan">
+                    Giving without limits for serving the community
+                    and achieving development.
+                </p>
+
+     <a
+    href="https://mail.google.com/mail/?view=cm&fs=1&to=Alashraf.org.24@gmail.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="email-btn">
+
+    <i class="fa-solid fa-envelope"></i>
+
+    <span data-i18n="sendEmail">
+        أرسل لنا بريدًا إلكترونيًا
+    </span>
+
+</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+<footer>
+
+    <div class="container">
+
+        <div class="footer-grid">
+
+            <div class="footer-brand">
+
+                <img
+                    src="images/logo.png"
+                    alt="Al-Ashraf Organization logo"
+                    class="footer-logo"
+                >
+
+                <p data-i18n="footerDescription">
+                    Al-Ashraf Organization for Development is a
+                    Sudanese voluntary, non-profit organization
+                    working to serve communities and contribute
+                    to development.
+                </p>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4 data-i18n="quickLinks">
+                    Quick Links
+                </h4>
+
+                <a href="#home" data-i18n="home">
+                    Home
+                </a>
+
+                <a href="#about" data-i18n="about">
+                    About
+                </a>
+
+                <a href="#fields" data-i18n="ourFields">
+                    Our Fields
+                </a>
+
+                <a href="#projects" data-i18n="projects">
+                    Projects
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4 data-i18n="ourWork">
+                    Our Work
+                </h4>
+
+                <a href="#fields" data-i18n="foodSecurity">
+                    Food Security
+                </a>
+
+                <a href="#fields" data-i18n="education">
+                    Education & Training
+                </a>
+
+                <a href="#fields" data-i18n="healthCare">
+                    Health Care
+                </a>
+
+                <a href="#fields" data-i18n="wash">
+                    WASH
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h4 data-i18n="contact">
+                    Contact
+                </h4>
+
+              
+ <a
+    href="https://mail.google.com/mail/?view=cm&fs=1&to=Alashraf.org.24@gmail.com"
+    target="_blank"
+    rel="noopener noreferrer"
+    data-i18n="emailUs"
+>
+    Email Us
+</a>
+
+                <a
+                    href="#contact"
+                    data-i18n="omdurmanSudan"
+                >
+                    Omdurman, Sudan
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <p data-i18n="copyright">
+                © 2026 Al-Ashraf Organization for Development.
+                All Rights Reserved.
+            </p>
+
+
+            <div class="footer-social">
+
+           <a
+    href="https://www.facebook.com/share/1E4yoPQwap/"
+    target="_blank"
+    rel="noopener noreferrer"
+    class="social-link"
+    aria-label="Facebook">
+
+    <i class="fa-brands fa-facebook-f"></i>
+
+</a>
+               
+
+              <a
+    href="https://wa.me/+249902670147"
+    target="_blank"
+    rel="noopener noreferrer"
+    aria-label="WhatsApp">
+
+    <i class="fa-brands fa-whatsapp"></i>
+
+</a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+<script>
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+function toggleMenu() {
+
+    const nav = document.getElementById("navLinks");
+
+    if (nav) {
+        nav.classList.toggle("show");
+    }
+
+}
+
+
+/* =========================================================
+   CLOSE MOBILE MENU
+========================================================= */
+
+document
+    .querySelectorAll(".nav-links a")
+    .forEach(link => {
+
+        link.addEventListener("click", () => {
+
+            const nav =
+                document.getElementById("navLinks");
+
+            if (nav) {
+                nav.classList.remove("show");
+            }
+
+        });
+
+    });
+
+
+/* =========================================================
+   ACTIVE NAVIGATION
+========================================================= */
+
+const sections =
+    document.querySelectorAll("section[id]");
+
+const navItems =
+    document.querySelectorAll(".nav-links a");
+
+
+window.addEventListener("scroll", () => {
+
+    let current = "";
+
+    sections.forEach(section => {
+
+        const sectionTop =
+            section.offsetTop - 150;
+
+        if (window.scrollY >= sectionTop) {
+
+            current =
+                section.getAttribute("id");
+
+        }
+
+    });
+
+
+    navItems.forEach(item => {
+
+        item.classList.remove("active");
+
+        if (
+            item.getAttribute("href")
+            === "#" + current
+        ) {
+
+            item.classList.add("active");
+
+        }
+
+    });
+
+});
+
+
+/* =========================================================
+   TRANSLATIONS
+========================================================= */
+
+const translations = {
+ 
+    en: {
+memberLogin: "Member Login",
+        home: "Home",
+        about: "About",
+        ourFields: "Our Fields",
+        partners: "Our Partners",
+
+partnersEyebrow: "Our Partners",
+
+partnersTitle: "Our Partners",
+
+partnersDescription:
+    "We are proud of our partnerships with organizations and international institutions that have contributed to serving communities and creating sustainable impact.",
+
+loadingPartners:
+    "Loading partners...",
+        ourImpact: "Our Impact",
+        projects: "Projects",
+        gallery: "Gallery",
+        contact: "Contact",
+
+    volunteerTraining: "Volunteer or Training Application",
+    
+        heroTitle:
+            "Al-Ashraf Organization for Development",
+
+        heroDescription:
+            "Al-Ashraf Organization for Development is a Sudanese voluntary non-profit organization registered with the Humanitarian Aid Commission (HAC). Established in 2005, it works in voluntary and humanitarian action and community service.",
+
+        founded: "Founded",
+
+        whoWeAre: "Who We Are",
+
+        aboutTitle:
+            "Working Together for a Better Community",
+
+        aboutParagraph1:
+            "Al-Ashraf Organization for Development is a Sudanese voluntary, non-profit organization working in humanitarian action, community development and volunteer service.",
+
+        aboutParagraph2:
+            "The organization was established in 2005 and is registered with the Humanitarian Aid Commission (HAC).",
+
+        aboutPoint1:
+            "Humanitarian and community support",
+
+        aboutPoint2:
+            "Volunteer and youth development",
+
+        aboutPoint3:
+            "Health and community initiatives",
+
+        aboutPoint4:
+            "Environmental sanitation activities",
+
+        exploreFields:
+            "Explore Our Fields",
+
+        whatWeDo:
+            "What We Do",
+
+        fieldsTitle:
+            "Our Fields of Work",
+
+        fieldsDescription:
+            "Our work focuses on key areas that contribute to community resilience, humanitarian response and sustainable development.",
+
+        foodSecurity:
+            "Food Security",
+
+        foodSecurityText:
+            "Supporting vulnerable families and contributing to access to essential food supplies.",
+
+        education:
+            "Education & Training",
+
+        educationText:
+            "Training youth and volunteers in humanitarian, health and community service skills.",
+
+        communityDevelopment:
+            "Community Development",
+
+        communityText:
+            "Supporting communities to build resilience and create positive local change.",
+
+        healthCare:
+            "Health Care",
+
+        healthText:
+            "Supporting patients, health facilities and people in need of essential care.",
+
+        wash:
+            "WASH",
+
+        washText:
+            "Environmental sanitation, public cleanliness and tree-planting campaigns.",
+
+        impactTitle:
+            "Numbers That Tell Our Story",
+
+        impactDescription:
+            "Through volunteer work, training and community initiatives, Al-Ashraf continues to serve communities in need.",
+
+        peopleTrained:
+            "People Trained",
+
+        peopleTrainedText:
+            "Youth and community members",
+
+        volunteers:
+            "Volunteers",
+
+        volunteersText:
+            "Trained volunteers",
+
+        campaigns:
+            "Campaigns",
+
+        campaignsText:
+            "Sanitation & tree planting",
+
+        locations:
+            "Locations",
+
+        locationsText:
+            "Communities and sites served",
+
+        ourWork:
+            "Our Work",
+
+        projectsTitle:
+            "Projects & Initiatives",
+
+        projectsDescription:
+            "Our projects respond to humanitarian needs and support communities through practical initiatives.",
+
+        project1Title:
+            "Supporting Vulnerable Families",
+
+        project1Text:
+            "Humanitarian support initiatives designed to help families affected by crisis.",
+
+        project2Title:
+            "Volunteer Training",
+
+        project2Text:
+            "Building the skills of young people and volunteers for humanitarian action.",
+
+        project3Title:
+            "Environmental Campaigns",
+
+        project3Text:
+            "Community sanitation and tree-planting campaigns promoting healthier environments.",
+
+        learnMore:
+            "Learn More",
+
+        ourActivities:
+            "Our Activities",
+
+        galleryTitle:
+            "From Our Field",
+
+        galleryDescription:
+            "A glimpse of our community activities and volunteer work.",
+
+        communityActivities:
+            "Community Activities",
+
+        volunteerWork:
+            "Volunteer Work",
+
+        humanitarianSupport:
+            "Humanitarian Support",
+
+        environmentalCampaign:
+            "Environmental Campaign",
+
+        ctaTitle:
+            "Al-Ashraf Organization for Development",
+
+        ctaText:
+            "Communication channels",
+
+        getInTouch:
+            "Get in Touch",
+
+        contactUs:
+            "Contact Us",
+
+        contactTitle:
+            "Let's Serve Our Community Together",
+
+        contactDescription:
+            "For inquiries, partnerships or information about our activities, you can reach us through the following channels.",
+
+        location:
+            "Location",
+
+        locationAddress:
+            "Al-Thawra Al-Harra 17, south of the Civil Registry.",
+
+        phone:
+            "Phone",
+
+        workingHours:
+            "Working Hours",
+
+        workingHoursText:
+            "Saturday - Thursday | 8:00 AM - 3:00 PM",
+
+        organizationName:
+            "Al-Ashraf Organization",
+
+        slogan:
+            "For partnerships and inquiries",
+
+       sendEmail: "Send us an email",
+
+        footerDescription:
+            "Al-Ashraf Organization for Development is a Sudanese voluntary, non-profit organization working to serve communities and contribute to development.",
+
+        quickLinks:
+            "Quick Links",
+
+        emailUs:
+            "Email Us",
+
+        omdurmanSudan:
+            "Omdurman, Sudan",
+
+        copyright:
+            "© 2026 Al-Ashraf Organization for Development. All Rights Reserved."
+
+    },
+
+
+    ar: {
+ memberLogin: "دخول الأعضاء",
+        home: "الرئيسية",
+
+        about: "من نحن",
+
+        ourFields: "مجالات عملنا",
+        partners: "شركاؤنا",
+
+partnersEyebrow: "شركاؤنا",
+
+partnersTitle: "شركاؤنا",
+
+partnersDescription:
+    "نفخر بشراكاتنا مع المنظمات والمؤسسات الدولية التي ساهمت معنا في خدمة المجتمعات وتحقيق أثر مستدام.",
+
+loadingPartners:
+    "جاري تحميل الشركاء...",
+
+        ourImpact: "أثرنا",
+
+        projects: "المشاريع",
+
+        gallery: "المعرض",
+
+        contact: "تواصل معنا",
+
+    volunteerTraining: "تقديم طلب تطوع أو تدريب",
+        
+    heroTitle:
+            "منظمة الأشراف للتنمية",
+
+        heroDescription:
+            "منظمة الأشراف للتنمية هي منظمة سودانية تطوعية غير ربحية مسجلة لدى مفوضية العون الإنساني (HAC)، تأسست عام 2005 حيث تعمل في مجال العمل الطوعي والإنساني وخدمة المجتمع.",
+
+        founded:
+            "تأسست عام",
+
+        whoWeAre:
+            "من نحن",
+
+        aboutTitle:
+            "نعمل معًا من أجل مجتمع أفضل",
+
+        aboutParagraph1:
+            "منظمة الأشراف للتنمية هي منظمة سودانية طوعية غير ربحية تعمل في مجال العمل الإنساني وتنمية المجتمع وخدمة العمل التطوعي.",
+
+        aboutParagraph2:
+            "تأسست المنظمة في عام 2005 وهي مسجلة لدى مفوضية العون الإنساني.",
+
+        aboutPoint1:
+            "الدعم الإنساني والمجتمعي",
+
+        aboutPoint2:
+            "تنمية المتطوعين والشباب",
+
+        aboutPoint3:
+            "المبادرات الصحية والمجتمعية",
+
+        aboutPoint4:
+            "أنشطة الإصحاح البيئي",
+
+        exploreFields:
+            "استكشف مجالات عملنا",
+
+        whatWeDo:
+            "ماذا نفعل",
+
+        fieldsTitle:
+            "مجالات عملنا",
+
+        fieldsDescription:
+            "تركز أعمالنا على مجالات أساسية تساهم في تعزيز صمود المجتمع والاستجابة الإنسانية وتحقيق التنمية المستدامة.",
+
+        foodSecurity:
+            "الأمن الغذائي",
+
+        foodSecurityText:
+            "دعم الأسر الأكثر احتياجًا والمساهمة في توفير الغذاء والاحتياجات الأساسية.",
+
+        education:
+            "التعليم والتدريب",
+
+        educationText:
+            "تدريب الشباب والمتطوعين في مجالات العمل الإنساني والصحة وخدمة المجتمع.",
+
+        communityDevelopment:
+            "تنمية المجتمع",
+
+        communityText:
+            "دعم المجتمعات لتعزيز قدرتها على الصمود وإحداث تغيير إيجابي على المستوى المحلي.",
+
+        healthCare:
+            "الرعاية الصحية",
+
+        healthText:
+            "دعم المرضى والمرافق الصحية والأشخاص المحتاجين إلى الرعاية الصحية الأساسية.",
+
+        wash:
+            "المياه والإصحاح والنظافة",
+
+        washText:
+            "تنفيذ أنشطة الإصحاح البيئي والنظافة العامة وحملات التشجير.",
+
+        impactTitle:
+            "أرقام تحكي قصتنا",
+
+        impactDescription:
+            "من خلال العمل التطوعي والتدريب والمبادرات المجتمعية، تواصل منظمة الأشراف خدمة المجتمعات المحتاجة.",
+
+        peopleTrained:
+            "شخصًا تم تدريبهم",
+
+        peopleTrainedText:
+            "من الشباب وأفراد المجتمع",
+
+        volunteers:
+            "متطوعًا",
+
+        volunteersText:
+            "متطوعون تم تدريبهم",
+
+        campaigns:
+            "حملة",
+
+        campaignsText:
+            "للإصحاح والتشجير",
+
+        locations:
+            "موقعًا",
+
+        locationsText:
+            "مجتمعات ومواقع تمت خدمتها",
+
+        ourWork:
+            "أعمالنا",
+
+        projectsTitle:
+            "المشاريع والمبادرات",
+
+        projectsDescription:
+            "تستجيب مشاريعنا للاحتياجات الإنسانية وتدعم المجتمعات من خلال مبادرات عملية.",
+
+        project1Title:
+            "دعم الأسر الأكثر احتياجًا",
+
+        project1Text:
+            "مبادرات للدعم الإنساني تهدف إلى مساعدة الأسر المتضررة من الأزمات.",
+
+        project2Title:
+            "تدريب المتطوعين",
+
+        project2Text:
+            "بناء مهارات الشباب والمتطوعين للعمل في المجال الإنساني.",
+
+        project3Title:
+            "الحملات البيئية",
+
+        project3Text:
+            "حملات للنظافة والإصحاح البيئي والتشجير من أجل بيئة أكثر صحة.",
+
+        learnMore:
+            "اعرف المزيد",
+
+        ourActivities:
+            "أنشطتنا",
+
+        galleryTitle:
+            "من الميدان",
+
+        galleryDescription:
+            "لمحة من أنشطتنا المجتمعية وأعمالنا التطوعية.",
+
+        communityActivities:
+            "أنشطة مجتمعية",
+
+        volunteerWork:
+            "العمل التطوعي",
+
+        humanitarianSupport:
+            "الدعم الإنساني",
+
+        environmentalCampaign:
+            "حملة بيئية",
+
+        ctaTitle:
+            "منظمة الأشراف للتنمية",
+
+        ctaText:
+            "قنوات التواصل",
+
+        getInTouch:
+            "تواصل معنا",
+
+        contactUs:
+            "تواصل معنا",
+
+        contactTitle:
+            "لنعمل معًا لخدمة مجتمعنا",
+
+        contactDescription:
+            "للاستفسارات أو الشراكات أو الحصول على معلومات حول أنشطتنا، يمكنكم التواصل معنا عبر القنوات التالية.",
+
+        location:
+            "العنوان",
+
+        locationAddress:
+            "الثورة الحارة 17، جنوب السجل المدني.",
+
+        phone:
+            "الهاتف",
+
+        workingHours:
+            "ساعات العمل",
+
+        workingHoursText:
+            "السبت - الخميس | 8:00 صباحًا - 3:00 مساءً",
+
+        organizationName:
+            "منظمة الأشراف للتنمية",
+
+        slogan:
+            "للشراكات والاستعلام",
+
+       sendEmail: "أرسل لنا بريدًا إلكترونيًا",
+
+        footerDescription:
+            "منظمة الأشراف للتنمية هي منظمة سودانية طوعية غير ربحية تعمل على خدمة المجتمعات والمساهمة في تحقيق التنمية.",
+
+        quickLinks:
+            "روابط سريعة",
+
+        emailUs:
+            "راسلنا",
+
+        omdurmanSudan:
+            "أم درمان، السودان",
+
+        copyright:
+            "© 2026 منظمة الأشراف للتنمية. جميع الحقوق محفوظة."
+
+    }
+
+};
+
+
+/* =========================================================
+   APPLY LANGUAGE
+========================================================= */
+
+function applyLanguage(language) {
+
+    const dictionary =
+        translations[language];
+
+    if (!dictionary) {
+        return;
+    }
+
+    const html =
+        document.documentElement;
+
+    html.setAttribute(
+        "lang",
+        language
+    );
+
+    html.setAttribute(
+        "dir",
+        language === "ar"
+            ? "rtl"
+            : "ltr"
+    );
+
+
+    document
+        .querySelectorAll("[data-i18n]")
+        .forEach(element => {
+
+            const key =
+                element.getAttribute("data-i18n");
+
+            if (
+                dictionary[key] !== undefined
+            ) {
+
+                element.textContent =
+                    dictionary[key];
+
+            }
+
+        });
+
+
+    const languageButton =
+        document.getElementById(
+            "languageBtn"
+        );
+
+    if (languageButton) {
+
+        languageButton.textContent =
+            language === "ar"
+                ? "EN"
+                : "AR";
+
+    }
+
+
+    localStorage.setItem(
+        "alAshrafLanguage",
+        language
+    );
+
+}
+
+
+/* =========================================================
+   TOGGLE LANGUAGE
+========================================================= */
+
+function toggleLanguage() {
+
+    const currentLanguage =
+        localStorage.getItem(
+            "alAshrafLanguage"
+        ) || "en";
+
+    const newLanguage =
+        currentLanguage === "en"
+            ? "ar"
+            : "en";
+
+    applyLanguage(newLanguage);
+
+}
+
+
+/* =========================================================
+   SAFE TEXT
+========================================================= */
+
+function escapeGalleryText(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        text || "";
+
+    return div.innerHTML;
+
+}
+
+
+/* =========================================================
+   GET IMAGE URL
+========================================================= */
+
+function getImageUrl(image) {
+
+    if (
+        image &&
+        image.image_url &&
+        image.image_url.trim() !== ""
+    ) {
+
+        return image.image_url;
+
+    }
+
+    return "";
+
+}
+
+function expandMediaRecords(records) {
+    const items = [];
+
+    (records || []).forEach(record => {
+
+        // إذا كان السجل يحتوي على عدة ملفات
+        if (Array.isArray(record.media_urls) && record.media_urls.length) {
+
+            record.media_urls.forEach(media => {
+
+                const url = media?.url || media?.image_url || "";
+
+                if (!url) return;
+
+                items.push({
+                    id: record.id,
+                    title: record.title || "",
+                    description: record.description || "",
+                    image_url: url,
+                    category: record.category,
+                    created_at: record.created_at
+                });
+
+            });
+
+        }
+
+        // دعم السجلات القديمة التي تحتوي صورة واحدة فقط
+        else if (record.image_url) {
+
+            items.push({
+                id: record.id,
+                title: record.title || "",
+                description: record.description || "",
+                image_url: record.image_url,
+                category: record.category,
+                created_at: record.created_at
+            });
+
+        }
+
+    });
+
+    return items;
+}
+/* =========================================================
+   UNIVERSAL IMAGE SLIDER
+   Unlimited images
+========================================================= */
+
+function createUniversalSlider({
+    container,
+    images,
+    showInfo = true,
+    autoPlay = true
+}) {
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (!images || !images.length) {
+
+        container.innerHTML = `
+            <div class="gallery-empty">
+                <i class="fa-regular fa-images"></i>
+                <p>No images available yet.</p>
+            </div>
+        `;
+
+        return;
+    }
+
+    /*
+     * الصور الموجودة فعلياً
+     * لا يوجد حد أقصى
+     */
+
+    const totalImages = images.length;
+
+    /* CARD */
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "universal-image-card";
+
+
+    /* SLIDER */
+
+    const slider =
+        document.createElement("div");
+
+    slider.className =
+        "universal-slider";
+
+
+    /* IMAGES */
+
+    images.forEach((image, index) => {
+
+        const img =
+            document.createElement("img");
+
+        img.className =
+            `universal-slide ${
+                index === 0 ? "active" : ""
+            }`;
+
+        img.src =
+            getImageUrl(image);
+
+        img.alt =
+            image.title ||
+            "Al-Ashraf Organization";
+
+        img.loading =
+            index === 0
+                ? "eager"
+                : "lazy";
+
+        slider.appendChild(img);
+
+    });
+
+
+    /* PREVIOUS */
+
+    const previous =
+        document.createElement("button");
+
+    previous.type = "button";
+
+    previous.className =
+        "universal-arrow universal-prev";
+
+    previous.setAttribute(
+        "aria-label",
+        "Previous image"
+    );
+
+    previous.innerHTML =
+        `<i class="fa-solid fa-chevron-left"></i>`;
+
+
+    /* NEXT */
+
+    const next =
+        document.createElement("button");
+
+    next.type = "button";
+
+    next.className =
+        "universal-arrow universal-next";
+
+    next.setAttribute(
+        "aria-label",
+        "Next image"
+    );
+
+    next.innerHTML =
+        `<i class="fa-solid fa-chevron-right"></i>`;
+
+
+    /* DOTS */
+
+    const dots =
+        document.createElement("div");
+
+    dots.className =
+        "universal-dots";
+
+
+    /*
+     * إنشاء نقطة لكل صورة
+     *
+     * 5 صور = 5 نقاط
+     * 20 صورة = 20 نقطة
+     * 100 صورة = 100 نقطة
+     */
+
+    images.forEach((image, index) => {
+
+        const dot =
+            document.createElement("button");
+
+        dot.type = "button";
+
+        dot.className =
+            `universal-dot ${
+                index === 0 ? "active" : ""
+            }`;
+
+        dot.setAttribute(
+            "aria-label",
+            `Show image ${index + 1}`
+        );
+
+        dot.addEventListener(
+            "click",
+            function () {
+
+                showSlide(index);
+
+                restartAutoPlay();
+
+            }
+        );
+
+        dots.appendChild(dot);
+
+    });
+
+
+    /* ADD TO SLIDER */
+
+    slider.appendChild(previous);
+
+    slider.appendChild(next);
+
+    slider.appendChild(dots);
+
+
+    /* COUNTER */
+
+    const counter =
+        document.createElement("div");
+
+    counter.className =
+        "universal-counter";
+
+    counter.textContent =
+        `1 / ${totalImages}`;
+
+
+    /* INFO */
+
+    let info = null;
+
+    if (showInfo) {
+
+        info =
+            document.createElement("div");
+
+        info.className =
+            "universal-card-info";
+
+        info.innerHTML = `
+
+            <h3 class="universal-card-title">
+                ${escapeGalleryText(
+                    images[0].title || ""
+                )}
+            </h3>
+
+            <p class="universal-card-description">
+                ${escapeGalleryText(
+                    images[0].description || ""
+                )}
+            </p>
+
+        `;
+
+    }
+
+
+    /* BUILD CARD */
+
+    card.appendChild(slider);
+
+    card.appendChild(counter);
+
+    if (info) {
+        card.appendChild(info);
+    }
+
+    container.appendChild(card);
+
+
+    /* CURRENT */
+
+    let current = 0;
+
+    let autoPlayTimer = null;
+
+
+    /* =====================================================
+       SHOW SLIDE
+    ===================================================== */
+
+    function showSlide(index) {
+
+        /*
+         * يمنع خروج الرقم عن عدد الصور
+         */
+
+        current =
+            (index + totalImages)
+            % totalImages;
+
+
+        const slides =
+            slider.querySelectorAll(
+                ".universal-slide"
+            );
+
+
+        const dotButtons =
+            dots.querySelectorAll(
+                ".universal-dot"
+            );
+
+
+        /* IMAGE */
+
+        slides.forEach(
+            (slide, i) => {
+
+                slide.classList.toggle(
+                    "active",
+                    i === current
+                );
+
+            }
+        );
+
+
+        /* DOT */
+
+        dotButtons.forEach(
+            (dot, i) => {
+
+                dot.classList.toggle(
+                    "active",
+                    i === current
+                );
+
+            }
+        );
+
+
+        /* COUNTER */
+
+        counter.textContent =
+            `${current + 1} / ${totalImages}`;
+
+
+        /* INFO */
+
+        if (info) {
+
+            const title =
+                info.querySelector(
+                    ".universal-card-title"
+                );
+
+            const description =
+                info.querySelector(
+                    ".universal-card-description"
+                );
+
+            if (title) {
+
+                title.textContent =
+                    images[current].title || "";
+
+            }
+
+            if (description) {
+
+                description.textContent =
+                    images[current].description || "";
+
+            }
+
+        }
+
+    }
+
+
+    /* =====================================================
+       NEXT
+    ===================================================== */
+
+    function nextSlide() {
+
+        showSlide(current + 1);
+
+        restartAutoPlay();
+
+    }
+
+
+    /* =====================================================
+       PREVIOUS
+    ===================================================== */
+
+    function previousSlide() {
+
+        showSlide(current - 1);
+
+        restartAutoPlay();
+
+    }
+
+
+    /* EVENTS */
+
+    previous.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            previousSlide();
+
+        }
+    );
+
+
+    next.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            nextSlide();
+
+        }
+    );
+
+
+    /* =====================================================
+       AUTO PLAY
+    ===================================================== */
+
+    function startAutoPlay() {
+
+        clearInterval(autoPlayTimer);
+
+        if (!autoPlay) return;
+
+        if (totalImages <= 1) return;
+
+        autoPlayTimer =
+            setInterval(
+                function () {
+
+                    showSlide(
+                        current + 1
+                    );
+
+                },
+                5000
+            );
+
+    }
+
+
+    function restartAutoPlay() {
+
+        clearInterval(
+            autoPlayTimer
+        );
+
+        startAutoPlay();
+
+    }
+
+
+    /* PAUSE ON HOVER */
+
+    card.addEventListener(
+        "mouseenter",
+        function () {
+
+            clearInterval(
+                autoPlayTimer
+            );
+
+        }
+    );
+
+
+    card.addEventListener(
+        "mouseleave",
+        function () {
+
+            startAutoPlay();
+
+        }
+    );
+
+
+    /* =====================================================
+       MOBILE SWIPE
+    ===================================================== */
+
+    let touchStartX = 0;
+
+    let touchEndX = 0;
+
+
+    slider.addEventListener(
+        "touchstart",
+        function (event) {
+
+            touchStartX =
+                event.changedTouches[0]
+                    .screenX;
+
+        },
+        { passive: true }
+    );
+
+
+    slider.addEventListener(
+        "touchend",
+        function (event) {
+
+            touchEndX =
+                event.changedTouches[0]
+                    .screenX;
+
+
+            const difference =
+                touchStartX -
+                touchEndX;
+
+
+            if (
+                Math.abs(difference)
+                < 50
+            ) {
+
+                return;
+
+            }
+
+
+            if (difference > 0) {
+
+                nextSlide();
+
+            } else {
+
+                previousSlide();
+
+            }
+
+        },
+        { passive: true }
+    );
+
+
+    /* INITIAL */
+
+    showSlide(0);
+
+    startAutoPlay();
+
+}
+/* =========================================================
+   LOAD HERO IMAGE
+   CATEGORY = hero
+========================================================= */
+ async function loadHeroImage() {
+
+    const { data, error } = await supabaseClient
+        .from("images")
+        .select(`
+            id,
+            title,
+            description,
+            image_url,
+            category,
+            media_urls,
+            created_at
+        `)
+        .eq("category", "hero")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Hero images error:", error);
+        return;
+    }
+
+    const images = expandMediaRecords(data)
+        .filter(image => getImageUrl(image));
+
+    console.log("Hero images loaded:", images.length);
+
+    const container = document.getElementById("heroSlides");
+    const dotsContainer = document.getElementById("heroDots");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+    if (dotsContainer) dotsContainer.innerHTML = "";
+
+    images.forEach((image, index) => {
+
+        const img = document.createElement("img");
+
+        img.src = getImageUrl(image);
+        img.alt = image.title || "Al-Ashraf Organization";
+        img.className = `hero-slide ${index === 0 ? "active" : ""}`;
+
+        container.appendChild(img);
+
+        if (dotsContainer) {
+
+            const dot = document.createElement("button");
+
+            dot.className = `hero-dot ${index === 0 ? "active" : ""}`;
+            dot.type = "button";
+
+            dot.addEventListener("click", () => {
+                showHeroSlide(index);
+            });
+
+            dotsContainer.appendChild(dot);
+        }
+
+    });
+
+    if (images.length > 0) {
+        initHeroSlider(images.length);
+    }
+}
+
+/* =========================================================
+   LOAD ABOUT IMAGE
+   CATEGORY = about
+========================================================= */
+  /* =========================================================
+   LOAD ABOUT IMAGE
+   CATEGORY = about
+   ONE IMAGE ONLY
+========================================================= */
+
+async function loadAboutImage() {
+
+    const container = document.getElementById("aboutImages");
+
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    try {
+
+        const { data, error } = await supabaseClient
+            .from("images")
+            .select(`
+                id,
+                title,
+                description,
+                image_url,
+                category,
+                media_urls,
+                created_at
+            `)
+            .eq("category", "about")
+            .order("created_at", { ascending: false })
+            .limit(1);
+
+        if (error) {
+
+            console.error(
+                "About image error:",
+                error
+            );
+
+            return;
+        }
+
+        if (!data || !data.length) {
+
+            console.log(
+                "No About image found."
+            );
+
+            return;
+        }
+
+        const record = data[0];
+
+        let imageUrl = "";
+
+        /*
+         * إذا كان السجل يحتوي على media_urls
+         * نستخدم أول صورة فقط
+         */
+        if (
+            Array.isArray(record.media_urls) &&
+            record.media_urls.length
+        ) {
+
+            imageUrl =
+                record.media_urls[0]?.url ||
+                record.media_urls[0]?.image_url ||
+                "";
+
+        }
+
+        /*
+         * دعم السجلات القديمة
+         */
+        if (!imageUrl) {
+
+            imageUrl =
+                record.image_url || "";
+
+        }
+
+        if (!imageUrl) return;
+
+        const img =
+            document.createElement("img");
+
+        img.src = imageUrl;
+
+        img.alt =
+            record.title ||
+            "Al-Ashraf Organization";
+
+        img.loading = "lazy";
+
+        container.appendChild(img);
+
+        console.log(
+            "About image loaded:",
+            imageUrl
+        );
+
+    } catch (error) {
+
+        console.error(
+            "About image unexpected error:",
+            error
+        );
+
+    }
+
+}
+/* =========================================================
+   LOAD PROJECT IMAGES
+   CATEGORY = project
+========================================================= */
+  async function loadProjects() {
+
+    const projectsContainer =
+        document.getElementById("publicProjects");
+
+    if (!projectsContainer) return;
+
+    try {
+
+        const { data, error } =
+            await supabaseClient
+                .from("images")
+                .select(`
+                    id,
+                    title,
+                    description,
+                    image_url,
+                    category,
+                    media_urls,
+                    created_at
+                `)
+                .eq("category", "project")
+                .order("created_at", {
+                    ascending: false
+                });
+
+        if (error) {
+
+            console.error(
+                "Projects loading error:",
+                error
+            );
+
+            projectsContainer.innerHTML = `
+                <div class="gallery-empty">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <p>Unable to load projects.</p>
+                </div>
+            `;
+
+            return;
+        }
+
+        /*
+         * كل Database Row = مشروع مستقل
+         */
+        const projectRecords = (data || [])
+            .map(record => {
+
+                let media = [];
+
+                if (
+                    Array.isArray(record.media_urls) &&
+                    record.media_urls.length
+                ) {
+
+                    media = record.media_urls
+                        .map(item => ({
+                            url:
+                                item?.url ||
+                                item?.image_url ||
+                                "",
+                            storage_path:
+                                item?.storage_path ||
+                                "",
+                            name:
+                                item?.name ||
+                                "",
+                            type:
+                                item?.type ||
+                                "image/*"
+                        }))
+                        .filter(item => item.url);
+
+                }
+
+                /*
+                 * دعم السجلات القديمة
+                 */
+                if (
+                    !media.length &&
+                    record.image_url
+                ) {
+
+                    media = [
+                        {
+                            url: record.image_url,
+                            storage_path:
+                                record.storage_path || "",
+                            name:
+                                record.title ||
+                                "Project",
+                            type: "image/*"
+                        }
+                    ];
+
+                }
+
+                return {
+
+                    id: record.id,
+
+                    title:
+                        record.title ||
+                        "Al-Ashraf Project",
+
+                    description:
+                        record.description ||
+                        "",
+
+                    created_at:
+                        record.created_at,
+
+                    media
+
+                };
+
+            })
+            .filter(project =>
+                project.media.length > 0
+            );
+
+
+        console.log(
+            "Project cards loaded:",
+            projectRecords.length
+        );
+
+
+        if (!projectRecords.length) {
+
+            projectsContainer.innerHTML = `
+                <div class="gallery-empty">
+
+                    <i class="fa-regular fa-images"></i>
+
+                    <p>
+                        No project images available yet.
+                    </p>
+
+                </div>
+            `;
+
+            return;
+        }
+
+
+        /*
+         * إنشاء بطاقة مستقلة لكل مشروع
+         */
+        projectsContainer.innerHTML =
+            projectRecords
+                .map((project, projectIndex) => {
+
+                    const media =
+                        project.media;
+
+                    return `
+
+                        <article
+                            class="project-card"
+                            data-project-id="${project.id}"
+                        >
+
+                            <div
+                                class="project-image project-slider"
+                            >
+
+                                <div class="project-slides">
+
+                                    ${media
+                                        .map(
+                                            (
+                                                item,
+                                                imageIndex
+                                            ) => `
+
+                                                <img
+                                                    class="
+                                                        project-slide
+                                                        ${
+                                                            imageIndex === 0
+                                                                ? "active"
+                                                                : ""
+                                                        }
+                                                    "
+                                                    src="${escapeGalleryText(
+                                                        item.url
+                                                    )}"
+                                                    alt="${escapeGalleryText(
+                                                        project.title
+                                                    )}"
+                                                    loading="${
+                                                        imageIndex === 0
+                                                            ? "eager"
+                                                            : "lazy"
+                                                    }"
+                                                >
+
+                                            `
+                                        )
+                                        .join("")}
+
+                                </div>
+
+
+                                ${
+                                    media.length > 1
+                                        ? `
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            project-slider-btn
+                                            project-prev
+                                        "
+                                        aria-label="Previous image"
+                                    >
+                                        <i class="fa-solid fa-chevron-left"></i>
+                                    </button>
+
+
+                                    <button
+                                        type="button"
+                                        class="
+                                            project-slider-btn
+                                            project-next
+                                        "
+                                        aria-label="Next image"
+                                    >
+                                        <i class="fa-solid fa-chevron-right"></i>
+                                    </button>
+
+
+                                    <div class="project-dots">
+
+                                        ${media
+                                            .map(
+                                                (
+                                                    _,
+                                                    imageIndex
+                                                ) => `
+
+                                                    <button
+                                                        type="button"
+                                                        class="
+                                                            project-dot
+                                                            ${
+                                                                imageIndex === 0
+                                                                    ? "active"
+                                                                    : ""
+                                                            }
+                                                        "
+                                                        data-index="${imageIndex}"
+                                                        aria-label="
+                                                            Show image ${
+                                                                imageIndex + 1
+                                                            }
+                                                        "
+                                                    ></button>
+
+                                                `
+                                            )
+                                            .join("")}
+
+                                    </div>
+
+                                `
+                                        : ""
+                                }
+
+
+                                <span class="project-tag">
+                                    Project
+                                </span>
+
+                            </div>
+
+
+                            <div class="project-body">
+
+                                <h3>
+                                    ${escapeGalleryText(
+                                        project.title
+                                    )}
+                                </h3>
+
+                                <p>
+                                    ${
+                                        escapeGalleryText(
+                                            project.description ||
+                                            "Our projects respond to humanitarian needs and support communities through practical initiatives."
+                                        )
+                                    }
+                                </p>
+
+
+                                ${
+                                    media.length > 1
+                                        ? `
+
+                                    <div class="project-counter">
+
+                                        <span class="project-current">
+                                            1
+                                        </span>
+
+                                        /
+                                        ${media.length}
+
+                                    </div>
+
+                                `
+                                        : ""
+                                }
+
+                            </div>
+
+                        </article>
+
+                    `;
+
+                })
+                .join("");
+
+
+        /*
+         * تشغيل Slider مستقل لكل بطاقة
+         */
+        const cards =
+            projectsContainer.querySelectorAll(
+                ".project-card"
+            );
+
+
+        cards.forEach(
+            (card, projectIndex) => {
+
+                const project =
+                    projectRecords[projectIndex];
+
+                const media =
+                    project.media;
+
+                if (media.length <= 1) {
+                    return;
+                }
+
+
+                const slider =
+                    card.querySelector(
+                        ".project-slider"
+                    );
+
+                const slides =
+                    [
+                        ...card.querySelectorAll(
+                            ".project-slide"
+                        )
+                    ];
+
+                const dots =
+                    [
+                        ...card.querySelectorAll(
+                            ".project-dot"
+                        )
+                    ];
+
+                const prev =
+                    card.querySelector(
+                        ".project-prev"
+                    );
+
+                const next =
+                    card.querySelector(
+                        ".project-next"
+                    );
+
+                const counter =
+                    card.querySelector(
+                        ".project-current"
+                    );
+
+
+                let current = 0;
+                let timer = null;
+
+
+                function showProjectSlide(index) {
+
+                    current =
+                        (
+                            index +
+                            media.length
+                        ) %
+                        media.length;
+
+
+                    slides.forEach(
+                        (slide, i) => {
+
+                            slide.classList.toggle(
+                                "active",
+                                i === current
+                            );
+
+                        }
+                    );
+
+
+                    dots.forEach(
+                        (dot, i) => {
+
+                            dot.classList.toggle(
+                                "active",
+                                i === current
+                            );
+
+                        }
+                    );
+
+
+                    if (counter) {
+
+                        counter.textContent =
+                            current + 1;
+
+                    }
+
+                }
+
+
+                function startAutoPlay() {
+
+                    clearInterval(timer);
+
+                    timer =
+                        setInterval(
+                            () => {
+
+                                showProjectSlide(
+                                    current + 1
+                                );
+
+                            },
+                            5000
+                        );
+
+                }
+
+
+                function restartAutoPlay() {
+
+                    clearInterval(timer);
+
+                    startAutoPlay();
+
+                }
+
+
+                if (prev) {
+
+                    prev.addEventListener(
+                        "click",
+                        event => {
+
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            showProjectSlide(
+                                current - 1
+                            );
+
+                            restartAutoPlay();
+
+                        }
+                    );
+
+                }
+
+
+                if (next) {
+
+                    next.addEventListener(
+                        "click",
+                        event => {
+
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            showProjectSlide(
+                                current + 1
+                            );
+
+                            restartAutoPlay();
+
+                        }
+                    );
+
+                }
+
+
+                dots.forEach(
+                    (dot, index) => {
+
+                        dot.addEventListener(
+                            "click",
+                            event => {
+
+                                event.preventDefault();
+                                event.stopPropagation();
+
+                                showProjectSlide(
+                                    index
+                                );
+
+                                restartAutoPlay();
+
+                            }
+                        );
+
+                    }
+                );
+
+
+                if (slider) {
+
+                    slider.addEventListener(
+                        "mouseenter",
+                        () => {
+
+                            clearInterval(timer);
+
+                        }
+                    );
+
+
+                    slider.addEventListener(
+                        "mouseleave",
+                        () => {
+
+                            startAutoPlay();
+
+                        }
+                    );
+
+
+                    let touchStartX = 0;
+
+
+                    slider.addEventListener(
+                        "touchstart",
+                        event => {
+
+                            touchStartX =
+                                event.changedTouches[0]
+                                    .screenX;
+
+                        },
+                        {
+                            passive: true
+                        }
+                    );
+
+
+                    slider.addEventListener(
+                        "touchend",
+                        event => {
+
+                            const touchEndX =
+                                event.changedTouches[0]
+                                    .screenX;
+
+                            const difference =
+                                touchStartX -
+                                touchEndX;
+
+
+                            if (
+                                Math.abs(
+                                    difference
+                                ) < 50
+                            ) {
+                                return;
+                            }
+
+
+                            if (difference > 0) {
+
+                                showProjectSlide(
+                                    current + 1
+                                );
+
+                            } else {
+
+                                showProjectSlide(
+                                    current - 1
+                                );
+
+                            }
+
+                            restartAutoPlay();
+
+                        },
+                        {
+                            passive: true
+                        }
+                    );
+
+                }
+
+
+                showProjectSlide(0);
+
+                startAutoPlay();
+
+            }
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Projects unexpected error:",
+            error
+        );
+
+        projectsContainer.innerHTML = `
+            <div class="gallery-empty">
+
+                <i class="fa-solid fa-triangle-exclamation"></i>
+
+                <p>
+                    Something went wrong while loading projects.
+                </p>
+
+            </div>
+        `;
+
+    }
+
+}
+/* =========================================================
+   LOAD ACTIVITIES + GALLERY
+   CATEGORY = activity OR gallery
+========================================================= */
+  /* =========================================================
+   LOAD ACTIVITIES + GALLERY
+   EACH DATABASE ROW = ONE CARD
+   MULTIPLE MEDIA FILES = SLIDER INSIDE CARD
+========================================================= */
+
+async function loadPublicGallery() {
+
+    const container =
+        document.getElementById("publicGallery");
+
+    if (!container) return;
+
+    try {
+
+        const { data, error } =
+            await supabaseClient
+                .from("images")
+                .select(`
+                    id,
+                    title,
+                    description,
+                    image_url,
+                    category,
+                    media_urls,
+                    created_at
+                `)
+                .in(
+                    "category",
+                    [
+                        "activity",
+                        "gallery"
+                    ]
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
+
+        if (error) {
+
+            console.error(
+                "Activities / Gallery loading error:",
+                error
+            );
+
+            container.innerHTML = `
+                <div class="gallery-empty">
+
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    <p>
+                        Unable to load activities and gallery.
+                    </p>
+
+                </div>
+            `;
+
+            return;
+        }
+
+
+        /* =====================================================
+           CONVERT DATABASE RECORDS
+           KEEP EACH ROW AS A SEPARATE CARD
+        ===================================================== */
+
+        const records =
+            (data || [])
+                .map(record => {
+
+                    let media = [];
+
+
+                    /* =================================================
+                       NEW SYSTEM
+                       MULTIPLE FILES IN media_urls
+                    ================================================= */
+
+                    if (
+                        Array.isArray(record.media_urls) &&
+                        record.media_urls.length
+                    ) {
+
+                        media =
+                            record.media_urls
+                                .map(item => {
+
+                                    return {
+
+                                        url:
+                                            item?.url ||
+                                            item?.image_url ||
+                                            "",
+
+                                        storage_path:
+                                            item?.storage_path ||
+                                            "",
+
+                                        name:
+                                            item?.name ||
+                                            "",
+
+                                        type:
+                                            item?.type ||
+                                            "image/*"
+
+                                    };
+
+                                })
+                                .filter(
+                                    item => item.url
+                                );
+
+                    }
+
+
+                    /* =================================================
+                       OLD SYSTEM
+                       SINGLE IMAGE
+                    ================================================= */
+
+                    if (
+                        !media.length &&
+                        record.image_url
+                    ) {
+
+                        media = [
+
+                            {
+
+                                url:
+                                    record.image_url,
+
+                                storage_path:
+                                    record.storage_path ||
+                                    "",
+
+                                name:
+                                    record.title ||
+                                    "Media",
+
+                                type:
+                                    "image/*"
+
+                            }
+
+                        ];
+
+                    }
+
+
+                    return {
+
+                        id:
+                            record.id,
+
+                        title:
+                            record.title ||
+                            "Al-Ashraf Activity",
+
+                        description:
+                            record.description ||
+                            "",
+
+                        category:
+                            record.category,
+
+                        created_at:
+                            record.created_at,
+
+                        media
+
+                    };
+
+                })
+                .filter(
+                    record =>
+                        record.media.length > 0
+                );
+
+
+        console.log(
+            "Activities / Gallery cards loaded:",
+            records.length
+        );
+
+
+        /* =====================================================
+           NO RECORDS
+        ===================================================== */
+
+        if (!records.length) {
+
+            container.innerHTML = `
+
+                <div class="gallery-empty">
+
+                    <i class="fa-regular fa-images"></i>
+
+                    <p>
+                        No activities or gallery images available yet.
+                    </p>
+
+                </div>
+
+            `;
+
+            return;
+        }
+
+
+        /* =====================================================
+           IMPORTANT
+           MAKE CONTAINER A GRID
+        ===================================================== */
+
+        container.classList.add(
+            "gallery-grid"
+        );
+
+
+        /* =====================================================
+           CREATE ONE CARD PER DATABASE ROW
+        ===================================================== */
+
+        container.innerHTML =
+            records
+                .map(
+                    record => {
+
+                        const media =
+                            record.media;
+
+
+                        const categoryLabel =
+                            record.category === "activity"
+                                ? "Activity"
+                                : "Gallery";
+
+
+                        return `
+
+                            <article
+                                class="
+                                    universal-image-card
+                                    gallery-record-card
+                                "
+                                data-gallery-id="${escapeGalleryText(
+                                    String(record.id)
+                                )}"
+                            >
+
+
+                                <!-- =========================
+                                     SLIDER
+                                ========================== -->
+
+                                <div
+                                    class="
+                                        universal-slider
+                                        gallery-record-slider
+                                    "
+                                >
+
+
+                                    <!-- IMAGES -->
+
+                                    ${media
+                                        .map(
+                                            (
+                                                item,
+                                                index
+                                            ) => {
+
+                                                return `
+
+                                                    <img
+                                                        class="
+                                                            universal-slide
+                                                            ${
+                                                                index === 0
+                                                                    ? "active"
+                                                                    : ""
+                                                            }
+                                                        "
+                                                        src="${escapeGalleryText(
+                                                            item.url
+                                                        )}"
+                                                        alt="${escapeGalleryText(
+                                                            record.title
+                                                        )}"
+                                                        loading="${
+                                                            index === 0
+                                                                ? "eager"
+                                                                : "lazy"
+                                                        }"
+                                                    >
+
+                                                `;
+
+                                            }
+                                        )
+                                        .join("")
+                                    }
+
+
+                                    <!-- =====================
+                                         ARROWS
+                                    ====================== -->
+
+                                    ${
+                                        media.length > 1
+                                            ? `
+
+                                        <button
+                                            type="button"
+                                            class="
+                                                universal-arrow
+                                                universal-prev
+                                            "
+                                            aria-label="Previous image"
+                                        >
+
+                                            <i
+                                                class="
+                                                    fa-solid
+                                                    fa-chevron-left
+                                                "
+                                            ></i>
+
+                                        </button>
+
+
+                                        <button
+                                            type="button"
+                                            class="
+                                                universal-arrow
+                                                universal-next
+                                            "
+                                            aria-label="Next image"
+                                        >
+
+                                            <i
+                                                class="
+                                                    fa-solid
+                                                    fa-chevron-right
+                                                "
+                                            ></i>
+
+                                        </button>
+
+
+                                        <!-- =================
+                                             DOTS
+                                        ================== -->
+
+                                        <div
+                                            class="universal-dots"
+                                        >
+
+                                            ${media
+                                                .map(
+                                                    (
+                                                        _,
+                                                        index
+                                                    ) => {
+
+                                                        return `
+
+                                                            <button
+                                                                type="button"
+                                                                class="
+                                                                    universal-dot
+                                                                    ${
+                                                                        index === 0
+                                                                            ? "active"
+                                                                            : ""
+                                                                    }
+                                                                "
+                                                                data-index="${index}"
+                                                                aria-label="
+                                                                    Show image ${
+                                                                        index + 1
+                                                                    }
+                                                                "
+                                                            ></button>
+
+                                                        `;
+
+                                                    }
+                                                )
+                                                .join("")
+                                            }
+
+                                        </div>
+
+                                    `
+                                            : ""
+                                    }
+
+
+                                    <!-- CATEGORY -->
+
+                                    <span
+                                        class="gallery-tag"
+                                    >
+                                        ${categoryLabel}
+                                    </span>
+
+
+                                </div>
+
+
+                                <!-- =========================
+                                     COUNTER
+                                ========================== -->
+
+                                ${
+                                    media.length > 1
+                                        ? `
+
+                                    <div
+                                        class="
+                                            universal-counter
+                                        "
+                                    >
+
+                                        <span
+                                            class="gallery-current"
+                                        >
+                                            1
+                                        </span>
+
+                                        /
+                                        ${media.length}
+
+                                    </div>
+
+                                `
+                                        : ""
+                                }
+
+
+                                <!-- =========================
+                                     INFORMATION
+                                ========================== -->
+
+                                <div
+                                    class="
+                                        universal-card-info
+                                    "
+                                >
+
+                                    <h3
+                                        class="
+                                            universal-card-title
+                                        "
+                                    >
+                                        ${escapeGalleryText(
+                                            record.title
+                                        )}
+                                    </h3>
+
+
+                                    <p
+                                        class="
+                                            universal-card-description
+                                        "
+                                    >
+                                        ${escapeGalleryText(
+                                            record.description
+                                        )}
+                                    </p>
+
+                                </div>
+
+
+                            </article>
+
+                        `;
+
+                    }
+                )
+                .join("");
+
+
+        /* =====================================================
+           INITIALIZE EACH CARD SEPARATELY
+        ===================================================== */
+
+        const cards =
+            container.querySelectorAll(
+                ".gallery-record-card"
+            );
+
+
+        cards.forEach(card => {
+
+            const slides =
+                [
+                    ...card.querySelectorAll(
+                        ".universal-slide"
+                    )
+                ];
+
+
+            const dots =
+                [
+                    ...card.querySelectorAll(
+                        ".universal-dot"
+                    )
+                ];
+
+
+            const previous =
+                card.querySelector(
+                    ".universal-prev"
+                );
+
+
+            const next =
+                card.querySelector(
+                    ".universal-next"
+                );
+
+
+            const counter =
+                card.querySelector(
+                    ".gallery-current"
+                );
+
+
+            const slider =
+                card.querySelector(
+                    ".gallery-record-slider"
+                );
+
+
+            const total =
+                slides.length;
+
+
+            /* SINGLE IMAGE */
+
+            if (total <= 1) {
+                return;
+            }
+
+
+            let current = 0;
+
+            let timer = null;
+
+            let touchStartX = 0;
+
+
+            /* =================================================
+               SHOW SLIDE
+            ================================================= */
+
+            function showSlide(index) {
+
+                current =
+                    (
+                        index +
+                        total
+                    ) % total;
+
+
+                slides.forEach(
+                    (slide, i) => {
+
+                        slide.classList.toggle(
+                            "active",
+                            i === current
+                        );
+
+                    }
+                );
+
+
+                dots.forEach(
+                    (dot, i) => {
+
+                        dot.classList.toggle(
+                            "active",
+                            i === current
+                        );
+
+                    }
+                );
+
+
+                if (counter) {
+
+                    counter.textContent =
+                        current + 1;
+
+                }
+
+            }
+
+
+            /* =================================================
+               NEXT
+            ================================================= */
+
+            function nextSlide() {
+
+                showSlide(
+                    current + 1
+                );
+
+                restartAutoPlay();
+
+            }
+
+
+            /* =================================================
+               PREVIOUS
+            ================================================= */
+
+            function previousSlide() {
+
+                showSlide(
+                    current - 1
+                );
+
+                restartAutoPlay();
+
+            }
+
+
+            /* =================================================
+               AUTO PLAY
+            ================================================= */
+
+            function startAutoPlay() {
+
+                clearInterval(
+                    timer
+                );
+
+
+                timer =
+                    setInterval(
+                        () => {
+
+                            showSlide(
+                                current + 1
+                            );
+
+                        },
+                        5000
+                    );
+
+            }
+
+
+            function restartAutoPlay() {
+
+                clearInterval(
+                    timer
+                );
+
+                startAutoPlay();
+
+            }
+
+
+            /* =================================================
+               PREVIOUS BUTTON
+            ================================================= */
+
+            if (previous) {
+
+                previous.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+                        previousSlide();
+
+                    }
+                );
+
+            }
+
+
+            /* =================================================
+               NEXT BUTTON
+            ================================================= */
+
+            if (next) {
+
+                next.addEventListener(
+                    "click",
+                    event => {
+
+                        event.preventDefault();
+
+                        event.stopPropagation();
+
+                        nextSlide();
+
+                    }
+                );
+
+            }
+
+
+            /* =================================================
+               DOT BUTTONS
+            ================================================= */
+
+            dots.forEach(
+                (dot, index) => {
+
+                    dot.addEventListener(
+                        "click",
+                        event => {
+
+                            event.preventDefault();
+
+                            event.stopPropagation();
+
+                            showSlide(
+                                index
+                            );
+
+                            restartAutoPlay();
+
+                        }
+                    );
+
+                }
+            );
+
+
+            /* =================================================
+               PAUSE ON HOVER
+            ================================================= */
+
+            card.addEventListener(
+                "mouseenter",
+                () => {
+
+                    clearInterval(
+                        timer
+                    );
+
+                }
+            );
+
+
+            card.addEventListener(
+                "mouseleave",
+                () => {
+
+                    startAutoPlay();
+
+                }
+            );
+
+
+            /* =================================================
+               MOBILE TOUCH START
+            ================================================= */
+
+            if (slider) {
+
+                slider.addEventListener(
+                    "touchstart",
+                    event => {
+
+                        touchStartX =
+                            event.changedTouches[0]
+                                .screenX;
+
+                    },
+                    {
+                        passive: true
+                    }
+                );
+
+
+                /* =============================================
+                   MOBILE TOUCH END
+                ============================================== */
+
+                slider.addEventListener(
+                    "touchend",
+                    event => {
+
+                        const touchEndX =
+                            event.changedTouches[0]
+                                .screenX;
+
+
+                        const difference =
+                            touchStartX -
+                            touchEndX;
+
+
+                        if (
+                            Math.abs(
+                                difference
+                            ) < 50
+                        ) {
+
+                            return;
+
+                        }
+
+
+                        if (
+                            difference > 0
+                        ) {
+
+                            nextSlide();
+
+                        } else {
+
+                            previousSlide();
+
+                        }
+
+                    },
+                    {
+                        passive: true
+                    }
+                );
+
+            }
+
+
+            /* =================================================
+               INITIAL SLIDE
+            ================================================= */
+
+            showSlide(0);
+
+            startAutoPlay();
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Activities / Gallery unexpected error:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="gallery-empty">
+
+                <i
+                    class="
+                        fa-solid
+                        fa-triangle-exclamation
+                    "
+                ></i>
+
+                <p>
+                    Something went wrong while loading activities and gallery.
+                </p>
+
+            </div>
+
+        `;
+
+    }
+
+}
+async function loadPublicPartners() {
+
+    const container = document.getElementById("publicPartners");
+
+    if (!container) return;
+
+    const { data, error } = await supabaseClient
+        .from("images")
+        .select("*")
+        .eq("category", "partners")
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.error("Partners loading error:", error);
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        container.innerHTML = `
+            <div class="partners-empty">
+                لا يوجد شركاء مضافون حالياً
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = data.map(partner => `
+        <div class="partner-card">
+
+            <div class="partner-logo">
+                <img
+                    src="${partner.image_url}"
+                    alt="${partner.title || "Partner"}"
+                >
+            </div>
+
+            <h3 class="partner-name">
+                ${partner.title || ""}
+            </h3>
+
+        </div>
+    `).join("");
+}
+/* =========================================================
+   LOAD ALL SUPABASE IMAGES
+========================================================= */
+
+ async function loadAllImages() {
+    console.log("Loading Al-Ashraf images...");
+
+    await Promise.all([
+        loadHeroImage(),
+        loadAboutImage(),
+        loadProjects(),
+        loadPublicGallery(),
+        loadPublicPartners()
+    ]);
+
+    console.log("Al-Ashraf image system loaded.");
+}
+
+
+/* =========================================================
+   LOAD SAVED LANGUAGE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const savedLanguage =
+            localStorage.getItem(
+                "alAshrafLanguage"
+            ) || "en";
+
+
+        applyLanguage(
+            savedLanguage
+        );
+
+
+        loadAllImages();
+
+    }
+);
+/* =========================================================
+   BACK TO TOP
+========================================================= */
+
+function scrollToTop() {
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+window.addEventListener("scroll", function () {
+
+    const button =
+        document.getElementById("backToTop");
+
+    if (!button) return;
+
+    if (window.scrollY > 300) {
+
+        button.classList.add("show");
+
+    } else {
+
+        button.classList.remove("show");
+
+    }
+
+});
+async function loadPublicPartners() {
+    const container = document.getElementById("publicPartners");
+
+    if (!container) return;
+
+    container.innerHTML = `
+        <div class="partners-loading">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+            <span data-i18n="loadingPartners">Loading partners...</span>
+        </div>
+    `;
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("images")
+            .select("*")
+            .eq("category", "partners")
+            .order("created_at", { ascending: false });
+
+        if (error) {
+            console.error("Partners loading error:", error);
+            throw error;
+        }
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `
+                <div class="partners-empty">
+                    <i class="fa-solid fa-handshake"></i>
+                    <p>No partners added yet.</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = data.map(partner => {
+            const imageUrl = partner.image_url || "";
+
+            return `
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        ${
+                            imageUrl
+                                ? `<img src="${escapeGalleryText(imageUrl)}"
+                                        alt="${escapeGalleryText(partner.title || "Partner")}">`
+                                : `<i class="fa-solid fa-handshake"></i>`
+                        }
+                    </div>
+
+                    <h3 class="partner-name">
+                        ${escapeGalleryText(partner.title || "")}
+                    </h3>
+                </div>
+            `;
+        }).join("");
+
+    } catch (error) {
+        console.error("Failed to load partners:", error);
+
+        container.innerHTML = `
+            <div class="partners-empty">
+                <p>Unable to load partners.</p>
+            </div>
+        `;
+    }
+}
+</script>
+<!-- Back To Top -->
+<button
+    type="button"
+    id="backToTop"
+    class="back-to-top"
+    aria-label="العودة إلى الأعلى"
+    onclick="scrollToTop()">
+
+    <i class="fa-solid fa-arrow-up"></i>
+
+</button>
+</body>
+</html>

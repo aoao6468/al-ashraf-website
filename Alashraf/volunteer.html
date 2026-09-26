@@ -1,0 +1,3511 @@
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>تقديم طلب تطوع أو تدريب | منظمة الأشراف للتنمية</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <style>
+
+        :root {
+            --green: #16845b;
+            --green-dark: #0d6042;
+            --green-deep: #083d2a;
+            --green-light: #eaf7f1;
+            --gold: #c9a24d;
+            --gold-light: #f7efd9;
+            --white: #ffffff;
+            --bg: #f6faf8;
+            --text: #183128;
+            --muted: #718079;
+            --border: #e1ebe6;
+            --shadow: 0 12px 35px rgba(8, 61, 42, 0.08);
+            --radius: 18px;
+        }
+
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+
+        body {
+            font-family: "Cairo", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.8;
+            transition: direction 0.2s ease;
+        }
+
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+
+        button,
+        input,
+        select,
+        textarea {
+            font-family: inherit;
+        }
+
+
+        /* =========================
+           NAVBAR
+        ========================= */
+
+        .navbar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(12px);
+        }
+
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 28px;
+            min-height: 78px;
+            width: 100%;
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+
+        .brand-icon {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+        }
+
+
+        .brand-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.35;
+        }
+
+
+        .brand-text strong {
+            color: var(--green-deep);
+            font-size: 15px;
+            font-weight: 800;
+        }
+
+
+        .brand-text span {
+            color: var(--muted);
+            font-size: 9px;
+            letter-spacing: 0.4px;
+            direction: ltr;
+            text-align: right;
+        }
+
+
+        /* =========================
+           NAV LINKS
+        ========================= */
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            flex: 1;
+        }
+
+
+        .nav-link {
+            padding: 9px 13px;
+            color: #50645c;
+            font-size: 12px;
+            font-weight: 600;
+            border-radius: 9px;
+            transition: all 0.25s ease;
+        }
+
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--green);
+            background: var(--green-light);
+        }
+
+
+        /* =========================
+           NAV ACTIONS
+        ========================= */
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+
+        .nav-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 9px 13px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: #ffffff;
+            color: #50645c;
+            font-size: 11px;
+            font-weight: 700;
+            transition: all 0.25s ease;
+        }
+
+
+        .nav-btn:hover {
+            border-color: var(--green);
+            color: var(--green);
+            background: var(--green-light);
+        }
+
+
+        .nav-btn i {
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           LANGUAGE BUTTON
+        ========================= */
+
+        .language-btn {
+            min-width: 92px;
+            cursor: pointer;
+        }
+
+
+        .language-btn .lang-ar {
+            display: inline;
+        }
+
+
+        .language-btn .lang-en {
+            display: none;
+        }
+
+
+        /* =========================
+           HERO
+        ========================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            min-height: 390px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+
+            background:
+                radial-gradient(
+                    circle at 20% 20%,
+                    rgba(22, 132, 91, 0.16),
+                    transparent 35%
+                ),
+
+                radial-gradient(
+                    circle at 80% 80%,
+                    rgba(201, 162, 77, 0.13),
+                    transparent 35%
+                ),
+
+                linear-gradient(
+                    135deg,
+                    #083d2a,
+                    #0d6042 55%,
+                    #16845b
+                );
+
+            color: white;
+        }
+
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 50%;
+            top: -200px;
+            left: -100px;
+        }
+
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 50%;
+            bottom: -160px;
+            right: -80px;
+        }
+
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 850px;
+            padding: 60px 25px;
+        }
+
+
+        .hero-icon {
+            width: 72px;
+            height: 72px;
+            margin: 0 auto 20px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 20px;
+            background: rgba(255,255,255,0.12);
+            border: 1px solid rgba(255,255,255,0.18);
+
+            font-size: 28px;
+            color: #ffffff;
+
+            box-shadow:
+                0 15px 35px rgba(0,0,0,0.12);
+        }
+
+
+        .hero h1 {
+            font-size: clamp(30px, 5vw, 48px);
+            font-weight: 800;
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
+
+
+        .hero p {
+            max-width: 650px;
+            margin: 0 auto;
+            color: rgba(255,255,255,0.82);
+            font-size: 15px;
+            line-height: 2;
+        }
+
+
+        .hero-line {
+            width: 65px;
+            height: 3px;
+            background: var(--gold);
+            margin: 20px auto 0;
+            border-radius: 20px;
+        }
+
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 25px 90px;
+        }
+
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 0.75fr 1.25fr;
+            gap: 28px;
+            align-items: start;
+        }
+
+
+        /* =========================
+           INFORMATION CARD
+        ========================= */
+
+        .info-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+        }
+
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 20px;
+        }
+
+
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 13px;
+            background: var(--green-light);
+            color: var(--green);
+            font-size: 17px;
+        }
+
+
+        .section-title h2 {
+            font-size: 19px;
+            font-weight: 800;
+            color: var(--green-deep);
+        }
+
+
+        .section-title p {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+
+        .info-text {
+            color: #5d6f68;
+            font-size: 13px;
+            line-height: 2;
+            margin-bottom: 25px;
+        }
+
+
+        .benefits {
+            display: grid;
+            gap: 13px;
+        }
+
+
+        .benefit {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 13px;
+            border-radius: 12px;
+            background: #f8fbf9;
+            border: 1px solid #edf3ef;
+        }
+
+
+        .benefit-icon {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 9px;
+            background: var(--green-light);
+            color: var(--green);
+            font-size: 13px;
+        }
+
+
+        .benefit strong {
+            display: block;
+            color: var(--green-deep);
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+
+        .benefit span {
+            display: block;
+            color: var(--muted);
+            font-size: 10px;
+            line-height: 1.7;
+        }
+
+
+        /* =========================
+           FORM CARD
+        ========================= */
+
+        .form-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: var(--shadow);
+        }
+
+
+        .form-header {
+            margin-bottom: 27px;
+        }
+
+
+        .form-header h2 {
+            color: var(--green-deep);
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+
+        .form-header p {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+
+        .form-group label {
+            color: #314a40;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+
+        .required {
+            color: #d85b5b;
+        }
+
+
+        .input,
+        .select,
+        .textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: #fbfdfc;
+            color: var(--text);
+            font-size: 12px;
+            outline: none;
+
+            transition:
+                border-color 0.2s ease,
+                box-shadow 0.2s ease,
+                background 0.2s ease;
+        }
+
+
+        .input,
+        .select {
+            height: 46px;
+            padding: 0 14px;
+        }
+
+
+        .textarea {
+            min-height: 115px;
+            padding: 12px 14px;
+            resize: vertical;
+        }
+
+
+        .input:focus,
+        .select:focus,
+        .textarea:focus {
+            border-color: var(--green);
+            background: #ffffff;
+
+            box-shadow:
+                0 0 0 3px rgba(22, 132, 91, 0.08);
+        }
+
+
+        .input::placeholder,
+        .textarea::placeholder {
+            color: #a1ada8;
+        }
+
+
+        /* =========================
+           TYPE OPTIONS
+        ========================= */
+
+        .type-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+
+        .type-option {
+            position: relative;
+        }
+
+
+        .type-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+
+        .type-option label {
+            min-height: 58px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 9px;
+            padding: 10px;
+
+            border: 1px solid var(--border);
+            border-radius: 11px;
+
+            background: #fbfdfc;
+            color: #62736d;
+
+            cursor: pointer;
+
+            font-size: 11px;
+            font-weight: 700;
+
+            transition: all 0.2s ease;
+        }
+
+
+        .type-option label i {
+            font-size: 16px;
+        }
+
+
+        .type-option input:checked + label {
+            border-color: var(--green);
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+
+        /* =========================
+           CONSENT
+        ========================= */
+
+        .consent-box {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+
+            padding: 14px;
+
+            border: 1px solid var(--border);
+            border-radius: 11px;
+
+            background: #fbfdfc;
+        }
+
+
+        .consent-box input {
+            width: 18px;
+            height: 18px;
+            margin-top: 3px;
+            accent-color: var(--green);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+
+        .consent-box label {
+            cursor: pointer;
+            color: #62736d;
+            font-size: 10px;
+            line-height: 1.8;
+        }
+
+
+        /* =========================
+           FORM MESSAGE
+        ========================= */
+
+        .form-message {
+            display: none;
+            margin-bottom: 20px;
+            padding: 15px 18px;
+            border-radius: 12px;
+            font-size: 11px;
+            line-height: 1.8;
+        }
+
+
+        .form-message.show {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+
+        .form-message.success {
+            background: #eaf7f1;
+            border: 1px solid #b9dfce;
+            color: #126342;
+        }
+
+
+        .form-message.error {
+            background: #fff1f1;
+            border: 1px solid #efc4c4;
+            color: #a13d3d;
+        }
+
+
+        .form-message i {
+            margin-top: 3px;
+        }
+
+
+        /* =========================
+           SUBMIT
+        ========================= */
+
+        .form-footer {
+            margin-top: 25px;
+            padding-top: 22px;
+            border-top: 1px solid var(--border);
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            gap: 15px;
+        }
+
+
+        .privacy-note {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+
+            color: #83908b;
+            font-size: 9px;
+        }
+
+
+        .privacy-note i {
+            color: var(--green);
+        }
+
+
+        .submit-btn {
+            min-height: 46px;
+
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            gap: 9px;
+            padding: 0 24px;
+
+            border: none;
+            border-radius: 11px;
+
+            background: var(--green);
+            color: #ffffff;
+
+            font-size: 12px;
+            font-weight: 800;
+
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 20px rgba(22, 132, 91, 0.18);
+
+            transition: all 0.25s ease;
+        }
+
+
+        .submit-btn:hover {
+            background: var(--green-dark);
+            transform: translateY(-2px);
+
+            box-shadow:
+                0 12px 25px rgba(22, 132, 91, 0.25);
+        }
+
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        .footer {
+            background: var(--green-deep);
+            color: rgba(255,255,255,0.75);
+            padding: 30px 25px;
+            text-align: center;
+        }
+
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+
+        .footer-logo img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
+
+        .footer-logo strong {
+            color: #ffffff;
+            font-size: 13px;
+        }
+
+
+        .footer p {
+            font-size: 10px;
+        }
+
+
+        .footer-line {
+            width: 45px;
+            height: 2px;
+            background: var(--gold);
+            margin: 13px auto;
+        }
+
+
+        /* =========================
+           BACK TO TOP
+        ========================= */
+
+        .back-to-top {
+            position: fixed;
+            bottom: 25px;
+            left: 25px;
+
+            width: 46px;
+            height: 46px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border: none;
+            border-radius: 50%;
+
+            background: var(--green);
+            color: #ffffff;
+
+            font-size: 16px;
+            cursor: pointer;
+
+            box-shadow:
+                0 8px 25px rgba(22, 132, 91, 0.25);
+
+            opacity: 0;
+            visibility: hidden;
+
+            transform: translateY(15px);
+
+            transition: all 0.25s ease;
+
+            z-index: 9999;
+        }
+
+
+        .back-to-top.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+
+        .back-to-top:hover {
+            background: var(--green-dark);
+            transform: translateY(-3px);
+        }
+
+
+        /* =========================
+           ENGLISH MODE
+        ========================= */
+
+        body.english .brand-text span {
+            text-align: left;
+        }
+
+
+        body.english .form-group label {
+            text-align: left;
+        }
+
+
+        body.english .consent-box {
+            direction: ltr;
+        }
+
+
+        body.english .privacy-note {
+            direction: ltr;
+        }
+
+
+        body.english .benefit {
+            direction: ltr;
+        }
+
+
+        body.english .section-title {
+            direction: ltr;
+        }
+
+
+        body.english .form-header {
+            text-align: left;
+        }
+
+
+        body.english .language-btn .lang-ar {
+            display: none;
+        }
+
+
+        body.english .language-btn .lang-en {
+            display: inline;
+        }
+
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 950px) {
+
+            .nav-links {
+                display: none;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-card {
+                order: 2;
+            }
+
+            .form-card {
+                order: 1;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .nav-inner {
+                padding: 0 16px;
+            }
+
+            .brand-text span {
+                display: none;
+            }
+
+            .brand-text strong {
+                font-size: 12px;
+            }
+
+            .brand-icon {
+                width: 44px;
+                height: 44px;
+            }
+
+            .nav-actions {
+                gap: 5px;
+            }
+
+            .nav-actions .nav-btn span {
+                display: none;
+            }
+
+            .nav-btn {
+                width: 40px;
+                height: 40px;
+                padding: 0;
+            }
+
+            .language-btn {
+                width: 42px;
+                min-width: 42px;
+            }
+
+            .hero {
+                min-height: 340px;
+            }
+
+            .hero-content {
+                padding: 50px 20px;
+            }
+
+            .hero h1 {
+                font-size: 29px;
+            }
+
+            .hero p {
+                font-size: 12px;
+            }
+
+            .main {
+                padding: 35px 15px 60px;
+            }
+
+            .form-card,
+            .info-card {
+                padding: 22px 18px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .type-options {
+                grid-template-columns: 1fr;
+            }
+
+            .form-footer {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .submit-btn {
+                width: 100%;
+            }
+
+            .back-to-top {
+                width: 42px;
+                height: 42px;
+                bottom: 18px;
+                left: 18px;
+            }
+
+        }
+.hero-logo {
+    width: 125px;
+    height: 125px;
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 28px;
+
+    padding: 12px;
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.18);
+
+    border: 2px solid rgba(255, 255, 255, 0.35);
+
+    animation: heroLogoFloat 4s ease-in-out infinite;
+}
+
+.hero-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+
+@keyframes heroLogoFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+
+}
+
+.volunteer-welcome-screen {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(22, 132, 91, 0.18),
+            transparent 45%
+        ),
+        linear-gradient(
+            135deg,
+            #083d2a 0%,
+            #0d6042 50%,
+            #16845b 100%
+        );
+    z-index: 999999;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .7s ease, visibility .7s ease;
+}
+
+.volunteer-welcome-screen.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.volunteer-welcome-content {
+    position: relative;
+    z-index: 2;
+    width: min(90%, 650px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+    animation: volunteerWelcomeContent .9s ease both;
+}
+
+.volunteer-welcome-logo {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.10);
+    border: 1px solid rgba(255,255,255,.25);
+    box-shadow:
+        0 0 0 12px rgba(255,255,255,.04),
+        0 25px 70px rgba(0,0,0,.22);
+    backdrop-filter: blur(10px);
+    animation: volunteerWelcomeLogo 2.8s ease-in-out infinite;
+}
+
+.volunteer-welcome-logo img {
+    width: 105px;
+    height: 105px;
+    object-fit: contain;
+}
+
+.volunteer-welcome-line {
+    width: 65px;
+    height: 3px;
+    border-radius: 50px;
+    background: #fff;
+    margin-bottom: 25px;
+}
+
+.volunteer-welcome-content h1 {
+    margin: 0 0 14px;
+    font-size: clamp(28px, 5vw, 48px);
+    line-height: 1.3;
+    font-weight: 800;
+}
+
+.volunteer-welcome-content p {
+    margin: 0;
+    font-size: clamp(15px, 2vw, 20px);
+    line-height: 1.8;
+    color: rgba(255,255,255,.88);
+}
+
+.volunteer-welcome-content small {
+    margin-top: 18px;
+    font-size: 12px;
+    color: rgba(255,255,255,.65);
+}
+
+.volunteer-welcome-loader {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 32px;
+}
+
+.volunteer-welcome-loader span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    animation: volunteerLoader 1.2s ease-in-out infinite;
+}
+
+.volunteer-welcome-loader span:nth-child(2) {
+    animation-delay: .15s;
+}
+
+.volunteer-welcome-loader span:nth-child(3) {
+    animation-delay: .3s;
+}
+
+.volunteer-welcome-glow {
+    position: absolute;
+    width: 420px;
+    height: 420px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.08);
+    filter: blur(80px);
+    pointer-events: none;
+    animation: volunteerGlow 5s ease-in-out infinite;
+}
+
+@keyframes volunteerWelcomeContent {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes volunteerWelcomeLogo {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+
+    50% {
+        transform: translateY(-8px) scale(1.03);
+    }
+}
+
+@keyframes volunteerLoader {
+    0%, 80%, 100% {
+        opacity: .35;
+        transform: translateY(0);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes volunteerGlow {
+    0%, 100% {
+        transform: scale(1);
+        opacity: .6;
+    }
+
+    50% {
+        transform: scale(1.25);
+        opacity: .9;
+    }
+}
+
+@media (max-width: 600px) {
+
+    .volunteer-welcome-content {
+        width: 90%;
+    }
+
+    .volunteer-welcome-logo {
+        width: 125px;
+        height: 125px;
+    }
+
+    .volunteer-welcome-logo img {
+        width: 88px;
+        height: 88px;
+    }
+
+    .volunteer-welcome-content h1 {
+        font-size: 27px;
+    }
+
+    .volunteer-welcome-content p {
+        font-size: 14px;
+    }
+
+    .volunteer-welcome-glow {
+        width: 280px;
+        height: 280px;
+    }
+}
+
+    </style>
+
+</head>
+
+
+<body>
+    
+<div class="volunteer-welcome-screen" id="volunteerWelcome">
+
+    <div class="volunteer-welcome-glow"></div>
+
+    <div class="volunteer-welcome-content">
+
+        <div class="volunteer-welcome-logo">
+            <img
+                src="images/logo.png"
+                alt="Al-Ashraf Organization"
+            >
+        </div>
+
+        <div class="volunteer-welcome-line"></div>
+
+        <h1>أهلاً بك في منظمة الأشراف للتنمية</h1>
+
+        <p>معًا نصنع أثرًا حقيقيًا في مجتمعنا</p>
+
+        <div class="volunteer-welcome-loader">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <small>التطوع والتدريب</small>
+
+    </div>
+
+</div>
+
+    <!-- =========================
+         NAVBAR
+    ========================= -->
+
+    <header class="navbar">
+
+        <div class="nav-inner">
+
+
+            <a href="index.html" class="brand">
+
+                <div class="brand-icon">
+
+                    <img
+                        src="images/logo.png"
+                        alt="Al-Ashraf Development Organization">
+
+                </div>
+
+                <div class="brand-text">
+
+                    <strong
+                        data-ar="منظمة الأشراف للتنمية"
+                        data-en="Al-Ashraf Development Organization">
+
+                        منظمة الأشراف للتنمية
+
+                    </strong>
+
+                    <span>
+                        AL-ASHRAF DEVELOPMENT ORGANIZATION
+                    </span>
+
+                </div>
+
+            </a>
+
+
+
+            <nav class="nav-links">
+
+                <a
+                    href="index.html"
+                    class="nav-link"
+                    data-ar="الرئيسية"
+                    data-en="Home">
+
+                    الرئيسية
+
+                </a>
+
+
+                <a
+                    href="index.html#about"
+                    class="nav-link"
+                    data-ar="من نحن"
+                    data-en="About Us">
+
+                    من نحن
+
+                </a>
+
+
+                <a
+                    href="index.html#projects"
+                    class="nav-link"
+                    data-ar="مشاريعنا"
+                    data-en="Our Projects">
+
+                    مشاريعنا
+
+                </a>
+
+
+                <a
+                    href="index.html#contact"
+                    class="nav-link"
+                    data-ar="تواصل معنا"
+                    data-en="Contact Us">
+
+                    تواصل معنا
+
+                </a>
+
+            </nav>
+
+
+
+            <div class="nav-actions">
+
+
+                <!-- LANGUAGE -->
+
+                <button
+                    type="button"
+                    class="nav-btn language-btn"
+                    id="languageToggle"
+                    aria-label="Change language">
+
+                    <i class="fa-solid fa-language"></i>
+
+                    <span class="lang-ar">
+                        English
+                    </span>
+
+                    <span class="lang-en">
+                        العربية
+                    </span>
+
+                </button>
+
+
+
+                <!-- HOME -->
+
+                <a
+                    href="index.html"
+                    class="nav-btn">
+
+                    <i class="fa-solid fa-house"></i>
+
+                    <span
+                        data-ar="الرئيسية"
+                        data-en="Home">
+
+                        الرئيسية
+
+                    </span>
+
+                </a>
+
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================
+         HERO
+    ========================= -->
+ <section class="hero">
+
+    <div class="hero-content">
+
+        <!-- Organization Logo -->
+        <div class="hero-logo">
+            <img
+                src="images/logo.png"
+                alt="شعار منظمة الأشراف للتنمية">
+        </div>
+
+        
+
+        <h1
+            data-ar="انضم إلى مسيرة العطاء"
+            data-en="Join Our Journey of Giving">
+
+            انضم إلى مسيرة العطاء
+
+        </h1>
+
+        <p
+            data-ar="قدم طلبك للانضمام إلى منظمة الأشراف للتنمية كمتطوع أو متدرب، وساهم معنا في خدمة المجتمع وتحقيق التنمية."
+            data-en="Apply to join Al-Ashraf Development Organization as a volunteer or trainee and contribute with us to serving the community and achieving development.">
+
+            قدم طلبك للانضمام إلى منظمة الأشراف للتنمية
+            كمتطوع أو متدرب، وساهم معنا في خدمة المجتمع
+            وتحقيق التنمية.
+
+        </p>
+
+        <div class="hero-line"></div>
+
+    </div>
+
+</section>
+
+
+
+    <!-- =========================
+         MAIN
+    ========================= -->
+
+    <main class="main">
+
+        <div class="content-grid">
+
+
+            <!-- =========================
+                 INFORMATION
+            ========================= -->
+
+            <div class="info-card">
+
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+
+                        <i class="fa-solid fa-circle-info"></i>
+
+                    </div>
+
+
+                    <div>
+
+                        <h2
+                            data-ar="لماذا تنضم إلينا؟"
+                            data-en="Why Join Us?">
+
+                            لماذا تنضم إلينا؟
+
+                        </h2>
+
+
+                        <p
+                            data-ar="كن جزءًا من مجتمع يصنع الفرق"
+                            data-en="Be part of a community that makes a difference">
+
+                            كن جزءًا من مجتمع يصنع الفرق
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <p
+                    class="info-text"
+                    data-ar="نؤمن بأن العمل التطوعي والتدريب فرصة حقيقية للتعلم والمساهمة في خدمة المجتمع. يمكنك من خلال المنظمة تطوير مهاراتك والمشاركة في المبادرات والبرامج المختلفة."
+                    data-en="We believe that volunteering and training are real opportunities to learn and contribute to the community. Through the organization, you can develop your skills and participate in various initiatives and programs.">
+
+                    نؤمن بأن العمل التطوعي والتدريب فرصة
+                    حقيقية للتعلم والمساهمة في خدمة المجتمع.
+                    يمكنك من خلال المنظمة تطوير مهاراتك
+                    والمشاركة في المبادرات والبرامج المختلفة.
+
+                </p>
+
+
+
+                <div class="benefits">
+
+
+                    <div class="benefit">
+
+                        <div class="benefit-icon">
+
+                            <i class="fa-solid fa-users"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong
+                                data-ar="العمل ضمن فريق"
+                                data-en="Teamwork">
+
+                                العمل ضمن فريق
+
+                            </strong>
+
+                            <span
+                                data-ar="شارك مع فريق يعمل لخدمة المجتمع."
+                                data-en="Work with a team dedicated to serving the community.">
+
+                                شارك مع فريق يعمل لخدمة المجتمع.
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="benefit">
+
+                        <div class="benefit-icon">
+
+                            <i class="fa-solid fa-graduation-cap"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong
+                                data-ar="تطوير المهارات"
+                                data-en="Skill Development">
+
+                                تطوير المهارات
+
+                            </strong>
+
+                            <span
+                                data-ar="اكتسب خبرات عملية ومهارات جديدة."
+                                data-en="Gain practical experience and develop new skills.">
+
+                                اكتسب خبرات عملية ومهارات جديدة.
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="benefit">
+
+                        <div class="benefit-icon">
+
+                            <i class="fa-solid fa-hand-holding-heart"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong
+                                data-ar="خدمة المجتمع"
+                                data-en="Community Service">
+
+                                خدمة المجتمع
+
+                            </strong>
+
+                            <span
+                                data-ar="ساهم في مبادرات وبرامج تخدم المجتمع."
+                                data-en="Contribute to initiatives and programs that serve the community.">
+
+                                ساهم في مبادرات وبرامج تخدم المجتمع.
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="benefit">
+
+                        <div class="benefit-icon">
+
+                            <i class="fa-solid fa-certificate"></i>
+
+                        </div>
+
+                        <div>
+
+                            <strong
+                                data-ar="توثيق المشاركة"
+                                data-en="Participation Recognition">
+
+                                توثيق المشاركة
+
+                            </strong>
+
+                            <span
+                                data-ar="يمكن توثيق مشاركاتك وإنجازاتك ضمن المنظمة."
+                                data-en="Your participation and achievements can be documented within the organization.">
+
+                                يمكن توثيق مشاركاتك وإنجازاتك ضمن المنظمة.
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =========================
+                 FORM
+            ========================= -->
+
+            <div class="form-card">
+
+
+                <div class="form-header">
+
+                    <h2
+                        data-ar="طلب تطوع أو تدريب"
+                        data-en="Volunteer or Training Application">
+
+                        طلب تطوع أو تدريب
+
+                    </h2>
+
+
+                    <p
+                        data-ar="يرجى تعبئة البيانات التالية بدقة."
+                        data-en="Please fill in the following information accurately.">
+
+                        يرجى تعبئة البيانات التالية بدقة.
+
+                    </p>
+
+                </div>
+
+
+
+                <!-- MESSAGE -->
+
+                <div
+                    id="formMessage"
+                    class="form-message">
+
+                </div>
+
+
+
+                <form id="volunteerForm">
+
+
+                    <div class="form-grid">
+
+
+                        <!-- FULL NAME -->
+
+                        <div class="form-group full">
+
+                            <label for="fullName">
+
+                                <span
+                                    data-ar="الاسم الكامل"
+                                    data-en="Full Name">
+
+                                    الاسم الكامل
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="fullName"
+                                class="input"
+                                placeholder="اكتب اسمك الكامل"
+                                data-placeholder-ar="اكتب اسمك الكامل"
+                                data-placeholder-en="Enter your full name"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- EMAIL -->
+
+                        <div class="form-group">
+
+                            <label for="email">
+
+                                <span
+                                    data-ar="البريد الإلكتروني"
+                                    data-en="Email Address">
+
+                                    البريد الإلكتروني
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <input
+                                type="email"
+                                id="email"
+                                class="input"
+                                placeholder="example@email.com"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- PHONE -->
+
+                        <div class="form-group">
+
+                            <label for="phone">
+
+                                <span
+                                    data-ar="رقم الهاتف"
+                                    data-en="Phone Number">
+
+                                    رقم الهاتف
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <input
+                                type="tel"
+                                id="phone"
+                                class="input"
+                                placeholder="مثال: 249XXXXXXXXX"
+                                data-placeholder-ar="مثال: 249XXXXXXXXX"
+                                data-placeholder-en="Example: 249XXXXXXXXX"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- ANOTHER PHONE -->
+
+                        <div class="form-group">
+
+                            <label for="anotherPhone">
+
+                                <span
+                                    data-ar="رقم آخر إن وجد"
+                                    data-en="Another Number (if any)">
+
+                                    رقم آخر إن وجد
+
+                                </span>
+
+                            </label>
+
+
+                            <input
+                                type="tel"
+                                id="anotherPhone"
+                                class="input"
+                                placeholder="رقم هاتف إضافي (اختياري)"
+                                data-placeholder-ar="رقم هاتف إضافي (اختياري)"
+                                data-placeholder-en="Additional phone number (optional)">
+
+                        </div>
+
+
+
+                        <!-- AGE -->
+
+                        <div class="form-group">
+
+                            <label for="age">
+
+                                <span
+                                    data-ar="العمر"
+                                    data-en="Age">
+
+                                    العمر
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <input
+                                type="number"
+                                id="age"
+                                class="input"
+                                min="10"
+                                max="100"
+                                placeholder="مثال: 23"
+                                data-placeholder-ar="مثال: 23"
+                                data-placeholder-en="Example: 23"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- GENDER -->
+
+                        <div class="form-group">
+
+                            <label for="gender">
+
+                                <span
+                                    data-ar="الجنس"
+                                    data-en="Gender">
+
+                                    الجنس
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <select
+                                id="gender"
+                                class="select"
+                                required>
+
+                                <option
+                                    value=""
+                                    data-ar="اختر الجنس"
+                                    data-en="Select gender">
+
+                                    اختر الجنس
+
+                                </option>
+
+                                <option
+                                    value="male"
+                                    data-ar="ذكر"
+                                    data-en="Male">
+
+                                    ذكر
+
+                                </option>
+
+                                <option
+                                    value="female"
+                                    data-ar="أنثى"
+                                    data-en="Female">
+
+                                    أنثى
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- ADDRESS -->
+
+                        <div class="form-group full">
+
+                            <label for="address">
+
+                                <span
+                                    data-ar="السكن"
+                                    data-en="Address">
+
+                                    السكن
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="address"
+                                class="input"
+                                placeholder="المدينة / المنطقة / الحي"
+                                data-placeholder-ar="المدينة / المنطقة / الحي"
+                                data-placeholder-en="City / Area / Neighborhood"
+                                required>
+
+                        </div>
+
+
+
+                        <!-- EDUCATION -->
+
+                        <div class="form-group">
+
+                            <label for="education">
+
+                                <span
+                                    data-ar="المستوى التعليمي"
+                                    data-en="Education Level">
+
+                                    المستوى التعليمي
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <select
+                                id="education"
+                                class="select"
+                                required>
+
+                                <option
+                                    value=""
+                                    data-ar="اختر المستوى التعليمي"
+                                    data-en="Select education level">
+
+                                    اختر المستوى التعليمي
+
+                                </option>
+
+                                <option
+                                    value="high_school"
+                                    data-ar="طالب ثانوي"
+                                    data-en="High School Student">
+
+                                    طالب ثانوي
+
+                                </option>
+
+                                <option
+                                    value="secondary_completed"
+                                    data-ar="ثانوي"
+                                    data-en="Secondary School">
+
+                                    ثانوي
+
+                                </option>
+
+                                <option
+                                    value="university_student"
+                                    data-ar="طالب جامعي"
+                                    data-en="University Student">
+
+                                    طالب جامعي
+
+                                </option>
+
+                                <option
+                                    value="bachelor"
+                                    data-ar="بكالوريوس"
+                                    data-en="Bachelor's Degree">
+
+                                    بكالوريوس
+
+                                </option>
+
+                                <option
+                                    value="master"
+                                    data-ar="ماجستير"
+                                    data-en="Master's Degree">
+
+                                    ماجستير
+
+                                </option>
+
+                                <option
+                                    value="phd"
+                                    data-ar="دكتوراه"
+                                    data-en="PhD">
+
+                                    دكتوراه
+
+                                </option>
+
+                                <option
+                                    value="other"
+                                    data-ar="أخرى"
+                                    data-en="Other">
+
+                                    أخرى
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- UNIVERSITY SPECIALIZATION -->
+
+                        <div class="form-group">
+
+                            <label for="specialization">
+
+                                <span
+                                    data-ar="التخصص الجامعي"
+                                    data-en="University Specialization">
+
+                                    التخصص الجامعي
+
+                                </span>
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="specialization"
+                                class="input"
+                                placeholder="اكتب تخصصك الجامعي إن وجد"
+                                data-placeholder-ar="اكتب تخصصك الجامعي إن وجد"
+                                data-placeholder-en="Enter your university specialization if applicable">
+
+                        </div>
+
+
+
+                        <!-- HIGH SCHOOL SPECIALIZATION -->
+
+                        <div class="form-group full">
+
+                            <label for="highSchoolSpecialization">
+
+                                <span
+                                    data-ar="لو كنت طالب ثانوي ما هو تخصصك؟"
+                                    data-en="If you are a high school student, what is your specialization?">
+
+                                    لو كنت طالب ثانوي ما هو تخصصك؟
+
+                                </span>
+
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="highSchoolSpecialization"
+                                class="input"
+                                placeholder="اكتب تخصصك في المرحلة الثانوية إن وجد"
+                                data-placeholder-ar="اكتب تخصصك في المرحلة الثانوية إن وجد"
+                                data-placeholder-en="Enter your high school specialization if applicable">
+
+                        </div>
+
+
+
+                        <!-- VOLUNTEER EXPERIENCE -->
+
+                        <div class="form-group full">
+
+                            <label>
+
+                                <span
+                                    data-ar="هل لديك خبرة سابقة في العمل التطوعي؟"
+                                    data-en="Do you have previous volunteer experience?">
+
+                                    هل لديك خبرة سابقة في العمل التطوعي؟
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <div class="type-options">
+
+
+                                <div class="type-option">
+
+                                    <input
+                                        type="radio"
+                                        id="experienceYes"
+                                        name="volunteerExperience"
+                                        value="yes"
+                                        required>
+
+                                    <label for="experienceYes">
+
+                                        <i class="fa-solid fa-circle-check"></i>
+
+                                        <span
+                                            data-ar="نعم"
+                                            data-en="Yes">
+
+                                            نعم
+
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+
+                                <div class="type-option">
+
+                                    <input
+                                        type="radio"
+                                        id="experienceNo"
+                                        name="volunteerExperience"
+                                        value="no">
+
+                                    <label for="experienceNo">
+
+                                        <i class="fa-solid fa-circle-xmark"></i>
+
+                                        <span
+                                            data-ar="لا"
+                                            data-en="No">
+
+                                            لا
+
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- EXPERIENCE DETAILS -->
+
+                        <div class="form-group full">
+
+                            <label for="experienceDetails">
+
+                                <span
+                                    data-ar="إذا كانت إجابتك نعم فاذكرها"
+                                    data-en="If yes, please state your experience">
+
+                                    إذا كانت إجابتك نعم فاذكرها
+
+                                </span>
+
+                            </label>
+
+
+                            <textarea
+                                id="experienceDetails"
+                                class="textarea"
+                                placeholder="اذكر باختصار خبراتك السابقة في العمل التطوعي"
+                                data-placeholder-ar="اذكر باختصار خبراتك السابقة في العمل التطوعي"
+                                data-placeholder-en="Briefly describe your previous volunteer experience"></textarea>
+
+                        </div>
+
+
+
+                        <!-- APPLICATION TYPE -->
+
+                        <div class="form-group full">
+
+                            <label>
+
+                                <span
+                                    data-ar="ما هو نوع طلب التقديم؟"
+                                    data-en="What type of application is this?">
+
+                                    ما هو نوع طلب التقديم؟
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <div class="type-options">
+
+
+                                <div class="type-option">
+
+                                    <input
+                                        type="radio"
+                                        id="applicationVolunteer"
+                                        name="applicationType"
+                                        value="volunteer"
+                                        checked
+                                        required>
+
+                                    <label for="applicationVolunteer">
+
+                                        <i class="fa-solid fa-hand-holding-heart"></i>
+
+                                        <span
+                                            data-ar="طلب تطوع"
+                                            data-en="Volunteer Application">
+
+                                            طلب تطوع
+
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+
+                                <div class="type-option">
+
+                                    <input
+                                        type="radio"
+                                        id="applicationTraining"
+                                        name="applicationType"
+                                        value="training">
+
+                                    <label for="applicationTraining">
+
+                                        <i class="fa-solid fa-graduation-cap"></i>
+
+                                        <span
+                                            data-ar="طلب تدريب"
+                                            data-en="Training Application">
+
+                                            طلب تدريب
+
+                                        </span>
+
+                                    </label>
+
+                                </div>
+
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- AVAILABILITY -->
+
+                        <div class="form-group full">
+
+                            <label for="availability">
+
+                                <span
+                                    data-ar="مدى توفر وقتك"
+                                    data-en="Your Availability">
+
+                                    مدى توفر وقتك
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <select
+                                id="availability"
+                                class="select"
+                                required>
+
+                                <option
+                                    value=""
+                                    data-ar="اختر مدى توفر وقتك"
+                                    data-en="Select your availability">
+
+                                    اختر مدى توفر وقتك
+
+                                </option>
+
+                                <option
+                                    value="full_time"
+                                    data-ar="متفرغ"
+                                    data-en="Full-time">
+
+                                    متفرغ
+
+                                </option>
+
+                                <option
+                                    value="part_time"
+                                    data-ar="متفرغ جزئيًا"
+                                    data-en="Part-time">
+
+                                    متفرغ جزئيًا
+
+                                </option>
+
+                                <option
+                                    value="weekends"
+                                    data-ar="عطلة نهاية الأسبوع"
+                                    data-en="Weekends">
+
+                                    عطلة نهاية الأسبوع
+
+                                </option>
+
+                                <option
+                                    value="flexible"
+                                    data-ar="حسب الحاجة"
+                                    data-en="As needed">
+
+                                    حسب الحاجة
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- PREFERRED CONTACT -->
+
+                        <div class="form-group full">
+
+                            <label for="preferredContact">
+
+                                <span
+                                    data-ar="طريقة التواصل المفضلة"
+                                    data-en="Preferred Contact Method">
+
+                                    طريقة التواصل المفضلة
+
+                                </span>
+
+                                <span class="required">*</span>
+
+                            </label>
+
+
+                            <select
+                                id="preferredContact"
+                                class="select"
+                                required>
+
+                                <option
+                                    value=""
+                                    data-ar="اختر طريقة التواصل"
+                                    data-en="Select contact method">
+
+                                    اختر طريقة التواصل
+
+                                </option>
+
+                                <option
+                                    value="phone"
+                                    data-ar="اتصال هاتفي"
+                                    data-en="Phone Call">
+
+                                    اتصال هاتفي
+
+                                </option>
+
+                                <option
+                                    value="whatsapp"
+                                    data-ar="WhatsApp"
+                                    data-en="WhatsApp">
+
+                                    WhatsApp
+
+                                </option>
+
+                                <option
+                                    value="email"
+                                    data-ar="البريد الإلكتروني"
+                                    data-en="Email">
+
+                                    البريد الإلكتروني
+
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+
+                        <!-- CONSENT -->
+
+                        <div class="form-group full">
+
+                            <div class="consent-box">
+
+                                <input
+                                    type="checkbox"
+                                    id="consent"
+                                    required>
+
+
+                                <label for="consent">
+
+                                    <span
+                                        data-ar="أقر بأن المعلومات التي قدمتها صحيحة، وأوافق على استخدام بياناتي لأغراض مراجعة طلب التطوع أو التدريب والتواصل معي بشأن الطلب."
+                                        data-en="I confirm that the information provided is accurate and agree to the use of my information for reviewing my volunteer or training application and contacting me regarding my application.">
+
+                                        أقر بأن المعلومات التي قدمتها صحيحة،
+                                        وأوافق على استخدام بياناتي لأغراض مراجعة
+                                        طلب التطوع أو التدريب والتواصل معي بشأن الطلب.
+
+                                    </span>
+
+                                </label>
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <!-- FOOTER -->
+
+                    <div class="form-footer">
+
+
+                        <div class="privacy-note">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <span
+                                data-ar="بياناتك ستستخدم لأغراض مراجعة الطلب فقط."
+                                data-en="Your information will only be used to review your application.">
+
+                                بياناتك ستستخدم لأغراض مراجعة الطلب فقط.
+
+                            </span>
+
+                        </div>
+
+
+
+                        <button
+                            type="submit"
+                            class="submit-btn"
+                            id="submitButton">
+
+                            <i class="fa-solid fa-paper-plane"></i>
+
+                            <span
+                                data-ar="إرسال الطلب"
+                                data-en="Submit Application">
+
+                                إرسال الطلب
+
+                            </span>
+
+                        </button>
+
+
+                    </div>
+
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+
+    <!-- =========================
+         FOOTER
+    ========================= -->
+
+    <footer class="footer">
+
+        <div class="footer-logo">
+
+            <img
+                src="images/logo.png"
+                alt="Al-Ashraf Development Organization">
+
+            <strong
+                data-ar="منظمة الأشراف للتنمية"
+                data-en="Al-Ashraf Development Organization">
+
+                منظمة الأشراف للتنمية
+
+            </strong>
+
+        </div>
+
+
+        <div class="footer-line"></div>
+
+
+        <p
+            data-ar="عطاء بلا حدود لخدمة المجتمع وتحقيق التنمية"
+            data-en="Unlimited giving for community service and development">
+
+            عطاء بلا حدود لخدمة المجتمع وتحقيق التنمية
+
+        </p>
+
+    </footer>
+
+
+
+    <!-- BACK TO TOP -->
+
+    <button
+        type="button"
+        id="backToTop"
+        class="back-to-top"
+        aria-label="Back to top">
+
+        <i class="fa-solid fa-arrow-up"></i>
+
+    </button>
+
+
+
+    <script>
+
+        /* =========================================
+           SUPABASE
+        ========================================= */
+
+        const SUPABASE_URL =
+            "https://hoivwjarrxxvieboujzy.supabase.co";
+
+
+        const SUPABASE_ANON_KEY =
+            "sb_publishable_1uf_RSuk4F75Sbtt7nfc5Q_DmjTCWhO";
+
+
+        const {
+            createClient
+        } = window.supabase;
+
+
+        const supabaseClient =
+            createClient(
+                SUPABASE_URL,
+                SUPABASE_ANON_KEY
+            );
+
+
+
+        /* =========================================
+           LANGUAGE SYSTEM
+        ========================================= */
+
+        let currentLanguage =
+            localStorage.getItem(
+                "alashraf-language"
+            ) || "ar";
+
+
+        const languageToggle =
+            document.getElementById(
+                "languageToggle"
+            );
+
+
+        function applyLanguage(language) {
+
+            currentLanguage = language;
+
+
+            localStorage.setItem(
+                "alashraf-language",
+                language
+            );
+
+
+            document.documentElement.lang =
+                language;
+
+
+            document.documentElement.dir =
+                language === "ar"
+                    ? "rtl"
+                    : "ltr";
+
+
+            document.body.classList.toggle(
+                "english",
+                language === "en"
+            );
+
+
+            /* -----------------------------
+               NORMAL TEXT
+            ----------------------------- */
+
+            document
+                .querySelectorAll("[data-ar][data-en]")
+                .forEach(function (element) {
+
+                    element.textContent =
+                        language === "ar"
+                            ? element.dataset.ar
+                            : element.dataset.en;
+
+                });
+
+
+            /* -----------------------------
+               PLACEHOLDERS
+            ----------------------------- */
+
+            document
+                .querySelectorAll(
+                    "[data-placeholder-ar][data-placeholder-en]"
+                )
+                .forEach(function (element) {
+
+                    element.placeholder =
+                        language === "ar"
+                            ? element.dataset.placeholderAr
+                            : element.dataset.placeholderEn;
+
+                });
+
+
+            /* -----------------------------
+               SELECT OPTIONS
+            ----------------------------- */
+
+            document
+                .querySelectorAll(
+                    "option[data-ar][data-en]"
+                )
+                .forEach(function (option) {
+
+                    option.textContent =
+                        language === "ar"
+                            ? option.dataset.ar
+                            : option.dataset.en;
+
+                });
+
+
+            /* -----------------------------
+               TITLE
+            ----------------------------- */
+
+            document.title =
+                language === "ar"
+                    ? "تقديم طلب تطوع أو تدريب | منظمة الأشراف للتنمية"
+                    : "Volunteer or Training Application | Al-Ashraf Development Organization";
+
+        }
+
+
+        languageToggle.addEventListener(
+            "click",
+            function () {
+
+                const newLanguage =
+                    currentLanguage === "ar"
+                        ? "en"
+                        : "ar";
+
+
+                applyLanguage(
+                    newLanguage
+                );
+
+            }
+        );
+
+
+        applyLanguage(
+            currentLanguage
+        );
+
+
+
+        /* =========================================
+           BACK TO TOP
+        ========================================= */
+
+        const backToTop =
+            document.getElementById(
+                "backToTop"
+            );
+
+
+        window.addEventListener(
+            "scroll",
+            function () {
+
+                if (window.scrollY > 300) {
+
+                    backToTop.classList.add(
+                        "show"
+                    );
+
+                } else {
+
+                    backToTop.classList.remove(
+                        "show"
+                    );
+
+                }
+
+            }
+        );
+
+
+        backToTop.addEventListener(
+            "click",
+            function () {
+
+                window.scrollTo({
+
+                    top: 0,
+
+                    behavior: "smooth"
+
+                });
+
+            }
+        );
+
+
+
+        /* =========================================
+           FORM ELEMENTS
+        ========================================= */
+
+        const volunteerForm =
+            document.getElementById(
+                "volunteerForm"
+            );
+
+
+        const submitButton =
+            document.getElementById(
+                "submitButton"
+            );
+
+
+        const formMessage =
+            document.getElementById(
+                "formMessage"
+            );
+
+
+
+        /* =========================================
+           MESSAGE
+        ========================================= */
+
+        function showMessage(
+            type,
+            arMessage,
+            enMessage
+        ) {
+
+            const message =
+                currentLanguage === "ar"
+                    ? arMessage
+                    : enMessage;
+
+
+            formMessage.className =
+                "form-message show " + type;
+
+
+            if (type === "success") {
+
+                formMessage.innerHTML = `
+                    <i class="fa-solid fa-circle-check"></i>
+                    <div>${message}</div>
+                `;
+
+            } else {
+
+                formMessage.innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <div>${message}</div>
+                `;
+
+            }
+
+
+            formMessage.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+        }
+
+
+
+        /* =========================================
+           SUBMIT APPLICATION
+        ========================================= */
+
+        volunteerForm.addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                /* -----------------------------
+                   GET VALUES
+                ----------------------------- */
+
+                const fullName =
+                    document
+                        .getElementById("fullName")
+                        .value
+                        .trim();
+
+
+                const email =
+                    document
+                        .getElementById("email")
+                        .value
+                        .trim();
+
+
+                const phone =
+                    document
+                        .getElementById("phone")
+                        .value
+                        .trim();
+
+
+                const anotherPhone =
+                    document
+                        .getElementById("anotherPhone")
+                        .value
+                        .trim();
+
+
+                const age =
+                    document
+                        .getElementById("age")
+                        .value;
+
+
+                const gender =
+                    document
+                        .getElementById("gender")
+                        .value;
+
+
+                const address =
+                    document
+                        .getElementById("address")
+                        .value
+                        .trim();
+
+
+                const education =
+                    document
+                        .getElementById("education")
+                        .value;
+
+
+                const specialization =
+                    document
+                        .getElementById("specialization")
+                        .value
+                        .trim();
+
+
+                const highSchoolSpecialization =
+                    document
+                        .getElementById(
+                            "highSchoolSpecialization"
+                        )
+                        .value
+                        .trim();
+
+
+                const experienceRadio =
+                    document.querySelector(
+                        'input[name="volunteerExperience"]:checked'
+                    );
+
+
+                const volunteerExperience =
+                    experienceRadio
+                        ? experienceRadio.value
+                        : "";
+
+
+                const experienceDetails =
+                    document
+                        .getElementById(
+                            "experienceDetails"
+                        )
+                        .value
+                        .trim();
+
+
+                const applicationTypeRadio =
+                    document.querySelector(
+                        'input[name="applicationType"]:checked'
+                    );
+
+
+                const applicationType =
+                    applicationTypeRadio
+                        ? applicationTypeRadio.value
+                        : "";
+
+
+                const availability =
+                    document
+                        .getElementById(
+                            "availability"
+                        )
+                        .value;
+
+
+                const preferredContact =
+                    document
+                        .getElementById(
+                            "preferredContact"
+                        )
+                        .value;
+
+
+                const consent =
+                    document
+                        .getElementById(
+                            "consent"
+                        )
+                        .checked;
+
+
+
+                /* =================================
+                   VALIDATION
+                ================================= */
+
+
+                if (!fullName) {
+
+                    showMessage(
+                        "error",
+                        "يرجى كتابة الاسم الكامل.",
+                        "Please enter your full name."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!email) {
+
+                    showMessage(
+                        "error",
+                        "يرجى كتابة البريد الإلكتروني.",
+                        "Please enter your email address."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!phone) {
+
+                    showMessage(
+                        "error",
+                        "يرجى كتابة رقم الهاتف.",
+                        "Please enter your phone number."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!age) {
+
+                    showMessage(
+                        "error",
+                        "يرجى إدخال العمر.",
+                        "Please enter your age."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!gender) {
+
+                    showMessage(
+                        "error",
+                        "يرجى اختيار الجنس.",
+                        "Please select your gender."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!address) {
+
+                    showMessage(
+                        "error",
+                        "يرجى كتابة مكان السكن.",
+                        "Please enter your address."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!education) {
+
+                    showMessage(
+                        "error",
+                        "يرجى اختيار المستوى التعليمي.",
+                        "Please select your education level."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!volunteerExperience) {
+
+                    showMessage(
+                        "error",
+                        "يرجى تحديد ما إذا كانت لديك خبرة سابقة في العمل التطوعي.",
+                        "Please indicate whether you have previous volunteer experience."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!applicationType) {
+
+                    showMessage(
+                        "error",
+                        "يرجى اختيار نوع الطلب.",
+                        "Please select the application type."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!availability) {
+
+                    showMessage(
+                        "error",
+                        "يرجى تحديد مدى توفر وقتك.",
+                        "Please select your availability."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!preferredContact) {
+
+                    showMessage(
+                        "error",
+                        "يرجى اختيار طريقة التواصل المفضلة.",
+                        "Please select your preferred contact method."
+                    );
+
+                    return;
+
+                }
+
+
+                if (!consent) {
+
+                    showMessage(
+                        "error",
+                        "يجب الموافقة على استخدام البيانات قبل إرسال الطلب.",
+                        "You must agree to the use of your information before submitting the application."
+                    );
+
+                    return;
+
+                }
+
+
+
+                /* =================================
+                   DISABLE BUTTON
+                ================================= */
+
+                submitButton.disabled = true;
+
+
+                submitButton.innerHTML = `
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <span>
+                        ${
+                            currentLanguage === "ar"
+                                ? "جاري إرسال الطلب..."
+                                : "Submitting..."
+                        }
+                    </span>
+                `;
+
+
+                formMessage.className =
+                    "form-message";
+
+
+
+                try {
+
+
+                    /* =================================
+                       INSERT INTO SUPABASE
+                    ================================= */
+
+                    const {
+                        data,
+                        error
+                    } = await supabaseClient
+                        .from(
+                            "volunteer_applications"
+                        )
+                        .insert({
+
+                            full_name:
+                                fullName,
+
+                            phone:
+                                phone,
+
+                            email:
+                                email,
+
+                            another_phone:
+                                anotherPhone || null,
+
+                            age:
+                                Number(age),
+
+                            gender:
+                                gender,
+
+                            address:
+                                address,
+
+                            education:
+                                education,
+
+                            specialization:
+                                specialization || null,
+
+                            high_school_specialization:
+                                highSchoolSpecialization || null,
+
+                            volunteer_experience:
+                                volunteerExperience,
+
+                            experience_details:
+                                experienceDetails || null,
+
+                            application_type:
+                                applicationType,
+
+                            availability:
+                                availability,
+
+                            preferred_contact:
+                                preferredContact,
+
+                            consent:
+                                true,
+
+                            status:
+                                "pending"
+
+                              });
+
+
+
+                    /* =================================
+                       ERROR
+                    ================================= */
+
+                    if (error) {
+
+                        console.error(
+                            "Supabase error:",
+                            error
+                        );
+
+                        throw error;
+
+                    }
+
+
+
+                    console.log(
+                        "Application submitted successfully:",
+                        data
+                    );
+
+
+
+                    /* =================================
+                       SUCCESS
+                    ================================= */
+
+                    showMessage(
+                        "success",
+                        "تم إرسال طلبك بنجاح. شكرًا لاهتمامك بالانضمام إلى منظمة الأشراف للتنمية. سيتم مراجعة طلبك والتواصل معك بعد المراجعة.",
+                        "Your application has been submitted successfully. Thank you for your interest in joining Al-Ashraf Development Organization. Your application will be reviewed and we will contact you afterward."
+                    );
+
+
+                    volunteerForm.reset();
+
+
+                    document
+                        .getElementById(
+                            "applicationVolunteer"
+                        )
+                        .checked = true;
+
+ } catch (error) {
+
+    console.error(
+        "❌ Application submission error:",
+        error
+    );
+
+    console.error(
+        "❌ Error message:",
+        error?.message
+    );
+
+    console.error(
+        "❌ Error code:",
+        error?.code
+    );
+
+    console.error(
+        "❌ Error details:",
+        error?.details
+    );
+
+    console.error(
+        "❌ Error hint:",
+        error?.hint
+    );
+
+
+    showMessage(
+        "error",
+
+        "حدث خطأ أثناء إرسال الطلب. افتح Console لمعرفة السبب.",
+
+        "An error occurred while submitting your application. Open the Console to see the exact error."
+    );
+
+
+} finally {
+
+                    /* =================================
+                       RESTORE BUTTON
+                    ================================= */
+
+                    submitButton.disabled = false;
+
+
+                    submitButton.innerHTML = `
+                        <i class="fa-solid fa-paper-plane"></i>
+
+                        <span>
+                            ${
+                                currentLanguage === "ar"
+                                    ? "إرسال الطلب"
+                                    : "Submit Application"
+                            }
+                        </span>
+                    `;
+
+                }
+
+            }
+        );
+
+
+
+        console.log(
+            "✅ Al-Ashraf Volunteer Page Loaded Successfully"
+        );
+
+        console.log(
+            "Current language:",
+            currentLanguage
+        );
+
+        console.log(
+            "Supabase connected:",
+            !!supabaseClient
+        );
+         
+(function () {
+
+    function startVolunteerWelcome() {
+
+        const welcome =
+            document.getElementById("volunteerWelcome");
+
+        if (!welcome) return;
+
+        setTimeout(function () {
+
+            welcome.classList.add("hide");
+
+            setTimeout(function () {
+                welcome.remove();
+            }, 750);
+
+        }, 2200);
+
+    }
+
+    if (document.readyState === "loading") {
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            startVolunteerWelcome
+        );
+
+    } else {
+
+        startVolunteerWelcome();
+
+    }
+
+})();
+
+
+
+    </script>
+
+
+</body>
+
+</html>
