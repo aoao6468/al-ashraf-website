@@ -1139,6 +1139,48 @@
             display: none;
         }
 
+        /* MEDIA UPLOAD PROGRESS */
+        .media-upload-progress {
+            margin-top: 16px;
+            padding: 13px 14px;
+            border: 1px solid #dcebe3;
+            border-radius: 12px;
+            background: #f7fbf8;
+        }
+        .media-upload-progress[hidden] { display: none !important; }
+        .media-upload-progress-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 9px;
+            color: #315244;
+            font-size: 11px;
+        }
+        .media-upload-progress-top strong { color: var(--green); font-size: 12px; }
+        .media-upload-track {
+            height: 8px;
+            overflow: hidden;
+            border-radius: 20px;
+            background: #e2eee7;
+        }
+        .media-upload-bar {
+            width: 0;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #16845b, #42b883);
+            transition: width .35s ease;
+        }
+        .media-upload-progress.is-active .media-upload-bar {
+            background-image: linear-gradient(90deg, #16845b 25%, #43b883 50%, #16845b 75%);
+            background-size: 200% 100%;
+            animation: mediaUploadMove 1.2s linear infinite;
+        }
+        @keyframes mediaUploadMove {
+            from { background-position: 100% 0; }
+            to { background-position: -100% 0; }
+        }
+
 
         /* =========================================
            FORM
@@ -4874,6 +4916,15 @@
                                             <span>Selected images and videos will appear here</span>
                                         </div>
                                     </div>
+                                    <div id="mediaUploadProgress" class="media-upload-progress" hidden aria-live="polite">
+                                        <div class="media-upload-progress-top">
+                                            <span id="mediaUploadStatus">Preparing files...</span>
+                                            <strong id="mediaUploadPercent">0%</strong>
+                                        </div>
+                                        <div class="media-upload-track">
+                                            <div id="mediaUploadBar" class="media-upload-bar"></div>
+                                        </div>
+                                    </div>
 
                                 </div>
 
@@ -6717,6 +6768,11 @@ async function saveImage() {
     const titleInput = document.getElementById("imageTitle");
     const categoryInput = document.getElementById("imageCategory");
     const descriptionInput = document.getElementById("imageDescription");
+    const progress = document.getElementById("mediaUploadProgress");
+    const progressBar = document.getElementById("mediaUploadBar");
+    const progressStatus = document.getElementById("mediaUploadStatus");
+    const progressPercent = document.getElementById("mediaUploadPercent");
+    const saveButton = document.querySelector('button[onclick="saveImage()"]');
     const files = Array.from(fileInput?.files || []);
     const title = titleInput?.value?.trim();
     const category = categoryInput?.value;
@@ -6726,14 +6782,33 @@ async function saveImage() {
     if (!title) return showToast("Please enter a card title.");
     if (!IMAGE_CATEGORIES.includes(category)) return showToast("Please select a valid category.");
 
+    const setProgress = (percent, message, active = true) => {
+        if (!progress) return;
+        progress.hidden = false;
+        progress.classList.toggle("is-active", active);
+        if (progressBar) progressBar.style.width = percent + "%";
+        if (progressPercent) progressPercent.textContent = percent + "%";
+        if (progressStatus) progressStatus.textContent = message;
+    };
+
     try {
+        if (saveButton) {
+            saveButton.disabled = true;
+            saveButton.dataset.originalHtml = saveButton.innerHTML;
+            saveButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Uploading...';
+        }
+        setProgress(3, "Preparing files...");
         showToast(`Uploading ${files.length} media file(s)...`);
         const mediaItems = [];
 
-        for (const originalFile of files) {
+        for (let index = 0; index < files.length; index++) {
+            const originalFile = files[index];
             const file = await compressGalleryImage(originalFile);
             const extension = file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "bin";
             const storagePath = `${crypto.randomUUID()}.${extension}`;
+            const startPercent = Math.round((index / files.length) * 85);
+            setProgress(startPercent, `Uploading file ${index + 1} of ${files.length}: ${originalFile.name}`);
+
             const { error: uploadError } = await supabaseClient.storage.from("gallery").upload(storagePath, file, {
                 cacheControl: "31536000",
                 upsert: false,
@@ -6741,12 +6816,15 @@ async function saveImage() {
             });
             if (uploadError) {
                 if (mediaItems.length) await supabaseClient.storage.from("gallery").remove(mediaItems.map(x => x.storage_path));
-                return showToast(getSupabaseErrorMessage(uploadError, `Failed to upload ${originalFile.name}.`));
+                showToast(getSupabaseErrorMessage(uploadError, `Failed to upload ${originalFile.name}.`));
+                return;
             }
             const { data: publicUrlData } = supabaseClient.storage.from("gallery").getPublicUrl(storagePath);
             mediaItems.push({url: publicUrlData?.publicUrl || "", storage_path: storagePath, name: originalFile.name, type: file.type || "application/octet-stream", size: file.size});
+            setProgress(Math.round(((index + 1) / files.length) * 85), `Uploaded ${index + 1} of ${files.length} files`);
         }
 
+        setProgress(92, "Saving media information...");
         const { data, error } = await supabaseClient.from("images").insert({
             title, description: description || null, category,
             image_url: mediaItems[0].url,
@@ -6756,15 +6834,32 @@ async function saveImage() {
 
         if (error) {
             await supabaseClient.storage.from("gallery").remove(mediaItems.map(x => x.storage_path));
-            return showToast(getSupabaseErrorMessage(error, "Failed to save media card. Add the media_urls column to the images table first."));
+            showToast(getSupabaseErrorMessage(error, "Failed to save media card. Add the media_urls column to the images table first."));
+            return;
         }
 
+        setProgress(100, "Upload completed successfully", false);
         images.unshift(data);
         renderImages(); renderGallery(); renderActivities(); updateStats(); populateProjectImages(); resetUploadForm();
         showToast(`${files.length} file(s) uploaded successfully.`);
     } catch (error) {
         console.error("Unexpected media save error:", error);
         showToast(error.message || "An unexpected error occurred.");
+    } finally {
+        if (saveButton) {
+            saveButton.disabled = false;
+            if (saveButton.dataset.originalHtml) {
+                saveButton.innerHTML = saveButton.dataset.originalHtml;
+                delete saveButton.dataset.originalHtml;
+            }
+        }
+        window.setTimeout(() => {
+            if (progress) {
+                progress.hidden = true;
+                progress.classList.remove("is-active");
+            }
+            if (progressBar) progressBar.style.width = "0%";
+        }, 1800);
     }
 }
 
