@@ -5123,17 +5123,51 @@ async function loadPublicGallery() {
 ========================================================= */
 
 async function loadAllImages() {
-    console.log("Loading Al-Ashraf images...");
+    console.log("Loading visible Al-Ashraf content...");
 
-    await Promise.all([
-        loadHeroImage(),
-        loadAboutImage(),
-        loadProjects(),
-        loadPublicGallery(),
-        loadPublicPartners()
-    ]);
+    // The hero is immediately visible, so load it first.
+    await loadHeroImage();
 
-    console.log("Al-Ashraf image system loaded.");
+    // Fetch the remaining sections only when they approach the viewport.
+    const deferredSections = [
+        { selector: "#about", load: loadAboutImage },
+        { selector: "#projects", load: loadProjects },
+        { selector: "#gallery", load: loadPublicGallery },
+        { selector: "#partners", load: loadPublicPartners }
+    ];
+
+    const loaded = new Set();
+    const loadSection = async (item, observer) => {
+        if (loaded.has(item.selector)) return;
+        loaded.add(item.selector);
+        if (observer) observer.unobserve(document.querySelector(item.selector));
+        try {
+            await item.load();
+        } catch (error) {
+            loaded.delete(item.selector);
+            console.error("Deferred section loading failed:", item.selector, error);
+        }
+    };
+
+    if (!("IntersectionObserver" in window)) {
+        await Promise.all(deferredSections.map(item => loadSection(item, null)));
+        return;
+    }
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) return;
+            const item = deferredSections.find(section => section.selector === "#" + entry.target.id);
+            if (item) loadSection(item, observer);
+        });
+    }, { rootMargin: "350px 0px", threshold: 0.01 });
+
+    deferredSections.forEach(item => {
+        const section = document.querySelector(item.selector);
+        if (section) observer.observe(section);
+    });
+
+    console.log("Hero loaded; other sections will load on approach.");
 }
 
 

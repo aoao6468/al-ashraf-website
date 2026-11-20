@@ -3459,7 +3459,8 @@ async function uploadAvatar(file) {
                     uploadFile,
                     {
                         upsert: false,
-                        contentType: uploadFile.type || file.type
+                        contentType: uploadFile.type || file.type,
+                        cacheControl: "31536000"
                     }
                 );
 

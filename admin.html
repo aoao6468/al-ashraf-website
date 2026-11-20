@@ -6663,7 +6663,7 @@ async function saveImage() {
             const extension = file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "bin";
             const storagePath = `${crypto.randomUUID()}.${extension}`;
             const { error: uploadError } = await supabaseClient.storage.from("gallery").upload(storagePath, file, {
-                cacheControl: "3600",
+                cacheControl: "31536000",
                 upsert: false,
                 contentType: file.type || "application/octet-stream"
             });
@@ -10415,7 +10415,7 @@ async function uploadCertificateForMember() {
                     file,
                     {
                         cacheControl:
-                            "3600",
+                            "31536000",
                         upsert:
                             false
                     }
@@ -13680,7 +13680,7 @@ async function uploadEditMediaFile(originalFile) {
                 storagePath,
                 file,
                 {
-                    cacheControl: "3600",
+                    cacheControl: "31536000",
                     upsert: false,
                     contentType:
                         file.type ||
