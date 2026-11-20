@@ -4828,3 +4828,64 @@ p, h1, h2, h3, h4, a, span { overflow-wrap: anywhere; }
         top: 100% !important;
     }
 }
+
+
+/* =========================================================
+   MOBILE MENU — STABLE OPEN/CLOSE STATE
+   Keep the dropdown visible after tapping the menu button.
+========================================================= */
+@media (max-width: 800px) {
+    .navbar {
+        position: relative !important;
+        z-index: 1200 !important;
+        overflow: visible !important;
+    }
+
+    .navbar #navLinks {
+        display: none !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-height: calc(100dvh - 76px) !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 0 !important;
+        padding: 12px 20px !important;
+        background: #ffffff !important;
+        box-shadow: 0 14px 28px rgba(0,0,0,.16) !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        z-index: 1300 !important;
+    }
+
+    .navbar #navLinks.show {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .navbar #menuToggle {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        position: relative !important;
+        z-index: 1400 !important;
+        flex: 0 0 40px !important;
+        min-width: 40px !important;
+        width: 40px !important;
+        height: 40px !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    body.dark-mode .navbar #navLinks {
+        background: #101814 !important;
+        color: #f1f7f4 !important;
+    }
+}
