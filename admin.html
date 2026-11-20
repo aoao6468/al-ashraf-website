@@ -11735,25 +11735,38 @@ function updateApplicationReceptionUI(isOpen) {
 async function loadApplicationReception() {
     const button = document.getElementById("applicationReceptionToggle");
     const status = document.getElementById("applicationReceptionStatus");
+    const msg = document.getElementById("applicationReceptionMessage");
     if (!button || !status) return;
 
     button.disabled = true;
-    status.textContent = isArabic ? "جارٍ التحميل..." : "Loading...";
-    const { data, error } = await supabaseClient.from("application_settings")
-        .select("is_open").eq("id", 1).maybeSingle();
+    status.textContent = isArabic ? "جارٍ الاتصال..." : "Connecting...";
+    if (msg) msg.textContent = "";
 
-    if (error || !data) {
+    let timeoutId;
+    try {
+        const request = supabaseClient.from("application_settings")
+            .select("is_open").eq("id", 1).maybeSingle();
+
+        const timeout = new Promise((_, reject) => {
+            timeoutId = setTimeout(() => reject(new Error("Connection timed out. Check internet and Supabase availability.")), 12000);
+        });
+
+        const { data, error } = await Promise.race([request, timeout]);
+        if (error) throw error;
+        if (!data) throw new Error("No application_settings row was found for id = 1.");
+
+        updateApplicationReceptionUI(data.is_open === true);
+        button.disabled = false;
+    } catch (error) {
         console.error("Could not load application reception setting:", error);
         button.disabled = true;
-        button.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span>Unavailable</span>';
-        status.textContent = isArabic ? "الإعداد غير متاح" : "Setting unavailable";
-        const msg = document.getElementById("applicationReceptionMessage");
-        if (msg) msg.textContent = (isArabic ? "تعذر قراءة الإعداد: " : "Could not read setting: ") + (error?.message || "No setting row");
-        return;
+        button.className = "btn btn-secondary";
+        button.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span data-ar="تعذر الاتصال" data-en="Connection failed">Connection failed</span>';
+        status.textContent = isArabic ? "تعذر تحميل الحالة" : "Could not load status";
+        if (msg) msg.textContent = (isArabic ? "لم نتمكن من قراءة إعداد الاستقبال: " : "Could not read reception setting: ") + (error.message || "Unknown error");
+    } finally {
+        if (timeoutId) clearTimeout(timeoutId);
     }
-
-    updateApplicationReceptionUI(data.is_open === true);
-    button.disabled = false;
 }
 
 async function toggleApplicationReception() {
