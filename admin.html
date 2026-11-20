@@ -6731,22 +6731,29 @@ async function scanLegacyGalleryImages() {
         const uniquePaths = [...new Set(referenced.map(item => item.path))];
         const storageFiles = new Map();
         const pageSize = 1000;
-        for (let offset = 0; ; offset += pageSize) {
-            const { data, error } = await supabaseClient.storage.from("gallery")
-                .list("", { limit: pageSize, offset, sortBy: { column: "name", order: "asc" } });
-            if (error) throw error;
-            const entries = data || [];
-            for (const entry of entries) {
-                if (entry && entry.id && entry.name) storageFiles.set(entry.name, entry);
+
+        async function listFolder(folderPath) {
+            for (let offset = 0; ; offset += pageSize) {
+                const { data, error } = await supabaseClient.storage.from("gallery")
+                    .list(folderPath, { limit: pageSize, offset, sortBy: { column: "name", order: "asc" } });
+                if (error) throw error;
+                const entries = data || [];
+                for (const entry of entries) {
+                    if (!entry || !entry.name) continue;
+                    const fullPath = folderPath ? folderPath + "/" + entry.name : entry.name;
+                    if (entry.id) storageFiles.set(fullPath, entry);
+                    else await listFolder(fullPath);
+                }
+                if (entries.length < pageSize) break;
             }
-            if (entries.length < pageSize) break;
         }
+        await listFolder("");
 
         const auditRows = uniquePaths.map(path => {
-            const fileName = path.split("/").pop();
-            const stored = path.includes("/") ? null : storageFiles.get(fileName);
+            const stored = storageFiles.get(path);
             const refs = referenced.filter(item => item.path === path);
             const first = refs[0];
+            const fileName = path.split("/").pop();
             const size = Number(stored?.metadata?.size) || first.recordedSize || 0;
             const mime = String(stored?.metadata?.mimetype || first.type || "").toLowerCase();
             const ext = fileName.split(".").pop().toLowerCase();
@@ -6774,7 +6781,7 @@ async function scanLegacyGalleryImages() {
             ' unique referenced paths checked; ' + candidates.length +
             ' JPEG/PNG files are potential candidates (' + formatBytes(totalBytes) +
             ' current combined size where known). ' + missing.length +
-            ' paths were not found in the bucket root listing.';
+            ' referenced paths were not found in the gallery bucket.';
 
         if (!auditRows.length) {
             results.innerHTML = '<p style="font-size:12px;color:var(--muted);">No Storage paths were found in the loaded image records.</p>';
@@ -6788,7 +6795,7 @@ async function scanLegacyGalleryImages() {
             '<td style="padding:9px;border-bottom:1px solid var(--border);white-space:nowrap;">' + formatBytes(row.size) + '</td>' +
             '<td style="padding:9px;border-bottom:1px solid var(--border);">' + row.references + '</td>' +
             '<td style="padding:9px;border-bottom:1px solid var(--border);">' +
-            (row.missing ? "Not found in root listing" : row.candidate ? "Potential candidate" : "Skip / not eligible") +
+            (row.missing ? "Not found in bucket" : row.candidate ? "Potential candidate" : "Skip / not eligible") +
             '</td></tr>'
         ).join("");
 
@@ -6806,9 +6813,6 @@ async function scanLegacyGalleryImages() {
         button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Scan existing images';
     }
 }
-
-   LOAD IMAGES
-========================================================= */
 
 async function loadImages() {
 
