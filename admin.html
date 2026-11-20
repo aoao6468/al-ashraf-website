@@ -4920,17 +4920,6 @@
 
 
 
-                <!-- LEGACY IMAGE AUDIT AND SAFE BATCH OPTIMIZATION -->
-                <div class="panel" style="margin-bottom:22px;">
-                    <div class="panel-header"><div class="panel-title"><i class="fa-solid fa-magnifying-glass-chart"></i><h3>Legacy Image Storage Audit</h3></div><span class="status">Safe optimization</span></div>
-                    <div class="panel-body">
-                        <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">Scan referenced gallery images, then optionally compress all eligible JPEG/PNG files. Optimized copies are uploaded to new paths; original files are kept and never deleted.</p>
-                        <button type="button" class="btn btn-primary" id="scanLegacyImagesBtn" onclick="scanLegacyGalleryImages()"><i class="fa-solid fa-magnifying-glass"></i> Scan existing images</button>
-                        <div id="legacyImageAuditStatus" role="status" style="margin-top:14px;font-size:12px;color:var(--text);">No scan has been run yet.</div>
-                        <div id="legacyImageAuditResults" style="margin-top:14px;overflow-x:auto;"></div>
-                    </div>
-                </div>
-
                 <!-- IMAGE FILTERS -->
 
                 <div class="filters">
@@ -5545,6 +5534,30 @@
 
                 </div>
 
+
+                <div class="panel" style="margin-bottom:22px;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <i class="fa-solid fa-toggle-on"></i>
+                            <h3 data-ar="استقبال طلبات التطوع والتدريب" data-en="Volunteer & Training Applications">Volunteer & Training Applications</h3>
+                        </div>
+                        <span id="applicationReceptionStatus" class="status">Loading...</span>
+                    </div>
+                    <div class="panel-body">
+                        <p style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:14px;"
+                           data-ar="عند إيقاف الاستقبال سيتم إغلاق نموذج التقديم ومنع إرسال طلبات جديدة، مع الاحتفاظ بالطلبات السابقة."
+                           data-en="When reception is turned off, the application form will close and new submissions will be blocked. Existing applications will be kept.">When reception is turned off, the application form will close and new submissions will be blocked. Existing applications will be kept.</p>
+                        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:600;">
+                            <input type="checkbox" id="applicationReceptionToggle" style="width:20px;height:20px;accent-color:#16845b;">
+                            <span data-ar="تفعيل استقبال الطلبات" data-en="Accept new applications">Accept new applications</span>
+                        </label>
+                        <button type="button" class="btn btn-primary" id="saveApplicationReceptionBtn" onclick="saveApplicationReception()" style="margin-top:16px;">
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            <span data-ar="حفظ الإعداد" data-en="Save setting">Save setting</span>
+                        </button>
+                        <p id="applicationReceptionMessage" role="status" style="margin-top:10px;font-size:12px;"></p>
+                    </div>
+                </div>
 
                 <div class="panel">
 
@@ -6246,6 +6259,8 @@ document.addEventListener(
             "✅ Admin page initialized."
         );
 
+
+        await loadApplicationReception();
 
         await loadImages();
 
@@ -11967,6 +11982,55 @@ console.log(
     "removeMember:",
     typeof window.removeMember
 );
+/* =========================================================
+   VOLUNTEER / TRAINING APPLICATION RECEPTION
+========================================================= */
+async function loadApplicationReception() {
+    const toggle = document.getElementById("applicationReceptionToggle");
+    const status = document.getElementById("applicationReceptionStatus");
+    if (!toggle || !status) return;
+    status.textContent = isArabic ? "جارٍ التحميل..." : "Loading...";
+    const { data, error } = await supabaseClient.from("application_settings")
+        .select("is_open").eq("id", 1).maybeSingle();
+    if (error || !data) {
+        console.error("Could not load application reception setting:", error);
+        toggle.checked = false;
+        toggle.disabled = true;
+        status.textContent = isArabic ? "الإعداد غير متاح" : "Setting unavailable";
+        const msg = document.getElementById("applicationReceptionMessage");
+        if (msg) msg.textContent = isArabic ? "يرجى تطبيق إعداد الاستقبال في Supabase أولاً." : "Apply the reception SQL setup in Supabase first.";
+        return;
+    }
+    toggle.checked = data.is_open === true;
+    status.textContent = toggle.checked ? (isArabic ? "الاستقبال مفتوح" : "Applications open") : (isArabic ? "الاستقبال مغلق" : "Applications closed");
+}
+async function saveApplicationReception() {
+    const toggle = document.getElementById("applicationReceptionToggle");
+    const button = document.getElementById("saveApplicationReceptionBtn");
+    const status = document.getElementById("applicationReceptionStatus");
+    const msg = document.getElementById("applicationReceptionMessage");
+    if (!toggle || !button || toggle.disabled) return;
+    button.disabled = true;
+    const old = button.innerHTML;
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    if (msg) msg.textContent = "";
+    try {
+        const { data, error } = await supabaseClient.from("application_settings")
+            .update({ is_open: toggle.checked, updated_at: new Date().toISOString() })
+            .eq("id", 1).select("is_open").single();
+        if (error) throw error;
+        toggle.checked = data.is_open === true;
+        if (status) status.textContent = toggle.checked ? (isArabic ? "الاستقبال مفتوح" : "Applications open") : (isArabic ? "الاستقبال مغلق" : "Applications closed");
+        if (msg) msg.textContent = isArabic ? "تم حفظ الإعداد بنجاح." : "Setting saved successfully.";
+    } catch (error) {
+        console.error("Saving reception setting failed:", error);
+        if (msg) msg.textContent = (isArabic ? "تعذر حفظ الإعداد: " : "Could not save setting: ") + (error.message || "Unknown error");
+    } finally {
+        button.disabled = false;
+        button.innerHTML = old;
+    }
+}
+
 /* =========================================================
    VOLUNTEER / TRAINING APPLICATIONS
 ========================================================= */
