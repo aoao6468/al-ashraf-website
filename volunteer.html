@@ -3493,12 +3493,18 @@
     );
 
 
+    // Expose the backend error on-screen for mobile troubleshooting.
+    const diagnostic = [
+        error?.message,
+        error?.code ? `Code: ${error.code}` : "",
+        error?.details,
+        error?.hint
+    ].filter(Boolean).join(" | ").slice(0, 700);
+
     showMessage(
         "error",
-
-        "حدث خطأ أثناء إرسال الطلب. افتح Console لمعرفة السبب.",
-
-        "An error occurred while submitting your application. Open the Console to see the exact error."
+        "تعذر إرسال الطلب. السبب التقني: " + (diagnostic || "خطأ غير معروف"),
+        "Could not submit the application. Technical reason: " + (diagnostic || "Unknown error")
     );
 
 
