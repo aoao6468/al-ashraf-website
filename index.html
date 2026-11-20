@@ -50,8 +50,9 @@
     <script>
 (function () {
   var touchDevice = (navigator.maxTouchPoints > 0 || 'ontouchstart' in window);
-  var shortScreen = Math.min(screen.width || 9999, screen.height || 9999) <= 900;
-  if (touchDevice && shortScreen) document.documentElement.classList.add('force-mobile-device');
+  /* Android Chrome may report a desktop-sized screen in Desktop site mode.
+     Touch capability is the reliable signal; do not gate this by screen.width. */
+  if (touchDevice) document.documentElement.classList.add('force-mobile-device');
 })();
 </script>
 <link rel="stylesheet" href="style.css?v=mobile-menu-fix-20261120">
@@ -1097,6 +1098,61 @@ const supabaseClient = window.supabase.createClient(
         padding: 10px 18px !important;
     }
 }
+
+
+/* FINAL NAVIGATION OVERRIDE — keep at the end of the page's inline stylesheet */
+html.force-mobile-device .navbar { position:relative!important; width:100%!important; z-index:9999!important; overflow:visible!important; }
+html.force-mobile-device .navbar .nav-inner {
+  width:100%!important; max-width:none!important; min-height:66px!important; height:auto!important;
+  margin:0!important; padding:8px 12px!important; box-sizing:border-box!important;
+  display:flex!important; align-items:center!important; justify-content:space-between!important;
+  gap:8px!important; flex-wrap:nowrap!important;
+}
+html.force-mobile-device .navbar .brand { flex:1 1 auto!important; min-width:0!important; gap:8px!important; }
+html.force-mobile-device .navbar .brand-logo { width:42px!important; height:42px!important; flex:0 0 42px!important; }
+html.force-mobile-device .navbar .brand-name-en { display:none!important; }
+html.force-mobile-device .navbar .brand-name-ar { display:block!important; font-size:11px!important; white-space:nowrap!important; }
+html.force-mobile-device .navbar .nav-actions { display:flex!important; flex:0 0 auto!important; align-items:center!important; gap:6px!important; margin:0!important; }
+html.force-mobile-device .navbar .member-login-btn,
+html.force-mobile-device .navbar .volunteer-btn { display:none!important; }
+html.force-mobile-device .navbar .language-btn {
+  display:inline-flex!important; align-items:center!important; justify-content:center!important;
+  width:36px!important; min-width:36px!important; height:36px!important; padding:0!important;
+}
+html.force-mobile-device .navbar #menuToggle {
+  display:inline-flex!important; visibility:visible!important; opacity:1!important;
+  align-items:center!important; justify-content:center!important;
+  width:42px!important; min-width:42px!important; height:42px!important; flex:0 0 42px!important;
+  padding:0!important; margin:0!important; border:0!important; border-radius:10px!important;
+  background:#16845b!important; color:#fff!important; font-size:20px!important;
+  position:relative!important; z-index:10001!important; cursor:pointer!important;
+}
+html.force-mobile-device .navbar #navLinks {
+  display:none!important; position:absolute!important; top:100%!important; left:0!important; right:0!important;
+  width:100%!important; max-width:100%!important; max-height:75vh!important; overflow-y:auto!important;
+  flex-direction:column!important; align-items:stretch!important; gap:0!important;
+  padding:10px 18px!important; margin:0!important; box-sizing:border-box!important;
+  background:#fff!important; box-shadow:0 14px 28px rgba(0,0,0,.18)!important; z-index:10000!important;
+}
+html.force-mobile-device .navbar #navLinks.show { display:flex!important; visibility:visible!important; opacity:1!important; pointer-events:auto!important; }
+html.force-mobile-device .navbar #navLinks a { display:block!important; width:100%!important; padding:12px 4px!important; font-size:14px!important; white-space:normal!important; }
+html.force-mobile-device .container { width:calc(100% - 28px)!important; max-width:100%!important; }
+html.force-mobile-device .hero { min-height:0!important; }
+html.force-mobile-device .hero-content { width:100%!important; max-width:100%!important; padding:52px 0!important; }
+html.force-mobile-device .hero h1 { font-size:clamp(29px,8vw,42px)!important; line-height:1.25!important; }
+html.force-mobile-device .hero-description { font-size:16px!important; line-height:1.8!important; }
+html.force-mobile-device .about-grid { grid-template-columns:minmax(0,1fr)!important; gap:28px!important; }
+html.force-mobile-device .about-image img { width:100%!important; height:auto!important; max-height:440px!important; object-fit:cover!important; }
+html.force-mobile-device .fields-grid,
+html.force-mobile-device .impact-grid,
+html.force-mobile-device .stats-grid,
+html.force-mobile-device .projects-grid,
+html.force-mobile-device .gallery-grid,
+html.force-mobile-device #publicGallery,
+html.force-mobile-device .partners-grid,
+html.force-mobile-device .contact-grid,
+html.force-mobile-device .footer-grid { grid-template-columns:minmax(0,1fr)!important; }
+html.force-mobile-device img, html.force-mobile-device video, html.force-mobile-device iframe { max-width:100%!important; }
 
 </style>
 
