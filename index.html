@@ -5118,6 +5118,59 @@ async function loadPublicGallery() {
     }
 
 }
+/* =========================================================
+   LOAD ALL SUPABASE IMAGES
+========================================================= */
+
+async function loadAllImages() {
+    console.log("Loading Al-Ashraf images...");
+
+    await Promise.all([
+        loadHeroImage(),
+        loadAboutImage(),
+        loadProjects(),
+        loadPublicGallery(),
+        loadPublicPartners()
+    ]);
+
+    console.log("Al-Ashraf image system loaded.");
+}
+
+
+/* =========================================================
+   LOAD SAVED LANGUAGE
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+        const savedLanguage =
+            localStorage.getItem("alAshrafLanguage") || "en";
+
+        applyLanguage(savedLanguage);
+        loadAllImages();
+    }
+);
+
+/* =========================================================
+   BACK TO TOP
+========================================================= */
+
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+
+window.addEventListener("scroll", function () {
+    const button = document.getElementById("backToTop");
+    if (!button) return;
+
+    if (window.scrollY > 300) button.classList.add("show");
+    else button.classList.remove("show");
+});
+
 async function loadPublicPartners() {
     const container = document.getElementById("publicPartners");
 
