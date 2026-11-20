@@ -3344,6 +3344,55 @@ function createUniversalSlider({
 
 }
 /* =========================================================
+   HERO SLIDER
+   Load remote images only when their slide becomes active.
+========================================================= */
+let heroCurrentIndex = 0;
+let heroAutoPlayTimer = null;
+
+function showHeroSlide(index) {
+    const container = document.getElementById("heroSlides");
+    const dotsContainer = document.getElementById("heroDots");
+    if (!container) return;
+    const slides = Array.from(container.querySelectorAll(".hero-slide"));
+    if (!slides.length) return;
+    heroCurrentIndex = (index + slides.length) % slides.length;
+    const activeSlide = slides[heroCurrentIndex];
+    if (activeSlide && !activeSlide.getAttribute("src") && activeSlide.dataset.src) {
+        activeSlide.src = activeSlide.dataset.src;
+        activeSlide.removeAttribute("data-src");
+    }
+    slides.forEach((slide, slideIndex) => slide.classList.toggle("active", slideIndex === heroCurrentIndex));
+    if (dotsContainer) Array.from(dotsContainer.children).forEach((dot, dotIndex) => dot.classList.toggle("active", dotIndex === heroCurrentIndex));
+}
+
+function initHeroSlider(totalSlides) {
+    const container = document.getElementById("heroSlides");
+    const previous = document.getElementById("heroPrev");
+    const next = document.getElementById("heroNext");
+    if (!container || totalSlides < 1) return;
+    showHeroSlide(0);
+    if (previous) previous.onclick = () => { showHeroSlide(heroCurrentIndex - 1); restartHeroAutoPlay(); };
+    if (next) next.onclick = () => { showHeroSlide(heroCurrentIndex + 1); restartHeroAutoPlay(); };
+    const stop = () => {
+        if (heroAutoPlayTimer) clearInterval(heroAutoPlayTimer);
+        heroAutoPlayTimer = null;
+    };
+    const start = () => {
+        stop();
+        if (totalSlides < 2) return;
+        heroAutoPlayTimer = setInterval(() => {
+            if (!document.hidden) showHeroSlide(heroCurrentIndex + 1);
+        }, 6000);
+    };
+    window.restartHeroAutoPlay = start;
+    container.addEventListener("mouseenter", stop, { passive: true });
+    container.addEventListener("mouseleave", start, { passive: true });
+    document.addEventListener("visibilitychange", () => document.hidden ? stop() : start());
+    start();
+}
+
+/* =========================================================
    LOAD HERO IMAGE
    CATEGORY = hero
 ========================================================= */
@@ -3385,9 +3434,18 @@ function createUniversalSlider({
 
         const img = document.createElement("img");
 
-        img.src = getImageUrl(image);
+        const imageUrl = getImageUrl(image);
         img.alt = image.title || "Al-Ashraf Organization";
         img.className = `hero-slide ${index === 0 ? "active" : ""}`;
+        if (index === 0) {
+            img.src = imageUrl;
+            img.loading = "eager";
+            img.fetchPriority = "high";
+        } else {
+            img.dataset.src = imageUrl;
+            img.loading = "lazy";
+        }
+        img.decoding = "async";
 
         container.appendChild(img);
 
@@ -3722,11 +3780,9 @@ async function loadAboutImage() {
                                                     alt="${escapeGalleryText(
                                                         project.title
                                                     )}"
-                                                    loading="${
-                                                        imageIndex === 0
-                                                            ? "eager"
-                                                            : "lazy"
-                                                    }"
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    fetchpriority="low"
                                                 >
 
                                             `
@@ -4475,11 +4531,9 @@ async function loadPublicGallery() {
                                                         alt="${escapeGalleryText(
                                                             record.title
                                                         )}"
-                                                        loading="${
-                                                            index === 0
-                                                                ? "eager"
-                                                                : "lazy"
-                                                        }"
+                                                        loading="lazy"
+                                                            decoding="async"
+                                                            fetchpriority="low"
                                                     >
 
                                                 `;
@@ -5065,122 +5119,6 @@ async function loadPublicGallery() {
 
 }
 async function loadPublicPartners() {
-
-    const container = document.getElementById("publicPartners");
-
-    if (!container) return;
-
-    const { data, error } = await supabaseClient
-        .from("images")
-        .select("*")
-        .eq("category", "partners")
-        .order("created_at", { ascending: false });
-
-    if (error) {
-        console.error("Partners loading error:", error);
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        container.innerHTML = `
-            <div class="partners-empty">
-                لا يوجد شركاء مضافون حالياً
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = data.map(partner => `
-        <div class="partner-card">
-
-            <div class="partner-logo">
-                <img
-                    src="${partner.image_url}"
-                    alt="${partner.title || "Partner"}"
-                >
-            </div>
-
-            <h3 class="partner-name">
-                ${partner.title || ""}
-            </h3>
-
-        </div>
-    `).join("");
-}
-/* =========================================================
-   LOAD ALL SUPABASE IMAGES
-========================================================= */
-
- async function loadAllImages() {
-    console.log("Loading Al-Ashraf images...");
-
-    await Promise.all([
-        loadHeroImage(),
-        loadAboutImage(),
-        loadProjects(),
-        loadPublicGallery(),
-        loadPublicPartners()
-    ]);
-
-    console.log("Al-Ashraf image system loaded.");
-}
-
-
-/* =========================================================
-   LOAD SAVED LANGUAGE
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        const savedLanguage =
-            localStorage.getItem(
-                "alAshrafLanguage"
-            ) || "en";
-
-
-        applyLanguage(
-            savedLanguage
-        );
-
-
-        loadAllImages();
-
-    }
-);
-/* =========================================================
-   BACK TO TOP
-========================================================= */
-
-function scrollToTop() {
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-window.addEventListener("scroll", function () {
-
-    const button =
-        document.getElementById("backToTop");
-
-    if (!button) return;
-
-    if (window.scrollY > 300) {
-
-        button.classList.add("show");
-
-    } else {
-
-        button.classList.remove("show");
-
-    }
-
-});
-async function loadPublicPartners() {
     const container = document.getElementById("publicPartners");
 
     if (!container) return;
@@ -5195,7 +5133,7 @@ async function loadPublicPartners() {
     try {
         const { data, error } = await supabaseClient
             .from("images")
-            .select("*")
+            .select("id, title, image_url, category, created_at")
             .eq("category", "partners")
             .order("created_at", { ascending: false });
 
@@ -5223,7 +5161,8 @@ async function loadPublicPartners() {
                         ${
                             imageUrl
                                 ? `<img src="${escapeGalleryText(imageUrl)}"
-                                        alt="${escapeGalleryText(partner.title || "Partner")}">`
+                                        alt="${escapeGalleryText(partner.title || "Partner")}"
+                                        loading="lazy" decoding="async" fetchpriority="low">`
                                 : `<i class="fa-solid fa-handshake"></i>`
                         }
                     </div>
