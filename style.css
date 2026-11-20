@@ -4667,3 +4667,67 @@ select,
     }
 }
 
+
+
+/* =========================================================
+   RESPONSIVE REFINEMENT — MOBILE & TABLET
+   Keeps the existing visual identity and desktop layout.
+========================================================= */
+html, body {
+    max-width: 100%;
+    overflow-x: clip;
+}
+*, *::before, *::after { box-sizing: border-box; }
+img, video, iframe { max-width: 100%; }
+.container, .section, main, header, footer { min-width: 0; }
+button, input, select, textarea { max-width: 100%; }
+p, h1, h2, h3, h4, a, span { overflow-wrap: anywhere; }
+
+@media (max-width: 800px) {
+    .container { width: min(100% - 32px, 720px); }
+    .section { padding-left: 0; padding-right: 0; }
+    .fields-grid, .impact-grid, .stats-grid, .projects-grid,
+    .gallery-grid, .footer-grid {
+        min-width: 0;
+    }
+    .hero { min-height: 0; }
+    .hero-content { width: 100%; }
+    .hero h1 { line-height: 1.35; }
+    .hero-buttons { width: 100%; }
+    .hero-buttons a, .hero-buttons button { max-width: 100%; }
+    .section-title { line-height: 1.35; }
+    .modal, .modal-overlay { padding: 12px; }
+    .modal-content, .modal-box { width: 100%; max-width: 100%; }
+}
+
+@media (max-width: 600px) {
+    .container { width: calc(100% - 28px); }
+    .section { padding-top: 48px; padding-bottom: 48px; }
+    .section-header { margin-bottom: 26px; }
+    .section-title { font-size: clamp(23px, 6vw, 30px); }
+    .section-text { font-size: 14px; line-height: 1.9; }
+    .hero { min-height: 0; }
+    .hero-content { padding-top: 52px; padding-bottom: 52px; }
+    .hero h1 { font-size: clamp(29px, 8vw, 40px); }
+    .hero-description { font-size: 14px; line-height: 1.9; }
+    .hero-buttons { align-items: stretch; gap: 10px; }
+    .hero-buttons a, .hero-buttons button { width: 100%; justify-content: center; }
+    .fields-grid, .impact-grid, .stats-grid, .projects-grid,
+    .gallery-grid, .footer-grid {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+    .card, .project-card, .field-card, .impact-card,
+    .gallery-card, .stat-card, .about-card {
+        min-width: 0;
+        max-width: 100%;
+    }
+    .footer-grid { gap: 22px; }
+    .footer { overflow: hidden; }
+    .back-to-top { bottom: 14px; left: 14px; }
+}
+
+@media (max-width: 380px) {
+    .container { width: calc(100% - 22px); }
+    .hero h1 { font-size: 28px; }
+    .section { padding-top: 40px; padding-bottom: 40px; }
+}
