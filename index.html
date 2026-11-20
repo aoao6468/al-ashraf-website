@@ -1283,8 +1283,11 @@ const supabaseClient = window.supabase.createClient(
             <!-- MOBILE MENU -->
             <button
                 class="menu-btn"
+                id="menuToggle"
                 onclick="toggleMenu()"
-                aria-label="Menu"
+                aria-label="Open menu"
+                aria-controls="navLinks"
+                aria-expanded="false"
                 type="button"
             >
                 <i class="fa-solid fa-bars"></i>
@@ -2258,13 +2261,21 @@ const supabaseClient = window.supabase.createClient(
 ========================================================= */
 
 function toggleMenu() {
-
     const nav = document.getElementById("navLinks");
+    const button = document.getElementById("menuToggle");
 
-    if (nav) {
-        nav.classList.toggle("show");
+    if (!nav) return;
+
+    const isOpen = nav.classList.toggle("show");
+    if (button) {
+        button.setAttribute("aria-expanded", String(isOpen));
+        button.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
+        const icon = button.querySelector("i");
+        if (icon) {
+            icon.classList.toggle("fa-bars", !isOpen);
+            icon.classList.toggle("fa-xmark", isOpen);
+        }
     }
-
 }
 
 
@@ -2285,9 +2296,36 @@ document
                 nav.classList.remove("show");
             }
 
+            const button = document.getElementById("menuToggle");
+            if (button) {
+                button.setAttribute("aria-expanded", "false");
+                button.setAttribute("aria-label", "Open menu");
+                const icon = button.querySelector("i");
+                if (icon) {
+                    icon.classList.add("fa-bars");
+                    icon.classList.remove("fa-xmark");
+                }
+            }
+
         });
 
     });
+
+document.addEventListener("keydown", event => {
+    if (event.key !== "Escape") return;
+    const nav = document.getElementById("navLinks");
+    const button = document.getElementById("menuToggle");
+    if (nav) nav.classList.remove("show");
+    if (button) {
+        button.setAttribute("aria-expanded", "false");
+        button.setAttribute("aria-label", "Open menu");
+        const icon = button.querySelector("i");
+        if (icon) {
+            icon.classList.add("fa-bars");
+            icon.classList.remove("fa-xmark");
+        }
+    }
+});
 
 
 /* =========================================================
