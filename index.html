@@ -370,6 +370,10 @@ const supabaseClient = window.supabase.createClient(
 #publicGallery {
     display: grid !important;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    /* Ignore legacy fixed gallery rows; let each card determine row height. */
+    grid-template-rows: none;
+    grid-auto-rows: auto;
+    grid-auto-flow: row;
     gap: 28px;
     width: 100%;
     align-items: start;
