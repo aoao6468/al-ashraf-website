@@ -2919,23 +2919,63 @@
         ========================================= */
 
         let applicationReceptionOpen = false;
+        let applicationReceptionCheckInProgress = false;
+
+        // Keep the form closed until Supabase confirms that reception is open.
+        submitButton.disabled = true;
 
         async function checkApplicationReception() {
-            const { data, error } = await supabaseClient.from("application_settings")
-                .select("is_open").eq("id", 1).maybeSingle();
-            applicationReceptionOpen = !error && data?.is_open === true;
-            if (!applicationReceptionOpen) {
+            if (applicationReceptionCheckInProgress) return;
+            applicationReceptionCheckInProgress = true;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from("application_settings")
+                    .select("is_open")
+                    .eq("id", 1)
+                    .maybeSingle();
+
+                if (error) throw error;
+
+                applicationReceptionOpen = data?.is_open === true;
+
+                if (!applicationReceptionOpen) {
+                    submitButton.disabled = true;
+                    showMessage(
+                        "error",
+                        "نعتذر، استقبال طلبات التطوع والتدريب مغلق حالياً. يرجى متابعة الموقع لمعرفة موعد فتح التقديم.",
+                        "Applications for volunteering and training are currently closed. Please check the website for updates."
+                    );
+                } else {
+                    submitButton.disabled = false;
+                    if (formMessage) formMessage.className = "form-message";
+                }
+            } catch (error) {
+                // Fail closed: never accept a request if the setting cannot be verified.
+                applicationReceptionOpen = false;
                 submitButton.disabled = true;
+                console.error("Could not verify application reception status:", error);
                 showMessage(
                     "error",
-                    "نعتذر، استقبال طلبات التطوع والتدريب مغلق حالياً. يرجى متابعة الموقع لمعرفة موعد فتح التقديم.",
-                    "Applications for volunteering and training are currently closed. Please check the website for updates."
+                    "تعذر التحقق من حالة استقبال الطلبات. يرجى تحديث الصفحة والمحاولة لاحقاً.",
+                    "Could not verify whether applications are open. Please refresh the page and try again."
                 );
-            } else {
-                submitButton.disabled = false;
-                if (formMessage) formMessage.className = "form-message";
+            } finally {
+                applicationReceptionCheckInProgress = false;
             }
         }
+
+        // Read the same setting controlled by the ON/OFF button in admin.html.
+        checkApplicationReception();
+
+        // Reflect admin changes on already-open volunteer pages without requiring a refresh.
+        setInterval(() => {
+            if (!document.hidden) checkApplicationReception();
+        }, 15000);
+
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) checkApplicationReception();
+        });
 
         function showMessage(
             type,
