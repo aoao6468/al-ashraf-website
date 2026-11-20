@@ -4731,3 +4731,100 @@ p, h1, h2, h3, h4, a, span { overflow-wrap: anywhere; }
     .hero h1 { font-size: 28px; }
     .section { padding-top: 40px; padding-bottom: 40px; }
 }
+
+
+
+/* =========================================================
+   FINAL MOBILE WIDTH NORMALIZATION
+   Keeps all public-page sections aligned to the device width.
+========================================================= */
+@media (max-width: 800px) {
+    html, body {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        overflow-x: clip !important;
+    }
+
+    body, #app, main, header, footer, section,
+    .navbar, .hero, .section, .impact, .cta {
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .navbar {
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    .navbar .container,
+    .nav-inner {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .container {
+        width: calc(100% - 32px) !important;
+        max-width: 1180px;
+        min-width: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+    }
+
+    .nav-links {
+        box-sizing: border-box !important;
+        max-width: 100% !important;
+    }
+
+    .about-grid, .fields-grid, .projects-grid,
+    .impact-grid, .gallery-grid, #publicGallery,
+    .partners-grid, .contact-grid, .footer-grid {
+        min-width: 0 !important;
+        max-width: 100% !important;
+    }
+
+    .about-grid > *, .fields-grid > *,
+    .projects-grid > *, .impact-grid > *,
+    .gallery-grid > *, #publicGallery > *,
+    .partners-grid > *, .contact-grid > *,
+    .footer-grid > * {
+        min-width: 0 !important;
+    }
+
+    img, video, iframe {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 520px) {
+    .container {
+        width: calc(100% - 28px) !important;
+    }
+
+    .navbar .nav-inner {
+        padding-left: 8px !important;
+        padding-right: 8px !important;
+    }
+
+    .navbar .brand-name-en {
+        display: none !important;
+    }
+
+    .navbar .brand-name-ar {
+        white-space: nowrap;
+        font-size: 11px;
+    }
+
+    .navbar .nav-links {
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        top: 100% !important;
+    }
+}
