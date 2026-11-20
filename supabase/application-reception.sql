@@ -5,6 +5,14 @@ create table if not exists public.application_settings (
     is_open boolean not null default true,
     updated_at timestamptz not null default now()
 );
+-- Upgrade an already-existing table safely (CREATE TABLE IF NOT EXISTS
+-- does not add columns to a table that was created earlier).
+alter table public.application_settings
+    add column if not exists is_open boolean not null default true;
+
+alter table public.application_settings
+    add column if not exists updated_at timestamptz not null default now();
+
 insert into public.application_settings (id, is_open)
 values (1, true) on conflict (id) do nothing;
 
