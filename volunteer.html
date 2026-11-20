@@ -2918,6 +2918,25 @@
            MESSAGE
         ========================================= */
 
+        let applicationReceptionOpen = false;
+
+        async function checkApplicationReception() {
+            const { data, error } = await supabaseClient.from("application_settings")
+                .select("is_open").eq("id", 1).maybeSingle();
+            applicationReceptionOpen = !error && data?.is_open === true;
+            if (!applicationReceptionOpen) {
+                submitButton.disabled = true;
+                showMessage(
+                    "error",
+                    "نعتذر، استقبال طلبات التطوع والتدريب مغلق حالياً. يرجى متابعة الموقع لمعرفة موعد فتح التقديم.",
+                    "Applications for volunteering and training are currently closed. Please check the website for updates."
+                );
+            } else {
+                submitButton.disabled = false;
+                if (formMessage) formMessage.className = "form-message";
+            }
+        }
+
         function showMessage(
             type,
             arMessage,
@@ -2969,6 +2988,9 @@
             async function (event) {
 
                 event.preventDefault();
+
+                await checkApplicationReception();
+                if (!applicationReceptionOpen) return;
 
 
                 /* -----------------------------
