@@ -5547,14 +5547,16 @@
                         <p style="font-size:13px;color:var(--muted);line-height:1.8;margin-bottom:14px;"
                            data-ar="عند إيقاف الاستقبال سيتم إغلاق نموذج التقديم ومنع إرسال طلبات جديدة، مع الاحتفاظ بالطلبات السابقة."
                            data-en="When reception is turned off, the application form will close and new submissions will be blocked. Existing applications will be kept.">When reception is turned off, the application form will close and new submissions will be blocked. Existing applications will be kept.</p>
-                        <label style="display:flex;align-items:center;gap:12px;cursor:pointer;font-weight:600;">
-                            <input type="checkbox" id="applicationReceptionToggle" style="width:20px;height:20px;accent-color:#16845b;">
-                            <span data-ar="تفعيل استقبال الطلبات" data-en="Accept new applications">Accept new applications</span>
-                        </label>
-                        <button type="button" class="btn btn-primary" id="saveApplicationReceptionBtn" onclick="saveApplicationReception()" style="margin-top:16px;">
-                            <i class="fa-solid fa-floppy-disk"></i>
-                            <span data-ar="حفظ الإعداد" data-en="Save setting">Save setting</span>
-                        </button>
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;">
+                            <div>
+                                <strong id="applicationReceptionActionLabel" style="display:block;font-size:14px;margin-bottom:5px;" data-ar="حالة استقبال الطلبات" data-en="Application reception">Application reception</strong>
+                                <span id="applicationReceptionHint" style="font-size:12px;color:var(--muted);" data-ar="اضغط على الزر لتغيير الحالة مباشرة." data-en="Press the button to change the status immediately.">Press the button to change the status immediately.</span>
+                            </div>
+                            <button type="button" id="applicationReceptionToggle" class="btn btn-primary" onclick="toggleApplicationReception()" disabled style="min-width:150px;padding:13px 20px;font-size:13px;">
+                                <i class="fa-solid fa-spinner fa-spin"></i>
+                                <span data-ar="جارٍ التحميل" data-en="Loading">Loading</span>
+                            </button>
+                        </div>
                         <p id="applicationReceptionMessage" role="status" style="margin-top:10px;font-size:12px;"></p>
                     </div>
                 </div>
@@ -11711,49 +11713,77 @@ console.log(
 /* =========================================================
    VOLUNTEER / TRAINING APPLICATION RECEPTION
 ========================================================= */
-async function loadApplicationReception() {
-    const toggle = document.getElementById("applicationReceptionToggle");
+function updateApplicationReceptionUI(isOpen) {
+    const button = document.getElementById("applicationReceptionToggle");
     const status = document.getElementById("applicationReceptionStatus");
-    if (!toggle || !status) return;
+    const label = document.getElementById("applicationReceptionActionLabel");
+    if (!button || !status) return;
+
+    button.dataset.open = String(isOpen);
+    button.className = isOpen ? "btn btn-danger" : "btn btn-primary";
+    button.innerHTML = isOpen
+        ? '<i class="fa-solid fa-toggle-off"></i><span data-ar="إيقاف الاستقبال" data-en="Turn reception OFF">Turn reception OFF</span>'
+        : '<i class="fa-solid fa-toggle-on"></i><span data-ar="تشغيل الاستقبال" data-en="Turn reception ON">Turn reception ON</span>';
+
+    status.textContent = isOpen
+        ? (isArabic ? "الاستقبال مفتوح" : "Applications open")
+        : (isArabic ? "الاستقبال مغلق" : "Applications closed");
+    if (label) label.textContent = isArabic ? "حالة استقبال الطلبات" : "Application reception";
+    if (typeof applyLanguage === "function") applyLanguage(isArabic ? "ar" : "en");
+}
+
+async function loadApplicationReception() {
+    const button = document.getElementById("applicationReceptionToggle");
+    const status = document.getElementById("applicationReceptionStatus");
+    if (!button || !status) return;
+
+    button.disabled = true;
     status.textContent = isArabic ? "جارٍ التحميل..." : "Loading...";
     const { data, error } = await supabaseClient.from("application_settings")
         .select("is_open").eq("id", 1).maybeSingle();
+
     if (error || !data) {
         console.error("Could not load application reception setting:", error);
-        toggle.checked = false;
-        toggle.disabled = true;
+        button.disabled = true;
+        button.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span>Unavailable</span>';
         status.textContent = isArabic ? "الإعداد غير متاح" : "Setting unavailable";
         const msg = document.getElementById("applicationReceptionMessage");
-        if (msg) msg.textContent = isArabic ? "يرجى تطبيق إعداد الاستقبال في Supabase أولاً." : "Apply the reception SQL setup in Supabase first.";
+        if (msg) msg.textContent = (isArabic ? "تعذر قراءة الإعداد: " : "Could not read setting: ") + (error?.message || "No setting row");
         return;
     }
-    toggle.checked = data.is_open === true;
-    status.textContent = toggle.checked ? (isArabic ? "الاستقبال مفتوح" : "Applications open") : (isArabic ? "الاستقبال مغلق" : "Applications closed");
+
+    updateApplicationReceptionUI(data.is_open === true);
+    button.disabled = false;
 }
-async function saveApplicationReception() {
-    const toggle = document.getElementById("applicationReceptionToggle");
-    const button = document.getElementById("saveApplicationReceptionBtn");
-    const status = document.getElementById("applicationReceptionStatus");
+
+async function toggleApplicationReception() {
+    const button = document.getElementById("applicationReceptionToggle");
     const msg = document.getElementById("applicationReceptionMessage");
-    if (!toggle || !button || toggle.disabled) return;
+    if (!button || button.disabled) return;
+
+    const currentState = button.dataset.open === "true";
+    const nextState = !currentState;
     button.disabled = true;
-    const old = button.innerHTML;
-    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>' +
+        (isArabic ? "جارٍ الحفظ..." : "Saving...") + '</span>';
     if (msg) msg.textContent = "";
+
     try {
         const { data, error } = await supabaseClient.from("application_settings")
-            .update({ is_open: toggle.checked, updated_at: new Date().toISOString() })
+            .update({ is_open: nextState, updated_at: new Date().toISOString() })
             .eq("id", 1).select("is_open").single();
         if (error) throw error;
-        toggle.checked = data.is_open === true;
-        if (status) status.textContent = toggle.checked ? (isArabic ? "الاستقبال مفتوح" : "Applications open") : (isArabic ? "الاستقبال مغلق" : "Applications closed");
-        if (msg) msg.textContent = isArabic ? "تم حفظ الإعداد بنجاح." : "Setting saved successfully.";
+
+        updateApplicationReceptionUI(data.is_open === true);
+        if (msg) msg.textContent = data.is_open
+            ? (isArabic ? "تم تشغيل استقبال الطلبات." : "Application reception is now ON.")
+            : (isArabic ? "تم إيقاف استقبال الطلبات." : "Application reception is now OFF.");
     } catch (error) {
-        console.error("Saving reception setting failed:", error);
-        if (msg) msg.textContent = (isArabic ? "تعذر حفظ الإعداد: " : "Could not save setting: ") + (error.message || "Unknown error");
+        console.error("Toggling application reception failed:", error);
+        updateApplicationReceptionUI(currentState);
+        if (msg) msg.textContent = (isArabic ? "تعذر تغيير الحالة: " : "Could not change status: ") + (error.message || "Unknown error");
     } finally {
         button.disabled = false;
-        button.innerHTML = old;
     }
 }
 
