@@ -4866,6 +4866,17 @@
 
 
 
+                <!-- LEGACY IMAGE AUDIT AND SAFE BATCH OPTIMIZATION -->
+                <div class="panel" style="margin-bottom:22px;">
+                    <div class="panel-header"><div class="panel-title"><i class="fa-solid fa-magnifying-glass-chart"></i><h3>Legacy Image Storage Audit</h3></div><span class="status">Safe optimization</span></div>
+                    <div class="panel-body">
+                        <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">Scan referenced gallery images, then optionally compress all eligible JPEG/PNG files. Optimized copies are uploaded to new paths; original files are kept and never deleted.</p>
+                        <button type="button" class="btn btn-primary" id="scanLegacyImagesBtn" onclick="scanLegacyGalleryImages()"><i class="fa-solid fa-magnifying-glass"></i> Scan existing images</button>
+                        <div id="legacyImageAuditStatus" role="status" style="margin-top:14px;font-size:12px;color:var(--text);">No scan has been run yet.</div>
+                        <div id="legacyImageAuditResults" style="margin-top:14px;overflow-x:auto;"></div>
+                    </div>
+                </div>
+
                 <!-- IMAGE FILTERS -->
 
                 <div class="filters">
@@ -6586,6 +6597,47 @@ function setupDragAndDrop() {
 
 
 /* =========================================================
+   IMAGE COMPRESSION BEFORE GALLERY UPLOAD
+   JPEG/PNG only. Videos, GIF, SVG, PDF and other files stay unchanged.
+========================================================= */
+async function compressGalleryImage(file) {
+    if (!file || !/^image\/(jpeg|png)$/.test(file.type || "")) return file;
+    if (typeof createImageBitmap !== "function") return file;
+
+    let bitmap;
+    try {
+        bitmap = await createImageBitmap(file);
+        const maxDimension = 1600;
+        const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+        if (scale >= 1 && file.size < 180 * 1024) return file;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        const context = canvas.getContext("2d");
+        if (!context) return file;
+        context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+        const blob = await new Promise(resolve =>
+            canvas.toBlob(resolve, "image/webp", 0.78)
+        );
+        if (!blob || blob.size >= file.size) return file;
+
+        const baseName = file.name.replace(/\.[^.]+$/, "") || "image";
+        return new File([blob], baseName + ".webp", {
+            type: "image/webp",
+            lastModified: file.lastModified || Date.now()
+        });
+    } catch (error) {
+        console.warn("Image compression skipped:", file.name, error);
+        return file;
+    } finally {
+        if (bitmap && typeof bitmap.close === "function") bitmap.close();
+    }
+}
+
+
+/* =========================================================
    SAVE IMAGE
 ========================================================= */
 
@@ -6607,7 +6659,8 @@ async function saveImage() {
         showToast(`Uploading ${files.length} media file(s)...`);
         const mediaItems = [];
 
-        for (const file of files) {
+        for (const originalFile of files) {
+            const file = await compressGalleryImage(originalFile);
             const extension = file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "bin";
             const storagePath = `${crypto.randomUUID()}.${extension}`;
             const { error: uploadError } = await supabaseClient.storage.from("gallery").upload(storagePath, file, {
@@ -6617,10 +6670,10 @@ async function saveImage() {
             });
             if (uploadError) {
                 if (mediaItems.length) await supabaseClient.storage.from("gallery").remove(mediaItems.map(x => x.storage_path));
-                return showToast(getSupabaseErrorMessage(uploadError, `Failed to upload ${file.name}.`));
+                return showToast(getSupabaseErrorMessage(uploadError, `Failed to upload ${originalFile.name}.`));
             }
             const { data: publicUrlData } = supabaseClient.storage.from("gallery").getPublicUrl(storagePath);
-            mediaItems.push({url: publicUrlData?.publicUrl || "", storage_path: storagePath, name: file.name, type: file.type || "application/octet-stream", size: file.size});
+            mediaItems.push({url: publicUrlData?.publicUrl || "", storage_path: storagePath, name: originalFile.name, type: file.type || "application/octet-stream", size: file.size});
         }
 
         const { data, error } = await supabaseClient.from("images").insert({
@@ -6646,8 +6699,278 @@ async function saveImage() {
 
 
 /* =========================================================
-   LOAD IMAGES
+   LEGACY GALLERY IMAGE AUDIT AND SAFE BATCH OPTIMIZATION
 ========================================================= */
+let legacyImageAuditCandidates = [];
+
+function formatLegacyImageBytes(bytes) {
+    if (!bytes) return "Unknown";
+    const units = ["B", "KB", "MB", "GB"];
+    let value = bytes, unit = 0;
+    while (value >= 1024 && unit < units.length - 1) { value /= 1024; unit++; }
+    return value.toFixed(unit ? 2 : 0) + " " + units[unit];
+}
+
+async function scanLegacyGalleryImages() {
+    const button = document.getElementById("scanLegacyImagesBtn");
+    const status = document.getElementById("legacyImageAuditStatus");
+    const results = document.getElementById("legacyImageAuditResults");
+    if (!button || !status || !results) return;
+
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scanning...';
+    status.textContent = "Checking image records and Storage metadata. Image contents are not being downloaded.";
+    results.innerHTML = "";
+    legacyImageAuditCandidates = [];
+
+    try {
+        const referenced = [];
+        for (const record of images) {
+            for (const media of getMediaItems(record)) {
+                const path = String(media.storage_path || "").trim();
+                if (!path) continue;
+                referenced.push({
+                    path, recordId: record.id,
+                    name: media.name || path.split("/").pop(),
+                    type: media.type || "", recordedSize: Number(media.size) || 0,
+                    title: record.title || "Untitled", category: record.category || "—"
+                });
+            }
+        }
+
+        const uniquePaths = [...new Set(referenced.map(item => item.path))];
+        const storageFiles = new Map();
+        const pageSize = 1000;
+
+        async function listFolder(folderPath) {
+            for (let offset = 0; ; offset += pageSize) {
+                const { data, error } = await supabaseClient.storage.from("gallery")
+                    .list(folderPath, { limit: pageSize, offset, sortBy: { column: "name", order: "asc" } });
+                if (error) throw error;
+                const entries = data || [];
+                for (const entry of entries) {
+                    if (!entry || !entry.name) continue;
+                    const fullPath = folderPath ? folderPath + "/" + entry.name : entry.name;
+                    if (entry.id) storageFiles.set(fullPath, entry);
+                    else await listFolder(fullPath);
+                }
+                if (entries.length < pageSize) break;
+            }
+        }
+        await listFolder("");
+
+        const auditRows = uniquePaths.map(path => {
+            const stored = storageFiles.get(path);
+            const refs = referenced.filter(item => item.path === path);
+            const first = refs[0];
+            const fileName = path.split("/").pop();
+            const size = Number(stored?.metadata?.size) || first.recordedSize || 0;
+            const mime = String(stored?.metadata?.mimetype || first.type || "").toLowerCase();
+            const ext = fileName.split(".").pop().toLowerCase();
+            const supported = mime === "image/jpeg" || mime === "image/png" ||
+                (!mime && ["jpg", "jpeg", "png"].includes(ext));
+            return {
+                path, name: first.name, size, title: first.title, category: first.category,
+                references: refs.length, missing: !stored,
+                candidate: !!stored && supported && size >= 180 * 1024
+            };
+        });
+
+        legacyImageAuditCandidates = auditRows.filter(row => row.candidate);
+        const missing = auditRows.filter(row => row.missing);
+        const totalBytes = legacyImageAuditCandidates.reduce((sum, row) => sum + row.size, 0);
+
+        status.innerHTML = '<strong>Scan complete.</strong> ' + uniquePaths.length +
+            ' unique referenced paths checked; ' + legacyImageAuditCandidates.length +
+            ' JPEG/PNG files are potential candidates (' + formatLegacyImageBytes(totalBytes) +
+            ' current combined size where known). ' + missing.length +
+            ' referenced paths were not found in the gallery bucket.';
+
+        if (!auditRows.length) {
+            results.innerHTML = '<p style="font-size:12px;color:var(--muted);">No Storage paths were found in the loaded image records.</p>';
+            return;
+        }
+
+        const rows = auditRows.slice(0, 100).map(row =>
+            '<tr><td style="padding:9px;border-bottom:1px solid var(--border);">' + escapeHtml(row.name) + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);">' + escapeHtml(row.title) + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);">' + escapeHtml(row.category) + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);white-space:nowrap;">' + formatLegacyImageBytes(row.size) + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);">' + row.references + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);">' +
+            (row.missing ? "Not found in bucket" : row.candidate ? "Potential candidate" : "Skip / not eligible") +
+            '</td></tr>'
+        ).join("");
+
+        results.innerHTML = '<p style="font-size:11px;color:var(--muted);margin-bottom:8px;">Showing up to 100 of ' +
+            auditRows.length + ' unique files. No compression has been performed yet.</p>' +
+            '<table style="width:100%;border-collapse:collapse;text-align:left;font-size:11px;"><thead><tr>' +
+            ["File","Record","Category","Stored size","References","Audit result"].map(label =>
+                '<th style="padding:9px;border-bottom:1px solid var(--border);white-space:nowrap;">' + label + '</th>'
+            ).join("") + '</tr></thead><tbody>' + rows + '</tbody></table>' +
+            (legacyImageAuditCandidates.length
+                ? '<div style="margin-top:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">' +
+                  '<button type="button" class="btn btn-primary" id="compressLegacyImagesBtn" onclick="compressLegacyGalleryCandidates()"><i class="fa-solid fa-wand-magic-sparkles"></i> Compress all ' + legacyImageAuditCandidates.length + ' eligible images</button>' +
+                  '<span style="font-size:11px;color:var(--muted);">Originals will remain untouched.</span></div>' +
+                  '<div id="legacyImageCompressionProgress" role="status" style="margin-top:12px;font-size:12px;color:var(--text);"></div>'
+                : '<p style="font-size:12px;color:var(--muted);margin-top:12px;">No eligible images were found.</p>');
+    } catch (error) {
+        console.error("Legacy gallery audit failed:", error);
+        status.textContent = "Scan failed: " + (error.message || "Unknown error") + ". No files were changed.";
+    } finally {
+        button.disabled = false;
+        button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Scan existing images';
+    }
+}
+
+async function compressLegacyGalleryCandidates() {
+    const button = document.getElementById("compressLegacyImagesBtn");
+    const status = document.getElementById("legacyImageAuditStatus");
+    const progress = document.getElementById("legacyImageCompressionProgress");
+    if (!button || !progress || !legacyImageAuditCandidates.length) return;
+
+    const candidates = [...legacyImageAuditCandidates];
+    const confirmed = confirm(
+        "Compress " + candidates.length + " eligible JPEG/PNG images?\n\n" +
+        "The tool will download and process one image at a time, upload optimized WebP copies to new paths, and update every database reference. Original files will NOT be deleted.\n\n" +
+        "Keep this page open until the process finishes."
+    );
+    if (!confirmed) return;
+
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
+    if (sessionError || !sessionData?.session) {
+        showToast("Your login session has expired. Please login again.");
+        return;
+    }
+
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Compressing...';
+    const summary = { done: 0, optimized: 0, skipped: 0, failed: 0, savedBytes: 0 };
+    const errors = [];
+
+    try {
+        for (let i = 0; i < candidates.length; i++) {
+            const candidate = candidates[i];
+            progress.textContent = "Processing " + (i + 1) + " of " + candidates.length + ": " + candidate.name;
+
+            let uploadedPath = "";
+            let updatedRecords = 0;
+            try {
+                const referencingRecords = images.filter(record =>
+                    getMediaItems(record).some(media => String(media.storage_path || "").trim() === candidate.path)
+                );
+                if (!referencingRecords.length) throw new Error("No current database references found; skipped for safety.");
+
+                const { data: originalBlob, error: downloadError } =
+                    await supabaseClient.storage.from("gallery").download(candidate.path);
+                if (downloadError) throw downloadError;
+                if (!originalBlob) throw new Error("Storage returned an empty file.");
+
+                const originalType = originalBlob.type ||
+                    (/\.png$/i.test(candidate.path) ? "image/png" : "image/jpeg");
+                const originalFile = new File(
+                    [originalBlob],
+                    candidate.name || candidate.path.split("/").pop(),
+                    { type: originalType, lastModified: Date.now() }
+                );
+                const compressedFile = await compressGalleryImage(originalFile);
+
+                if (compressedFile === originalFile || compressedFile.size >= originalFile.size ||
+                    compressedFile.type !== "image/webp") {
+                    summary.skipped++;
+                    summary.done++;
+                    progress.textContent = "Processed " + summary.done + "/" + candidates.length +
+                        " — no smaller WebP result for " + candidate.name + ".";
+                    continue;
+                }
+
+                uploadedPath = "optimized/" + crypto.randomUUID() + ".webp";
+                const { error: uploadError } = await supabaseClient.storage.from("gallery").upload(
+                    uploadedPath,
+                    compressedFile,
+                    { cacheControl: "31536000", upsert: false, contentType: "image/webp" }
+                );
+                if (uploadError) throw uploadError;
+
+                const { data: publicUrlData } =
+                    supabaseClient.storage.from("gallery").getPublicUrl(uploadedPath);
+                const optimizedUrl = publicUrlData?.publicUrl || "";
+                if (!optimizedUrl) throw new Error("Could not create a public URL for the optimized file.");
+
+                for (const record of referencingRecords) {
+                    const currentMedia = getMediaItems(record);
+                    const nextMedia = currentMedia.map(media => {
+                        if (String(media.storage_path || "").trim() !== candidate.path) return { ...media };
+                        return {
+                            ...media,
+                            url: optimizedUrl,
+                            storage_path: uploadedPath,
+                            type: "image/webp",
+                            size: compressedFile.size
+                        };
+                    });
+                    const firstMedia = nextMedia[0];
+                    const { error: updateError } = await supabaseClient.from("images").update({
+                        image_url: firstMedia?.url || record.image_url || null,
+                        storage_path: firstMedia?.storage_path || record.storage_path || null,
+                        media_urls: nextMedia
+                    }).eq("id", record.id);
+                    if (updateError) throw updateError;
+
+                    const localIndex = images.findIndex(item => String(item.id) === String(record.id));
+                    if (localIndex !== -1) {
+                        images[localIndex] = {
+                            ...images[localIndex],
+                            image_url: firstMedia?.url || images[localIndex].image_url,
+                            storage_path: firstMedia?.storage_path || images[localIndex].storage_path,
+                            media_urls: nextMedia
+                        };
+                    }
+                    updatedRecords++;
+                }
+
+                summary.optimized++;
+                summary.savedBytes += Math.max(0, originalFile.size - compressedFile.size);
+            } catch (error) {
+                summary.failed++;
+                errors.push(candidate.name + ": " + (error.message || "Unknown error"));
+                console.error("Legacy image compression failed:", candidate.path, error);
+                // Never remove an uploaded copy after a partial database update.
+                // Keeping both versions is safer than risking a broken reference.
+                if (uploadedPath && updatedRecords === 0) {
+                    const { error: cleanupError } = await supabaseClient.storage.from("gallery").remove([uploadedPath]);
+                    if (cleanupError) console.warn("Could not clean up unused optimized copy:", cleanupError);
+                }
+            }
+
+            summary.done++;
+            progress.textContent = "Progress " + summary.done + "/" + candidates.length +
+                " — optimized: " + summary.optimized + ", unchanged: " + summary.skipped +
+                ", failed: " + summary.failed + ".";
+        }
+
+        if (typeof renderImages === "function") renderImages();
+        if (typeof renderGallery === "function") renderGallery();
+        if (typeof renderActivities === "function") renderActivities();
+        if (typeof updateStats === "function") updateStats();
+        if (typeof populateProjectImages === "function") populateProjectImages();
+
+        const savedLabel = formatLegacyImageBytes(summary.savedBytes);
+        const finalMessage = "Batch finished. " + summary.optimized + " optimized, " +
+            summary.skipped + " unchanged, " + summary.failed + " failed. Approximate storage bytes saved across replaced references: " +
+            savedLabel + ". Original files were retained.";
+        if (status) status.textContent = finalMessage;
+        progress.textContent = finalMessage + (errors.length ? " Details: " + errors.join(" | ") : "");
+        showToast(summary.failed ? "Compression finished with some failures. Review the results." : "All eligible images processed successfully.");
+        legacyImageAuditCandidates = [];
+        button.remove();
+    } finally {
+        if (button.isConnected) {
+            button.disabled = false;
+            button.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles"></i> Retry remaining eligible images';
+        }
+    }
+}
 
 async function loadImages() {
 
@@ -13331,8 +13654,9 @@ function removeNewEditMedia(index) {
    UPLOAD ONE FILE
 --------------------------------------------------------- */
 
-async function uploadEditMediaFile(file) {
+async function uploadEditMediaFile(originalFile) {
 
+    const file = await compressGalleryImage(originalFile);
     const extension =
         file.name.includes(".")
             ? file.name.split(".").pop().toLowerCase()
@@ -13384,7 +13708,7 @@ async function uploadEditMediaFile(file) {
             storagePath,
 
         name:
-            file.name,
+            originalFile.name,
 
         type:
             file.type ||
