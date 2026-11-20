@@ -11713,23 +11713,28 @@ console.log(
 /* =========================================================
    VOLUNTEER / TRAINING APPLICATION RECEPTION
 ========================================================= */
+function receptionIsArabic() {
+    return document.documentElement.lang === "ar" ||
+           document.documentElement.dir === "rtl";
+}
+
 function updateApplicationReceptionUI(isOpen) {
     const button = document.getElementById("applicationReceptionToggle");
     const status = document.getElementById("applicationReceptionStatus");
     const label = document.getElementById("applicationReceptionActionLabel");
     if (!button || !status) return;
 
+    const arabic = receptionIsArabic();
     button.dataset.open = String(isOpen);
     button.className = isOpen ? "btn btn-danger" : "btn btn-primary";
     button.innerHTML = isOpen
-        ? '<i class="fa-solid fa-toggle-off"></i><span data-ar="إيقاف الاستقبال" data-en="Turn reception OFF">Turn reception OFF</span>'
-        : '<i class="fa-solid fa-toggle-on"></i><span data-ar="تشغيل الاستقبال" data-en="Turn reception ON">Turn reception ON</span>';
+        ? '<i class="fa-solid fa-toggle-off"></i><span>' + (arabic ? "إيقاف الاستقبال" : "Turn reception OFF") + '</span>'
+        : '<i class="fa-solid fa-toggle-on"></i><span>' + (arabic ? "تشغيل الاستقبال" : "Turn reception ON") + '</span>';
 
     status.textContent = isOpen
-        ? (isArabic ? "الاستقبال مفتوح" : "Applications open")
-        : (isArabic ? "الاستقبال مغلق" : "Applications closed");
-    if (label) label.textContent = isArabic ? "حالة استقبال الطلبات" : "Application reception";
-    if (typeof applyLanguage === "function") applyLanguage(isArabic ? "ar" : "en");
+        ? (arabic ? "الاستقبال مفتوح" : "Applications open")
+        : (arabic ? "الاستقبال مغلق" : "Applications closed");
+    if (label) label.textContent = arabic ? "حالة استقبال الطلبات" : "Application reception";
 }
 
 async function loadApplicationReception() {
@@ -11738,19 +11743,18 @@ async function loadApplicationReception() {
     const msg = document.getElementById("applicationReceptionMessage");
     if (!button || !status) return;
 
+    const arabic = receptionIsArabic();
     button.disabled = true;
-    status.textContent = isArabic ? "جارٍ الاتصال..." : "Connecting...";
+    status.textContent = arabic ? "جارٍ الاتصال..." : "Connecting...";
     if (msg) msg.textContent = "";
 
     let timeoutId;
     try {
         const request = supabaseClient.from("application_settings")
             .select("is_open").eq("id", 1).maybeSingle();
-
         const timeout = new Promise((_, reject) => {
-            timeoutId = setTimeout(() => reject(new Error("Connection timed out. Check internet and Supabase availability.")), 12000);
+            timeoutId = setTimeout(() => reject(new Error("Connection timed out after 12 seconds.")), 12000);
         });
-
         const { data, error } = await Promise.race([request, timeout]);
         if (error) throw error;
         if (!data) throw new Error("No application_settings row was found for id = 1.");
@@ -11761,9 +11765,9 @@ async function loadApplicationReception() {
         console.error("Could not load application reception setting:", error);
         button.disabled = true;
         button.className = "btn btn-secondary";
-        button.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span data-ar="تعذر الاتصال" data-en="Connection failed">Connection failed</span>';
-        status.textContent = isArabic ? "تعذر تحميل الحالة" : "Could not load status";
-        if (msg) msg.textContent = (isArabic ? "لم نتمكن من قراءة إعداد الاستقبال: " : "Could not read reception setting: ") + (error.message || "Unknown error");
+        button.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i><span>' + (arabic ? "تعذر الاتصال" : "Connection failed") + '</span>';
+        status.textContent = arabic ? "تعذر تحميل الحالة" : "Could not load status";
+        if (msg) msg.textContent = (arabic ? "تعذر قراءة إعداد الاستقبال: " : "Could not read reception setting: ") + (error.message || "Unknown error");
     } finally {
         if (timeoutId) clearTimeout(timeoutId);
     }
@@ -11774,11 +11778,12 @@ async function toggleApplicationReception() {
     const msg = document.getElementById("applicationReceptionMessage");
     if (!button || button.disabled) return;
 
+    const arabic = receptionIsArabic();
     const currentState = button.dataset.open === "true";
     const nextState = !currentState;
     button.disabled = true;
     button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i><span>' +
-        (isArabic ? "جارٍ الحفظ..." : "Saving...") + '</span>';
+        (arabic ? "جارٍ الحفظ..." : "Saving...") + '</span>';
     if (msg) msg.textContent = "";
 
     try {
@@ -11786,15 +11791,16 @@ async function toggleApplicationReception() {
             .update({ is_open: nextState, updated_at: new Date().toISOString() })
             .eq("id", 1).select("is_open").single();
         if (error) throw error;
+        if (!data) throw new Error("The setting update returned no row.");
 
         updateApplicationReceptionUI(data.is_open === true);
         if (msg) msg.textContent = data.is_open
-            ? (isArabic ? "تم تشغيل استقبال الطلبات." : "Application reception is now ON.")
-            : (isArabic ? "تم إيقاف استقبال الطلبات." : "Application reception is now OFF.");
+            ? (arabic ? "تم تشغيل استقبال الطلبات." : "Application reception is now ON.")
+            : (arabic ? "تم إيقاف استقبال الطلبات." : "Application reception is now OFF.");
     } catch (error) {
         console.error("Toggling application reception failed:", error);
         updateApplicationReceptionUI(currentState);
-        if (msg) msg.textContent = (isArabic ? "تعذر تغيير الحالة: " : "Could not change status: ") + (error.message || "Unknown error");
+        if (msg) msg.textContent = (arabic ? "تعذر تغيير الحالة: " : "Could not change status: ") + (error.message || "Unknown error");
     } finally {
         button.disabled = false;
     }
