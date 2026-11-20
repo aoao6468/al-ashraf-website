@@ -6590,7 +6590,7 @@ function setupDragAndDrop() {
    JPEG/PNG only. Videos, GIF, SVG, PDF and other files stay unchanged.
 ========================================================= */
 async function compressGalleryImage(file) {
-    if (!file || !/^image\\/(jpeg|png)$/.test(file.type || "")) return file;
+    if (!file || !/^image\/(jpeg|png)$/.test(file.type || "")) return file;
     if (typeof createImageBitmap !== "function") return file;
 
     let bitmap;
@@ -6612,7 +6612,7 @@ async function compressGalleryImage(file) {
         );
         if (!blob || blob.size >= file.size) return file;
 
-        const baseName = file.name.replace(/\\.[^.]+$/, "") || "image";
+        const baseName = file.name.replace(/\.[^.]+$/, "") || "image";
         return new File([blob], baseName + ".webp", {
             type: "image/webp",
             lastModified: file.lastModified || Date.now()
