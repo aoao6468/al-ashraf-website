@@ -47,7 +47,14 @@
          STYLE
     ========================================================== -->
 
-    <link rel="stylesheet" href="style.css">
+    <script>
+(function () {
+  var touchDevice = (navigator.maxTouchPoints > 0 || 'ontouchstart' in window);
+  var shortScreen = Math.min(screen.width || 9999, screen.height || 9999) <= 900;
+  if (touchDevice && shortScreen) document.documentElement.classList.add('force-mobile-device');
+})();
+</script>
+<link rel="stylesheet" href="style.css?v=mobile-menu-fix-20261120">
 
     <!-- =========================================================
      SUPABASE
