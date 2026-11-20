@@ -4866,6 +4866,17 @@
 
 
 
+                <!-- LEGACY IMAGE AUDIT (READ ONLY) -->
+                <div class="panel" style="margin-bottom:22px;">
+                    <div class="panel-header"><div class="panel-title"><i class="fa-solid fa-magnifying-glass-chart"></i><h3>Legacy Image Storage Audit</h3></div><span class="status">Read only</span></div>
+                    <div class="panel-body">
+                        <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;">Scan existing gallery records and Storage metadata to find referenced JPEG/PNG files that may benefit from compression. This scan does not download, change, replace, or delete any file.</p>
+                        <button type="button" class="btn btn-primary" id="scanLegacyImagesBtn" onclick="scanLegacyGalleryImages()"><i class="fa-solid fa-magnifying-glass"></i> Scan existing images</button>
+                        <div id="legacyImageAuditStatus" role="status" style="margin-top:14px;font-size:12px;color:var(--text);">No scan has been run yet.</div>
+                        <div id="legacyImageAuditResults" style="margin-top:14px;overflow-x:auto;"></div>
+                    </div>
+                </div>
+
                 <!-- IMAGE FILTERS -->
 
                 <div class="filters">
@@ -6688,6 +6699,114 @@ async function saveImage() {
 
 
 /* =========================================================
+/* =========================================================
+   LEGACY GALLERY IMAGE AUDIT — READ ONLY
+   Metadata only: no downloads, uploads, database writes or deletions.
+========================================================= */
+async function scanLegacyGalleryImages() {
+    const button = document.getElementById("scanLegacyImagesBtn");
+    const status = document.getElementById("legacyImageAuditStatus");
+    const results = document.getElementById("legacyImageAuditResults");
+    if (!button || !status || !results) return;
+
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Scanning...';
+    status.textContent = "Checking image records and Storage metadata. Image contents are not being downloaded.";
+    results.innerHTML = "";
+
+    try {
+        const referenced = [];
+        for (const record of images) {
+            for (const media of getMediaItems(record)) {
+                const path = String(media.storage_path || "").trim();
+                if (!path) continue;
+                referenced.push({
+                    path, name: media.name || path.split("/").pop(),
+                    type: media.type || "", recordedSize: Number(media.size) || 0,
+                    title: record.title || "Untitled", category: record.category || "—"
+                });
+            }
+        }
+
+        const uniquePaths = [...new Set(referenced.map(item => item.path))];
+        const storageFiles = new Map();
+        const pageSize = 1000;
+        for (let offset = 0; ; offset += pageSize) {
+            const { data, error } = await supabaseClient.storage.from("gallery")
+                .list("", { limit: pageSize, offset, sortBy: { column: "name", order: "asc" } });
+            if (error) throw error;
+            const entries = data || [];
+            for (const entry of entries) {
+                if (entry && entry.id && entry.name) storageFiles.set(entry.name, entry);
+            }
+            if (entries.length < pageSize) break;
+        }
+
+        const auditRows = uniquePaths.map(path => {
+            const fileName = path.split("/").pop();
+            const stored = path.includes("/") ? null : storageFiles.get(fileName);
+            const refs = referenced.filter(item => item.path === path);
+            const first = refs[0];
+            const size = Number(stored?.metadata?.size) || first.recordedSize || 0;
+            const mime = String(stored?.metadata?.mimetype || first.type || "").toLowerCase();
+            const ext = fileName.split(".").pop().toLowerCase();
+            const supported = mime === "image/jpeg" || mime === "image/png" ||
+                (!mime && ["jpg", "jpeg", "png"].includes(ext));
+            return {
+                path, name: first.name, size, title: first.title, category: first.category,
+                references: refs.length, missing: !stored,
+                candidate: !!stored && supported && size >= 180 * 1024
+            };
+        });
+
+        const candidates = auditRows.filter(row => row.candidate);
+        const missing = auditRows.filter(row => row.missing);
+        const totalBytes = candidates.reduce((sum, row) => sum + row.size, 0);
+        const formatBytes = bytes => {
+            if (!bytes) return "Unknown";
+            const units = ["B", "KB", "MB", "GB"];
+            let value = bytes, unit = 0;
+            while (value >= 1024 && unit < units.length - 1) { value /= 1024; unit++; }
+            return value.toFixed(unit ? 2 : 0) + " " + units[unit];
+        };
+
+        status.innerHTML = '<strong>Scan complete.</strong> ' + uniquePaths.length +
+            ' unique referenced paths checked; ' + candidates.length +
+            ' JPEG/PNG files are potential candidates (' + formatBytes(totalBytes) +
+            ' current combined size where known). ' + missing.length +
+            ' paths were not found in the bucket root listing.';
+
+        if (!auditRows.length) {
+            results.innerHTML = '<p style="font-size:12px;color:var(--muted);">No Storage paths were found in the loaded image records.</p>';
+            return;
+        }
+
+        const rows = auditRows.slice(0, 100).map(row =>
+            '<tr><td style="padding:9px;border-bottom:1px solid var(--border);">' + escapeHtml(row.name) + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);">' + escapeHtml(row.title) + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);">' + escapeHtml(row.category) + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);white-space:nowrap;">' + formatBytes(row.size) + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);">' + row.references + '</td>' +
+            '<td style="padding:9px;border-bottom:1px solid var(--border);">' +
+            (row.missing ? "Not found in root listing" : row.candidate ? "Potential candidate" : "Skip / not eligible") +
+            '</td></tr>'
+        ).join("");
+
+        results.innerHTML = '<p style="font-size:11px;color:var(--muted);margin-bottom:8px;">Showing up to 100 of ' +
+            auditRows.length + ' unique files. No compression has been performed.</p>' +
+            '<table style="width:100%;border-collapse:collapse;text-align:left;font-size:11px;"><thead><tr>' +
+            ["File","Record","Category","Stored size","References","Audit result"].map(label =>
+                '<th style="padding:9px;border-bottom:1px solid var(--border);white-space:nowrap;">' + label + '</th>'
+            ).join("") + '</tr></thead><tbody>' + rows + '</tbody></table>';
+    } catch (error) {
+        console.error("Legacy gallery audit failed:", error);
+        status.textContent = "Scan failed: " + (error.message || "Unknown error") + ". No files were changed.";
+    } finally {
+        button.disabled = false;
+        button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Scan existing images';
+    }
+}
+
    LOAD IMAGES
 ========================================================= */
 
