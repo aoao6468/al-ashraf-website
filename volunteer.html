@@ -1326,7 +1326,24 @@
     }
 }
 
-    </style>
+    
+/* Volunteer form mobile refinements */
+@media (max-width: 650px) {
+    html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+    .nav-inner { width: 100%; min-width: 0; gap: 8px; }
+    .nav-actions { min-width: 0; gap: 5px; }
+    .content-grid { grid-template-columns: minmax(0,1fr) !important; }
+    .info-card, .form-card { min-width: 0; width: 100%; padding: 20px 16px !important; }
+    .form-grid { grid-template-columns: minmax(0,1fr) !important; }
+    .form-group, input, select, textarea, button { min-width: 0; max-width: 100%; width: 100%; }
+    .form-actions { flex-wrap: wrap; }
+}
+@media (max-width: 380px) {
+    .nav-inner { padding: 0 10px !important; }
+    .info-card, .form-card { padding: 16px 12px !important; }
+}
+
+</style>
 
 </head>
 
