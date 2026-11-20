@@ -6586,6 +6586,47 @@ function setupDragAndDrop() {
 
 
 /* =========================================================
+   IMAGE COMPRESSION BEFORE GALLERY UPLOAD
+   JPEG/PNG only. Videos, GIF, SVG, PDF and other files stay unchanged.
+========================================================= */
+async function compressGalleryImage(file) {
+    if (!file || !/^image\\/(jpeg|png)$/.test(file.type || "")) return file;
+    if (typeof createImageBitmap !== "function") return file;
+
+    let bitmap;
+    try {
+        bitmap = await createImageBitmap(file);
+        const maxDimension = 1600;
+        const scale = Math.min(1, maxDimension / Math.max(bitmap.width, bitmap.height));
+        if (scale >= 1 && file.size < 180 * 1024) return file;
+
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+        canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+        const context = canvas.getContext("2d");
+        if (!context) return file;
+        context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+        const blob = await new Promise(resolve =>
+            canvas.toBlob(resolve, "image/webp", 0.78)
+        );
+        if (!blob || blob.size >= file.size) return file;
+
+        const baseName = file.name.replace(/\\.[^.]+$/, "") || "image";
+        return new File([blob], baseName + ".webp", {
+            type: "image/webp",
+            lastModified: file.lastModified || Date.now()
+        });
+    } catch (error) {
+        console.warn("Image compression skipped:", file.name, error);
+        return file;
+    } finally {
+        if (bitmap && typeof bitmap.close === "function") bitmap.close();
+    }
+}
+
+
+/* =========================================================
    SAVE IMAGE
 ========================================================= */
 
@@ -6607,7 +6648,8 @@ async function saveImage() {
         showToast(`Uploading ${files.length} media file(s)...`);
         const mediaItems = [];
 
-        for (const file of files) {
+        for (const originalFile of files) {
+            const file = await compressGalleryImage(originalFile);
             const extension = file.name.includes(".") ? file.name.split(".").pop().toLowerCase() : "bin";
             const storagePath = `${crypto.randomUUID()}.${extension}`;
             const { error: uploadError } = await supabaseClient.storage.from("gallery").upload(storagePath, file, {
@@ -6617,10 +6659,10 @@ async function saveImage() {
             });
             if (uploadError) {
                 if (mediaItems.length) await supabaseClient.storage.from("gallery").remove(mediaItems.map(x => x.storage_path));
-                return showToast(getSupabaseErrorMessage(uploadError, `Failed to upload ${file.name}.`));
+                return showToast(getSupabaseErrorMessage(uploadError, `Failed to upload ${originalFile.name}.`));
             }
             const { data: publicUrlData } = supabaseClient.storage.from("gallery").getPublicUrl(storagePath);
-            mediaItems.push({url: publicUrlData?.publicUrl || "", storage_path: storagePath, name: file.name, type: file.type || "application/octet-stream", size: file.size});
+            mediaItems.push({url: publicUrlData?.publicUrl || "", storage_path: storagePath, name: originalFile.name, type: file.type || "application/octet-stream", size: file.size});
         }
 
         const { data, error } = await supabaseClient.from("images").insert({
@@ -13331,8 +13373,9 @@ function removeNewEditMedia(index) {
    UPLOAD ONE FILE
 --------------------------------------------------------- */
 
-async function uploadEditMediaFile(file) {
+async function uploadEditMediaFile(originalFile) {
 
+    const file = await compressGalleryImage(originalFile);
     const extension =
         file.name.includes(".")
             ? file.name.split(".").pop().toLowerCase()
@@ -13384,7 +13427,7 @@ async function uploadEditMediaFile(file) {
             storagePath,
 
         name:
-            file.name,
+            originalFile.name,
 
         type:
             file.type ||
