@@ -3233,7 +3233,62 @@
     display: block;
 }
 
-    </style>
+    
+/* Mobile-first admin refinements */
+@media (max-width: 850px) {
+    .admin-layout { display: block; width: 100%; overflow-x: clip; }
+    .sidebar { width: min(290px, 86vw); max-width: 86vw; }
+    .main { width: 100%; min-width: 0; }
+    .content { width: 100%; min-width: 0; padding: 18px; }
+    .top-header { width: 100%; min-width: 0; gap: 10px; }
+    .page-heading { min-width: 0; }
+    .page-heading h1 { overflow-wrap: anywhere; }
+    .dashboard-grid, .stats-grid, .image-grid, .form-grid,
+    #applications-section #applicationsContainer {
+        min-width: 0;
+    }
+    .modal, .modal-overlay, .application-modal-overlay {
+        padding: 10px;
+        align-items: flex-start;
+    }
+    .modal-box, .application-modal {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: calc(100dvh - 20px);
+        overflow-y: auto;
+    }
+}
+@media (max-width: 600px) {
+    .content { padding: 14px !important; }
+    .top-header { padding: 0 12px !important; }
+    .top-header > * { min-width: 0; }
+    .stats-grid, .image-grid, .form-grid, .dashboard-grid,
+    .quick-actions, #applications-section #applicationsContainer {
+        grid-template-columns: minmax(0, 1fr) !important;
+    }
+    .section-title, .panel-header { gap: 10px; flex-wrap: wrap; }
+    .section-title > *, .panel-header > * { min-width: 0; max-width: 100%; }
+    .form-group, .form-group input, .form-group select,
+    .form-group textarea, input, select, textarea { min-width: 0; width: 100%; }
+    .content table {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    .image-card, .application-card, .stat-card { min-width: 0; }
+    .image-card-actions, .card-actions { flex-wrap: wrap; }
+    .image-card-actions button, .card-actions button { flex: 1 1 auto; }
+    .filters { max-width: 100%; overflow-x: auto; }
+}
+@media (max-width: 380px) {
+    .content { padding: 10px !important; }
+    .top-header { padding: 0 9px !important; }
+    .sidebar { width: 84vw; }
+}
+
+</style>
 <style>
 
 /* ================================
