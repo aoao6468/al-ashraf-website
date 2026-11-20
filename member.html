@@ -1975,7 +1975,28 @@
     display: block;
 }
 
-    </style>
+    
+/* Member portal mobile refinements */
+@media (max-width: 650px) {
+    html, body { width: 100%; max-width: 100%; overflow-x: clip; }
+    .navbar-inner { min-width: 0; gap: 8px; }
+    .nav-actions { display: flex; gap: 6px; min-width: 0; }
+    .profile-layout { grid-template-columns: minmax(0,1fr) !important; }
+    .profile-card, .profile-content, .certificates-section { min-width: 0; width: 100%; }
+    .profile-content { padding: 16px !important; }
+    .certificates-grid { grid-template-columns: minmax(0,1fr) !important; }
+    .certificate-card { min-width: 0; max-width: 100%; flex-wrap: wrap; }
+    .certificate-card > * { min-width: 0; max-width: 100%; }
+    .modal, .modal-box { width: calc(100% - 20px) !important; max-width: 100% !important; }
+    input, select, textarea, button { max-width: 100%; }
+}
+@media (max-width: 380px) {
+    .navbar-inner { width: calc(100% - 16px) !important; }
+    .nav-btn { width: 36px !important; min-width: 36px; }
+    .profile-content { padding: 12px !important; }
+}
+
+</style>
 
 </head>
 
