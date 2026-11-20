@@ -1154,6 +1154,25 @@ html.force-mobile-device .contact-grid,
 html.force-mobile-device .footer-grid { grid-template-columns:minmax(0,1fr)!important; }
 html.force-mobile-device img, html.force-mobile-device video, html.force-mobile-device iframe { max-width:100%!important; }
 
+
+/* Definitive phone header fix: target both hardware width and normal viewport. */
+@media only screen and (max-device-width: 800px), only screen and (max-width: 800px) {
+ header.navbar{width:100%!important;min-height:66px!important;position:relative!important;overflow:visible!important;z-index:9999!important}
+ header.navbar>.nav-inner{width:100%!important;max-width:none!important;min-height:66px!important;height:auto!important;padding:8px 12px!important;margin:0!important;box-sizing:border-box!important;display:flex!important;flex-flow:row nowrap!important;align-items:center!important;justify-content:space-between!important;gap:8px!important}
+ header.navbar .brand{flex:1 1 auto!important;min-width:0!important;gap:8px!important}
+ header.navbar .brand-logo{width:42px!important;height:42px!important;flex:0 0 42px!important}
+ header.navbar .brand-name-en{display:none!important}
+ header.navbar .brand-name-ar{display:block!important;font-size:11px!important;white-space:nowrap!important}
+ header.navbar .nav-links,header.navbar #navLinks{display:none!important;position:absolute!important;top:100%!important;left:0!important;right:0!important;width:100%!important;max-width:100%!important;max-height:75vh!important;overflow-y:auto!important;flex-direction:column!important;align-items:stretch!important;justify-content:flex-start!important;gap:0!important;padding:10px 18px!important;margin:0!important;box-sizing:border-box!important;background:#fff!important;box-shadow:0 14px 28px rgba(0,0,0,.18)!important;z-index:10000!important}
+ header.navbar .nav-links.show,header.navbar #navLinks.show{display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important}
+ header.navbar .nav-links a{display:block!important;width:100%!important;padding:12px 4px!important;font-size:14px!important;white-space:normal!important}
+ header.navbar .nav-actions{display:flex!important;flex:0 0 auto!important;align-items:center!important;gap:6px!important;margin:0!important}
+ header.navbar .member-login-btn,header.navbar .volunteer-btn{display:none!important}
+ header.navbar .language-btn{display:inline-flex!important;width:36px!important;min-width:36px!important;height:36px!important;padding:0!important;align-items:center!important;justify-content:center!important}
+ header.navbar #menuToggle{display:inline-flex!important;visibility:visible!important;opacity:1!important;width:42px!important;min-width:42px!important;height:42px!important;flex:0 0 42px!important;align-items:center!important;justify-content:center!important;padding:0!important;margin:0!important;border:0!important;border-radius:10px!important;background:#16845b!important;color:#fff!important;font-size:20px!important;position:relative!important;z-index:10001!important;cursor:pointer!important}
+ header.navbar #menuToggle i{display:inline-block!important}
+}
+
 </style>
 
 </head>
