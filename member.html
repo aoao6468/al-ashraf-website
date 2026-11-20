@@ -3392,9 +3392,37 @@ document
    UPLOAD AVATAR
 ========================================================= */
 
-async function uploadAvatar(
-    file
-) {
+async function compressMemberAvatar(file) {
+    if (!file || !file.type.startsWith("image/") || !("createImageBitmap" in window)) return file;
+    let bitmap;
+    try {
+        bitmap = await createImageBitmap(file);
+        const maxSide = 512;
+        const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+        const width = Math.max(1, Math.round(bitmap.width * scale));
+        const height = Math.max(1, Math.round(bitmap.height * scale));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        if (!context) return file;
+        context.drawImage(bitmap, 0, 0, width, height);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/webp", 0.78));
+        if (!blob || blob.size >= file.size) return file;
+        const baseName = file.name.replace(/\.[^.]+$/, "") || "avatar";
+        return new File([blob], baseName + ".webp", { type: "image/webp", lastModified: Date.now() });
+    } catch (error) {
+        console.warn("Avatar compression skipped:", error);
+        return file;
+    } finally {
+        if (bitmap && typeof bitmap.close === "function") bitmap.close();
+    }
+}
+
+/* =========================================================
+   UPLOAD AVATAR
+========================================================= */
+async function uploadAvatar(file) {
 
     if (!currentUser) {
 
@@ -3410,15 +3438,9 @@ async function uploadAvatar(
         );
 
 
-        const extension =
-            file.name
-                .split(".")
-                .pop()
-                .toLowerCase();
-
-
-        const filePath =
-            `members/${currentUser.id}/avatar-${Date.now()}.${extension}`;
+        const uploadFile = await compressMemberAvatar(file);
+        const extension = uploadFile.type === "image/webp" ? "webp" : uploadFile.name.split(".").pop().toLowerCase();
+        const filePath = `members/${currentUser.id}/avatar-${Date.now()}.${extension}`;
 
 
         /*
@@ -3434,11 +3456,10 @@ async function uploadAvatar(
                 .from("gallery")
                 .upload(
                     filePath,
-                    file,
+                    uploadFile,
                     {
                         upsert: false,
-                        contentType:
-                            file.type
+                        contentType: uploadFile.type || file.type
                     }
                 );
 
